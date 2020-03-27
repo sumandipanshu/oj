@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from core.models import Profile
 import logging
 
+@login_required
 def Add_question(request):
     if request.method == 'GET':
         form = QuestionForm()

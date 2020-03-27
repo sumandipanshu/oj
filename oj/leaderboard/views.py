@@ -2,7 +2,10 @@ from django.http import HttpResponse
 from core.models import Profile
 from django.contrib.auth.models import User
 from django.shortcuts import render
+from core.models import Profile
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def leaderboard(request):
     users=Profile.objects.order_by('score')
     users=[i.__dict__ for  i in list(users)]
