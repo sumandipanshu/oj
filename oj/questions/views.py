@@ -26,12 +26,13 @@ def Add_question(request):
 def index(request):
     questions=Questions.objects.all()
     questions=[i.__dict__ for  i in list(questions)]
+    user = Profile.objects.get(pk = request.user.pk)
     temp=[]
     for i in questions:
         temp.append({"title":i["title"],"points":i["points"],"id":i["id"]})
     
     logging.warning(temp)
-    return render(request,'questions_display.html',{'questions':temp,})
+    return render(request,'questions_display.html',{'questions':temp,'score':user.score})
 
 @login_required
 def question(request,qid):

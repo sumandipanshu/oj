@@ -18,11 +18,14 @@ li {
   padding-left: 10px;
 }
 
-li a {
+li a{
+  background-color:#7b16ff;
+} 
+a {
   display: block;
   padding-top:0px;
   color: white;
-  background-color:#7b16ff;
+    text-transform: uppercase;
   text-align: center;
   border-radius: 6px;
   padding: 14px ;
@@ -30,7 +33,8 @@ li a {
 }
 hr {
 	display: block;
-	border: 1px dotted #7b16ff ;
+	border: 1px solid #7b16ff ;
+	width:97%;
 	color: #7b16ff;
 }
 
@@ -48,11 +52,12 @@ header h1{
 .leaderboard{
 	table-layout:fixed;
 	border: 1px solid #5d5d5d; 
-	width: 500px;
+	width: 600px;
+	padding-top:20px;
+	padding-bottom: 20px;
 	border-radius:10px;
 	background-color: #2b2a2a;
-	float: left;
-
+    display:inline-table;
 	color: white;
 }
 td:nth-child(1) span{
@@ -63,21 +68,25 @@ td:nth-child(1) span{
 	background-color: #7b16ff
 }
 .leaderboard td{
-	padding-left: 10px;
 	text-align: center;
-	padding-top: 10px;
 	
 }
-.leaderboard-content .user{
+.leaderboard-content{
+	display: flex;
+	margin-top:50px;
+	justify-content: center;
+	align-items: center;
+}
+.user{
 	float: left;
 	table-layout:fixed;
 	border: 1px solid #5d5d5d; 
-	width: 500px;
+	width: 300px;
 	text-align:center;
 	border-radius:10px;
 	margin-right: 20px;
 	background-color: #ddd9ff;
-
+	padding-bottom: 20px;
 	color: #16171a;
     	
 }
@@ -86,5 +95,51 @@ td:nth-child(1) span{
 }
 
 
+.question-page{
+	color: white;
+}
+.question-page h1{
+    text-transform: uppercase;
 
+	text-align: center;
+	text-decoration:underline
+}
+.question-page h2{
+	text-decoration:underline;
+}
+.question-page span{
+	color: #7b16ff;
+}
 
+form{
+	color: white;
+}
+form input[type=text]{
+	width:30%;
+	box-sizing: border-box;
+	 border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  resize: none;
+}
+form input[type=submit]{
+	background-color: #7b16ff;
+    border: 1px solid #7b16ff;
+    width: 100px;
+    height: 30px;
+    font-size: 20px;
+	color: white;
+}
+form input[type=submit]:hover{
+   background-color: #6411d0;
+}
+textarea {
+  width: 100%;
+  height: 150px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  resize: none;
+}

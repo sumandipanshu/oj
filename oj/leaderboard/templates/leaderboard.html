@@ -1,28 +1,37 @@
-{% extends 'base.html' %}
-{% block content %}
-<div class = "leaderboard-content">
-	<table class = "user">
-	<caption><h2>My details</h2></caption>
+{% extends 'base.html' %} {% block content %}
+<div class="leaderboard-content">
+	<table class="user">
 		<tr>
-			<th> Username </th> <th>Score</th> 
+			<th colspan=2>
+				<h2>My Details</h2>
+			</th>
 		</tr>
 		<tr>
-			<td>{{ user.username }}</td> <td> {{ user.score }} </td>
+			<td> Username </td>
+			<td>Score</td>
+		</tr>
+		<tr>
+			<th>{{ user.username }}</th>
+			<th> {{ score }} </th>
 		</tr>
 	</table>
- <table class = "leaderboard">
-   <caption><h2>LeaderBoard</h2></caption>
-	 <tr>
-		 <th> Rank </th> <th> Name </th> <th> score </th>
-	</tr>
- {% for user in users %}
- <tr> 
-	 <td> <span>1</span> </td> <td> {{ user.username }} </td> <td> {{ user.score }} </td>
- </tr>
+	<table class="leaderboard">
+		<caption>
+			<h2>LeaderBoard</h2>
+		</caption>
+		<tr>
+			<th> Rank </th>
+			<th> Name </th>
+			<th> score </th>
+		</tr>
+		{% for user in users %}
+		<tr>
+			<td> <span>{{user.index}}</span> </td>
+			<td> {{ user.username }} </td>
+			<td> {{ user.score }} </td>
+		</tr>
 
- 
-
- {% endfor %}
- </table>
- </div>
- {% endblock %}
+		{% endfor %}
+	</table>
+</div>
+{% endblock %}

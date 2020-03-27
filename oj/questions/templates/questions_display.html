@@ -1,15 +1,38 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} 
 {% block content %}
-<body>
-   <h1>Welcome {{ user.username }}</h1>
-   <h2>Problems</h2>
-
-<hr>
-{% for question in questions %}
-<h1>Title: <a href={{question.id}} > {{question.title }}</a></h1>
-<h2>Points:  {{question.points}}</h2>
-<hr>
-
-{% endfor %}
-</body>
+<div class="leaderboard-content">
+	<table class="user">
+		<tr>
+			<th colspan=2>
+				<h2>My Details</h2>
+			</th>
+		</tr>
+		<tr>
+			<td> Username </td>
+			<td>Score</td>
+		</tr>
+		<tr>
+			<th>{{ user.username }}</th>
+			<th> {{score}} </th>
+		</tr>
+	</table>
+	<table class="leaderboard">
+		<caption>
+			<h2>Problems</h2>
+		</caption>
+		<tr>
+			<th> Index </th>
+			<th> Title </th>
+			<th> Points </th>
+		</tr>
+		{% for question in questions %}
+		<tr>
+			<td> {{ question.id }} </td>
+			<td> <a href={{question.id}}> {{question.title }}</a></td>
+			<td> {{question.points}} </td>
+		</tr>
+		
+		{% endfor %}
+	</table>
+</div>
 {% endblock %}

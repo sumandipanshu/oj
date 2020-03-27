@@ -1,40 +1,40 @@
-<!DOCTYPE html>
-{% load static %}
+<!DOCTYPE html> {% load static %}
 <html lang="en">
-  <head>
+
+<head>
 	<link rel="stylesheet" href="{% static 'style.css' %}">
 
-    <meta charset="utf-8">
-    <title>{% block title %}OJ{% endblock %}</title>
-  </head>
-  <body>
-    <header>
-	  <ul> 
-		<h1>Online Judge</h1>
-		  {% if user.is_authenticated %}
-		  <li >
-			  <a href="{% url 'logout' %}">logout</a>
-		  </li>
-		  {% else %}
-		  <li>
-			  <a href="{% url 'login' %}">login</a> 
-		</li>
-		<li>
-			  <a href="{% url 'signup' %}">signup</a>
-		  </li>
-		  {% endif %}
-		  <li>
-			  <a href="/questions">questions</a>
-		  </li>
-		  <li>
-			  <a href="/leaderboard">leaderboard</a>
-		  </li>
-	  </ul>
-        <main>
-    </header>
-        <hr>
-{% block content %}
-      {% endblock %}
-    </main>
-  </body>
+	<meta charset="utf-8">
+	<title>{% block title %}OJ{% endblock %}</title>
+</head>
+
+<body>
+	<header>
+		<ul>
+			<h1>Online Judge</h1>
+			{% if user.is_authenticated %}
+			<li>
+				<a href="{% url 'logout' %}">logout</a>
+			</li>
+			{% else %}
+			<li>
+				<a href="{% url 'login' %}">login</a>
+			</li>
+			<li>
+				<a href="{% url 'signup' %}">signup</a>
+			</li>
+			{% endif %}
+			<li>
+				<a href="/questions">questions</a>
+			</li>
+			<li>
+				<a href="/leaderboard">leaderboard</a>
+			</li>
+		</ul>
+		<main>
+	</header>
+	<hr> {% block content %} {% endblock %}
+	</main>
+</body>
+
 </html>
