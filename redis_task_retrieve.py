@@ -1,6 +1,6 @@
 import redis
 import filterout
-conn=redis.Redis('127.0.0.1')
+conn=redis.Redis('redis')
 
 fl=""
 def get_task():
