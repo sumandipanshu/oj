@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<body>
+   <h1>Welcome {{ user.username }}</h1>
+   <h2>Problems</h2>
+
+<hr>
+{% for question in questions %}
+<h1>Title: <a href={{question.id}} > {{question.title }}</a></h1>
+<h2>Points:  {{question.points}}</h2>
+<hr>
+
+{% endfor %}
+</body>
+{% endblock %}

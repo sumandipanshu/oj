@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+	<h1>Welcome {{ user.username }}</h1>
+    <h2>LeaderBoard</h2>
+ 
+ <hr>
+ {% for user in users %}
+ <h1>user:  {{user.username }}</h1>
+ <h2>score:  {{user.score}}</h2>
+ <hr>
+
+ 
+ {% endfor %}
+ {% endblock %}

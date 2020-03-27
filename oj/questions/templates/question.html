@@ -1,0 +1,19 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<body>
+        <h1>Welcome {{ user.username }}</h1>
+        <h2>Problems</h2>
+        <h1>question</h1>
+     
+     <hr>
+     <h1>Title: {{question.title }}</h1>
+     <h2>Description: {{ question.description }}</h2>
+     
+     <h2>Points:  {{question.points}}</h2>
+     <h3>Author:  {{question.author }}</h3>
+     <hr>
+     <h2><a href="/questions/submission/{{ question.id }}">Code</a></h2>
+   
+     </body>
+	 {% endblock %}

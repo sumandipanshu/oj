@@ -1,0 +1,2 @@
+ranger-fm==1.9.2
+redis==3.4.1

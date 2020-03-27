@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+    web:
+        build: ./oj
+        command: python3 -u manage.py runserver 0.0.0.0:8000
+        volumes:
+            - ./oj:/oj
+        ports:
+            - "8000:8000"
+        networks:
+            - redis-net
+        depends_on:
+            -  checker
+
+    migrations:
+        build: ./oj
+        command: python3 manage.py migrate
+        volumes: 
+            - ./oj:/oj
+
+    checker:
+        build: ./checker
+        command: python3 redis_task_retrieve.py 
+        volumes:
+            - ./checker:/checker
+        networks:
+            - redis-net
+        depends_on:
+            - redis
+    redis:
+        image: "redis:alpine"
+        networks:
+            - redis-net
+        command: redis-server
+        ports:
+            - "6379:6379"
+networks:
+    redis-net:
