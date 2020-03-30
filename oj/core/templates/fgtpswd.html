@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<p>An email with reset link will be sent to you, if you are already registered.</p>
+        <div id="credentials-box">
+            <div id="cred-header">Enter Your Credentials</div>
+            <div id="cred-body">
+                <form name="fgtpswd" method="post" action="/">
+                    {% csrf_token %}
+                    <div class="field">
+                        <div class="name">
+                            <label for="email">Email</label>
+                        </div>
+                        <div class="value">
+                            <input id="email" name="email" value="" required>
+                        </div>
+                    </div>
+                    <div class="button-field">
+                        <input type="submit" value="Enter">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <p align="center">Don't have an account? <a href="{% url 'signup' ">Signup</a>.</p>
+        {% endblock %}

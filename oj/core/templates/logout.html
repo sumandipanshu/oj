@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <div align="center">
+<div align="center">
     <br>
     <br>
     <br>
@@ -10,8 +10,10 @@
     <br>
     <br>
     <br>
-    <h2>Welcome, {{ user.email }} <small>{{ user.username }}</small>!</h2>
-    <p>Thanks for confirming your email address!</p>
+    <p >Thanks for spending some quality time with the ONLINE JUDGE today.</p>
+    <p>Comeback again ;)</p>
+    <br>
+    <a href="{% url 'login' %}">Login again</a>
     <br>
     <br>
     <br>
@@ -26,5 +28,5 @@
     <br>
     <br>
     <br>
-  </div>
+</div>
 {% endblock %}

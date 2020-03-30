@@ -1,0 +1,620 @@
+/* ==========================================================================
+   Base styles: opinionated defaults
+   ========================================================================== */
+
+html {
+  color: #222;
+  font-size: 1em;
+  line-height: 1.4;
+}
+
+/*
+ * Remove text-shadow in selection highlight:
+ * https://twitter.com/miketaylr/status/12228805301
+ *
+ * Vendor-prefixed and regular ::selection selectors cannot be combined:
+ * https://stackoverflow.com/a/16982510/7133471
+ *
+ * Customize the background color to match your design.
+ */
+
+::-moz-selection {
+  background: #b3d4fc;
+  text-shadow: none;
+}
+
+::selection {
+  background: #b3d4fc;
+  text-shadow: none;
+}
+
+/*
+ * A better looking default horizontal rule
+ */
+
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 1em 0;
+  padding: 0;
+}
+
+/*
+ * Remove the gap between audio, canvas, iframes,
+ * images, videos and the bottom of their containers:
+ * https://github.com/h5bp/html5-boilerplate/issues/440
+ */
+
+audio,
+canvas,
+iframe,
+img,
+svg,
+video {
+  vertical-align: middle;
+}
+
+/*
+ * Remove default fieldset styles.
+ */
+
+fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+ * Allow only vertical resizing of textareas.
+ */
+
+textarea {
+  resize: vertical;
+}
+
+/* ==========================================================================
+   Browser Upgrade Prompt
+   ========================================================================== */
+
+.browserupgrade {
+  margin: 0.2em 0;
+  background: #ccc;
+  color: #000;
+  padding: 0.2em 0;
+}
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+
+/* ==========================================================================
+   Helper classes
+   ========================================================================== */
+
+/*
+ * Hide visually and from screen readers
+ */
+
+.hidden {
+  display: none !important;
+}
+
+/*
+* Hide only visually, but have it available for screen readers:
+* https://snook.ca/archives/html_and_css/hiding-content-for-accessibility
+*
+* 1. For long content, line feeds are not interpreted as spaces and small width
+*    causes content to wrap 1 word per line:
+*    https://medium.com/@jessebeach/beware-smushed-off-screen-accessible-text-5952a4c2cbfe
+*/
+
+.sr-only {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+  /* 1 */
+}
+
+/*
+* Extends the .sr-only class to allow the element
+* to be focusable when navigated to via the keyboard:
+* https://www.drupal.org/node/897638
+*/
+
+.sr-only.focusable:active,
+.sr-only.focusable:focus {
+  clip: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  position: static;
+  white-space: inherit;
+  width: auto;
+}
+
+/*
+* Hide visually and from screen readers, but maintain layout
+*/
+
+.invisible {
+  visibility: hidden;
+}
+
+/*
+* Clearfix: contain floats
+*
+* For modern browsers
+* 1. The space content is one way to avoid an Opera bug when the
+*    `contenteditable` attribute is included anywhere else in the document.
+*    Otherwise it causes space to appear at the top and bottom of elements
+*    that receive the `clearfix` class.
+* 2. The use of `table` rather than `block` is only necessary if using
+*    `:before` to contain the top-margins of child elements.
+*/
+
+.clearfix:before,
+.clearfix:after {
+  content: " ";
+  /* 1 */
+  display: table;
+  /* 2 */
+}
+
+.clearfix:after {
+  clear: both;
+}
+
+/* ==========================================================================
+   EXAMPLE Media Queries for Responsive Design.
+   These examples override the primary ('mobile first') styles.
+   Modify as content requires.
+   ========================================================================== */
+
+@media only screen and (min-width: 35em) {
+  /* Style adjustments for viewports that meet the condition */
+}
+
+@media print,
+  (-webkit-min-device-pixel-ratio: 1.25),
+  (min-resolution: 1.25dppx),
+  (min-resolution: 120dpi) {
+  /* Style adjustments for high resolution devices */
+}
+
+/* ==========================================================================
+   Print styles.
+   Inlined to avoid the additional HTTP request:
+   https://www.phpied.com/delay-loading-your-print-css/
+   ========================================================================== */
+
+@media print {
+  *,
+  *:before,
+  *:after {
+    background: transparent !important;
+    color: #000 !important;
+    /* Black prints faster */
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  a,
+  a:visited {
+    text-decoration: none;
+  }
+  a[href]:after {
+    content: " (" attr(href) ")";
+  }
+  abbr[title]:after {
+    content: " (" attr(title) ")";
+  }
+  /*
+     * Don't show links that are fragment identifiers,
+     * or use the `javascript:` pseudo protocol
+     */
+  a[href^="#"]:after,
+  a[href^="javascript:"]:after {
+    content: "";
+  }
+  pre {
+    white-space: pre-wrap !important;
+  }
+  pre,
+  blockquote {
+    border: 1px solid #999;
+    page-break-inside: avoid;
+  }
+  /*
+     * Printing Tables:
+     * https://web.archive.org/web/20180815150934/http://css-discuss.incutio.com/wiki/Printing_Tables
+     */
+  thead {
+    display: table-header-group;
+  }
+  tr,
+  img {
+    page-break-inside: avoid;
+  }
+  p,
+  h2,
+  h3 {
+    orphans: 3;
+    widows: 3;
+  }
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
+}
+
+html{
+  padding: 1rem;
+  min-width: 600px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+body{
+  margin: 0;
+}
+
+/* #container{
+  margin: 0px 18%;
+} */
+#header{
+  padding: 10px 0 50px 0;
+}
+
+#logo{
+  float: left;
+}
+#logo img{
+  width: 285px;
+  height: 47px;
+}
+
+#login-signup{
+  float: right;
+  list-style-type: none;
+}
+
+#loggedin{
+  float: right;
+  list-style-type: none;
+}
+
+#header-nav{
+  border: 1px solid rgb(185,185,185);
+  border-radius: 6px;
+  padding: 0.75rem 0.25rem;
+  margin-top: 1rem;
+
+}
+#header-nav ul{
+  margin: 0;
+  padding: 0;
+}
+#header-nav ul li{
+  display: inline;
+  margin-left: 1rem;
+  font-weight: bold;
+}
+#header-nav a,#header-nav a:visited{
+  color: inherit;
+  text-decoration: none;
+}
+#header-nav p{
+  margin: 0 0;
+  text-align: center;
+  font-weight: 800;
+  font-size: xx-large;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+#credentials-box{
+  border: 1px solid rgb(185,185,185);
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  width: 30rem;
+  margin: 5em auto 2em auto;
+}
+
+#cred-header{
+  border-bottom: 1px solid rgb(185,185,185);
+  color: #3B5998;
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
+}
+
+.field{
+  margin: 1.5rem 0;
+  overflow: hidden;
+}
+
+.name{
+  width: 11rem;
+  float: left;
+  text-align: right;
+  padding-right: 1rem;
+}
+
+.value{
+  width: 15rem;
+  float: left;
+  margin-bottom: 1rem;
+}
+
+.button-field{
+  margin: 1.5rem;
+  margin-left: 12rem;
+}
+
+.forgotPassword{
+  text-align: right;
+  bottom: 0.75rem;
+  padding-right: 0.5rem;
+  font-size: 0.9rem;
+}
+
+footer{
+  margin-top:2rem;
+  border-top: 1px solid rgb(185,185,185);
+  padding-top: 0.5rem;
+  text-align: center;
+}
+
+#middle{
+  margin-top: 1rem;
+  overflow: auto;
+}
+
+main{
+  /* margin-right: 21rem; */
+}
+
+#contest-database{
+  /* margin-right: 22rem; */
+}
+
+#contest-database #caption{
+  background-color: #e1e1e1;
+  font-size: 1rem;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  padding:0.25rem 0.5rem;
+}
+
+#contest-database table{
+  width: 100%;
+  text-align: center;
+  border-collapse: collapse;
+}
+
+#contest-database td, #contest-database th{
+  border: 1px solid #e1e1e1;
+  padding: 0.5em;
+  font-size: 0.9rem;
+}
+
+#contest-database tbody tr:nth-child(2n-1){
+  background-color: #f8f8f8;
+}
+
+#problem-database #caption{
+  background-color: #e1e1e1;
+  font-size: 0.9rem;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  padding:0.25rem 0.5rem;
+}
+
+#problem-database table{
+  width: 100%;
+  text-align: center;
+  border-collapse: collapse;
+}
+
+#problem-database td, #problem-database th{
+  border: 1px solid #e1e1e1;
+  padding: 0.5em;
+  font-size: 0.8rem;
+}
+
+#problem-database tbody tr:nth-child(2n-1){
+  background-color: #f8f8f8;
+}
+#problem-database tbody tr td:nth-child(1){
+  width: 17%;
+}
+#problem-database thead tr th:nth-child(1){
+  width: 17%;
+}
+
+#problem-database thead tr th:nth-child(2){
+  text-align: left;
+}
+#problem-database tbody tr td:nth-child(2){
+  text-align: left;
+}
+
+
+.submit-form{
+  margin-top: 1rem;
+}
+
+#submitpage-problemindex{
+  margin-bottom: 1rem;
+  overflow: auto;
+}
+
+#submitpage-problemindex label{
+  display: inline-block;
+  width: 8rem;
+}
+#submitpage-languageindex{
+  margin-bottom: 1rem;
+  overflow: auto;
+}
+
+#submitpage-languageindex label{
+  display: inline-block;
+  width: 8rem;
+}
+
+.submitpage-value{
+  display: inline-block;
+}
+
+.submitpage-value select{
+  width:20rem;
+}
+
+#submitpage-sourcefield{
+  margin-bottom: 1rem;
+}
+
+#submitpage-sourcefield textarea{
+  box-sizing: border-box;
+  width: 100%;
+}
+
+#submissions-database #caption{
+  background-color: #e1e1e1;
+  font-size: 0.9rem;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  padding:0.25rem 0.5rem;
+}
+
+#submissions-database table{
+  width: 100%;
+  text-align: center;
+  border-collapse: collapse;
+}
+
+#submissions-database td, #submissions-database th{
+  border: 1px solid #e1e1e1;
+  padding: 0.5em;
+  font-size: 0.8rem;
+}
+
+#submissions-database tbody tr:nth-child(2n-1){
+  background-color: #f8f8f8;
+}
+#leaderboard-database #caption{
+  background-color: #e1e1e1;
+  font-size: 0.9rem;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  padding:0.25rem 0.5rem;
+}
+
+#leaderboard-database table{
+  width: 100%;
+  text-align: center;
+  border-collapse: collapse;
+}
+
+#leaderboard-database td, #leaderboard-database th{
+  border: 1px solid #e1e1e1;
+  padding: 0.5em;
+  font-size: 0.8rem;
+}
+
+#leaderboard-database tbody tr:nth-child(2n-1){
+  background-color: #f8f8f8;
+}
+
+.problem-statement{
+  margin: 0.5em;
+  font-family: "Helvetica Neue",  Helvetica, Arial, sans-serif;
+  line-height: 1.2rem;
+  font-size: 1rem;
+}
+
+.problem-statement .statement-header{
+  margin-bottom: 1em;
+  text-align: center;
+}
+
+.problem-statement .statement-header .qs-title{
+  margin-bottom: 1em;
+  text-align: center;
+  font-size: 150%;
+  font-family: "Helvetica Neue",  Helvetica, Arial, sans-serif;
+}
+
+.problem-statement .time-limit, .problem-statement .memory-limit, .problem-statement .input-file, .problem-statement .output-file {
+  margin: 0 auto;
+}
+.problem-statement .property-title {
+  display: inline;
+  padding-right: 4px;
+}
+.problem-statement .legend {
+  margin-bottom: 1em;
+}
+.problem-statement p {
+  margin: 0 0 1em 0 !important;
+}
+.problem-statement ul {
+  list-style: disc;
+  list-style-type: disc;
+  list-style-position: outside;
+  margin-top: 1em !important;
+  margin-bottom: 1em !important;
+}
+
+.problem-statement ol {
+  list-style: decimal;
+  list-style-type: decimal;
+  list-style-position: outside;
+  margin-top: 1em !important;
+  margin-bottom: 1em !important;
+}
+
+.problem-statement li {
+  line-height: 1.5em;
+  margin-left: 3em;
+}
+
+.problem-statement .output-specification {
+  margin-bottom: 1em;
+}
+.problem-statement .sample-tests {
+  font-family: Consolas, "Lucida Console", "Andale Mono", "Bitstream Vera Sans Mono", "Courier New", Courier;
+  font-size: 0.9em;
+}
+.problem-statement .section-title {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 115%;
+  font-weight: bold;
+}
+.problem-statement .sample-tests .input, .problem-statement .sample-tests .output {
+  border: 1px solid #888;
+}
+.problem-statement .sample-tests .output {
+  margin-bottom: 1em;
+  position: relative;
+  top: -1px;
+}
+.problem-statement .sample-tests .title {
+  font-size: 1.3em;
+  padding: 0.25em;
+  border-bottom: 1px solid #888;
+  text-transform: lowercase;
+  font-weight: bold;
+}
+.problem-statement .sample-tests pre {
+  line-height: 1.25em;
+  padding: 0.25em;
+  margin: 0;
+  background-color: #efefef;
+}
