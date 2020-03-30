@@ -1,0 +1,10 @@
+{% for submission in submissions %}
+<div>
+	{{ submission.solution.solution_code }}
+	<br>{{ submission.solution.lang}}
+	<br>{{ submission.solution.status}}
+	<br>{{ submission.question.title }}
+	<br>{{ submission.question.points }}
+	<br>{{ submission.question.author }}
+</div>
+{% endfor %}

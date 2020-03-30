@@ -4,7 +4,7 @@ from .models import Questions,Submission
 class QuestionForm(ModelForm):
     class Meta:
         model=Questions
-        fields=('title','description','points','test_inputs','expected_outputs','author',)
+        fields='__all__'
 
 class SubmissionForm(ModelForm):
     class Meta:

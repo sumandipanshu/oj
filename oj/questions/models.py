@@ -7,6 +7,11 @@ class Questions(models.Model):
     test_inputs=models.TextField(max_length=300,blank=False)
     expected_outputs=models.TextField(max_length=300,blank=False)
     author=models.CharField(max_length=30,blank=True)
+    time_limit=models.IntegerField(max_length = 10, blank = False)
+    memory_size = models.IntegerField(max_length = 10, blank = False)
+    sample_inputs=models.TextField(max_length=300,blank=False)
+    sample_outputs=models.TextField(max_length=300,blank=False)
+
 class Submission(models.Model):
     qid=models.IntegerField(null=False,blank=False)
     user_id=models.IntegerField(null=False,blank=False)

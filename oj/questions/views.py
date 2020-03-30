@@ -8,6 +8,18 @@ from django.contrib.auth.decorators import login_required
 from core.models import Profile
 import logging
 
+def get_submission(request):
+    solved = Submission.objects.filter(status = "success",user_id = request.user.id)
+    submissions = []
+    for i in solved:
+        temp = {}
+        temp["solution"] = i
+        temp["question"] = Questions.objects.get(id = i.id)
+        submissions.append(temp)
+    print(submissions)
+    return render(request, 'get_submission.html',{'submissions':submissions})
+    
+
 @login_required
 def Add_question(request):
     if request.method == 'GET':
@@ -20,7 +32,7 @@ def Add_question(request):
         if form.is_valid():
             form.save()
              
-    return render(request, 'post_form_upload.html', {
+    return render(request, 'add_question.html', {
         'form': form,
     })
 @login_required
@@ -89,3 +101,4 @@ def solution(request, qid):
     return render(request, 'post_form_upload.html', {
         'form': form,
     })
+

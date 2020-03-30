@@ -22,4 +22,5 @@ urlpatterns = [
     path('add_question',views.Add_question),
     path('<int:qid>/',views.question),
     path('submission/<int:qid>',views.solution),    
+    path('get_submission', views.get_submission),
 ]
