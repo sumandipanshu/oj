@@ -1,26 +1,53 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<p>An email with reset link will be sent to you, if you are already registered.</p>
-        <div id="credentials-box">
-            <div id="cred-header">Enter Your Credentials</div>
-            <div id="cred-body">
-                <form name="fgtpswd" method="post" action="/">
-                    {% csrf_token %}
-                    <div class="field">
-                        <div class="name">
-                            <label for="email">Email</label>
-                        </div>
-                        <div class="value">
-                            <input id="email" name="email" value="" required>
-                        </div>
-                    </div>
-                    <div class="button-field">
-                        <input type="submit" value="Enter">
-                    </div>
-                </form>
-            </div>
-        </div>
+{% if "/accounts/password_reset/done/" == request.path %}
+<div align="center">
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <h1>Password reset sent</h1>
+    <p>We’ve emailed you instructions for setting your password, if an account exists with the email you entered. You should receive them shortly.</p>
+    <p>If you don’t receive an email, please make sure you’ve entered the address you registered with, and check your spam folder.</p>
+    <br>
+    <a href="{% url 'login' %}">Login again</a>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    
+    <br>
+    <br>
+</div>
+{%else%}
+<h1>Password reset</h1>
+<p>Forgotten your password? Enter your email address below, and we’ll email instructions for setting a new one</p>
+<div id="credentials-box">
+    <div id="cred-header">Enter Your Email</div>
 
-        <p align="center">Don't have an account? <a href="{% url 'signup' ">Signup</a>.</p>
-        {% endblock %}
+    <div id="cred-body">
+        <form name="fgtpswd" method="post" >
+            {% csrf_token %}
+            <div class="field">
+                <div class="name">
+                    <label for="email">Email</label>
+                </div>
+                <div class="value">
+                    <input id="email" name="email" value="" required>
+                </div>
+            </div>
+            <div class="button-field">
+                <input type="submit" value="Reset my password">
+            </div>
+        </form>
+    </div>
+</div>
+
+<p align="center">Don't have an account? <a href="{% url 'signup' %}">Signup</a>.</p>
+{%endif%}
+{% endblock %}

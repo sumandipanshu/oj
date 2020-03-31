@@ -14,7 +14,7 @@ def get_submission(request):
     for i in solved:
         temp = {}
         temp["solution"] = i
-        temp["question"] = Questions.objects.get(id = i.id)
+        temp["question"] = Questions.objects.get(id = i.qid)
         submissions.append(temp)
     print(submissions)
     return render(request, 'get_submission.html',{'submissions':submissions})

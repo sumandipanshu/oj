@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="middle">
+    <main>
+        <form name="submit" class="submit-form" method="POST">
+            {% csrf_token %}
+            <div id="submitpage-languageindex">
+                <label for="title">Title:</label>
+                <div class="submitpage-value">
+                    <input id="title" type="text" name="title">
+                </div>
+            </div>
+            <div id="submitpage-languageindex">
+                <label for="author">Author:</label>
+                <div class="submitpage-value">
+                    <input id="author" type="text" name="author">
+                </div>
+            </div>
+            <div id="submitpage-languageindex">
+                <label for="points">Points:</label>
+                <div class="submitpage-value">
+                    <input id="points" type="number" name="points">
+                </div>
+            </div>
+            <div id="submitpage-languageindex">
+                <label for="time_limit">Time Limit:</label>
+                <div class="submitpage-value">
+                    <input id="time_limit" type="number" name="time_limit">
+                </div>
+            </div>
+            <div id="submitpage-languageindex">
+                <label for="memory_size">Memory Limit:</label>
+                <div class="submitpage-value">
+                    <input id="memory_size" type="text" name="memory_size">
+                </div>
+            </div>
+            <div id="submitpage-sourcefield">
+                <label for="description">Description:</label>
+                <div>
+                    <textarea id="description" name="description" rows="15" style="width: 70% !important;"
+                        required></textarea>
+                </div>
+            </div>
+
+            <div id="submitpage-sourcefield">
+                <label for="sample_inputs">Sample Input:</label>
+                <div>
+                    <textarea id="sample_inputs" name="sample_inputs" rows="10" style="width: 30% !important;"
+                        required></textarea>
+                </div>
+            </div>
+            <div id="submitpage-sourcefield">
+                <label for="sample_outputs">Sample Output:</label>
+                <div>
+                    <textarea id="sample_outputs" name="sample_outputs" rows="10" style="width: 30% !important;"
+                        required></textarea>
+                </div>
+            </div>
+            <div id="submitpage-sourcefield">
+                <label for="test_inputs">Test Input:</label>
+                <div>
+                    <textarea id="test_inputs" name="test_inputs" rows="10" style="width: 30% !important;"
+                        required></textarea>
+                </div>
+            </div>
+            <div id="submitpage-sourcefield">
+                <label for="expected_outputs">Expected Output:</label>
+                <div>
+                    <textarea id="expected_outputs" name="expected_outputs" rows="10" style="width: 30% !important;"
+                        required></textarea>
+                </div>
+            </div>
+
+            <div class="submitpage-submitfield">
+                <input type="submit" value="Submit">
+            </div>
+        </form>
+    </main>
+</div>
+{% endblock %}

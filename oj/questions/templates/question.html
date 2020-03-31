@@ -10,13 +10,13 @@
 						<div class="property-title">
 							time limit per test:
 						</div>
-						1 second
+						{{question.time_limit}}
 					</div>
 					<div class="memory-limit">
 						<div class="property-title">
 							memory limit per test:
 						</div>
-						256 megabytes
+						{{question.memory_size}}
 					</div>
 					<div class="input-file">
 						<div class="property-title">
@@ -57,11 +57,11 @@
 					<div class="sample-test">
 						<div class="input">
 							<div class="title">Input</div>
-							<pre class="content">{{question.test_inputs}}</pre>
+							<pre class="content">{{question.sample_inputs}}</pre>
 						</div>
 						<div class="output">
 							<div class="title">Output</div>
-							<pre class="content">{{question.expected_outputs}}</pre>
+							<pre class="content">{{question.sample_outputs}}</pre>
 						</div>
 					</div>
 				</div>
