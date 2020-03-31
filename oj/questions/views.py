@@ -44,31 +44,24 @@ def index(request):
     for i in questions:
         temp.append({"title":i["title"],"points":i["points"],"id":i["id"]})
     
-    logging.warning(temp)
     return render(request,'questions_display.html',{'questions':temp,'score':user.score})
 
 @login_required
 def question(request,qid):
     question=Questions.objects.filter(id=qid)[0].__dict__
-    logging.warning(question)
     question.pop("test_inputs")
     question.pop("expected_outputs")
     return render(request,"question.html",{"question":question,})
 
 @login_required
 def solution(request, qid):
-    logging.warning(request.method)
     if request.method=='GET':
         form=SubmissionForm()
         
     else:
-        logging.warning(request.user.id)
-        logging.warning("ueshissf:r")
         form=SubmissionForm(request.POST)
         submit=Submission()
         previous = Submission.objects.filter(status = "success",user_id = request.user.id, qid = qid)
-        logging.warning(previous)
-        logging.warning(len(previous))
         if len(previous) == 0:
             if form.is_valid():
                 submit=form.save(commit=False)
@@ -80,20 +73,19 @@ def solution(request, qid):
             question=Questions.objects.get(id=qid)
             question=question.__dict__
             add_task(request.user.id,qid,submit.solution_code,question["test_inputs"],question["expected_outputs"],submit.lang,submit.status)
-            logging.warning(request.user.__dict__)
             user = Profile.objects.get(pk = request.user.pk)
             if user.score == None:
                 user.score = 0
-            logging.warning(user.__dict__)
             while True:
                 if get_output(request.user.id)[b'status'].decode('utf-8')!="processing" and get_output(request.user.id)[b'question'].decode('utf-8')==str(qid):
-                    submit = Submission.objects.get(user_id = request.user.id , qid = qid)
+                    submit = Submission.objects.filter(user_id = request.user.id , qid = qid)
+                    print(submit)
+                    submit = submit[-1]
                     if get_output(request.user.id)[b"status"].decode('utf-8')=="201":
                         user.score+=int(question["points"])
                         submit.status = "success"
                         submit.save()
                         user.save()
-                        logging.warning("\n\n yes \n\n")
                     else:
                         submit.status = "wrong"
                         submit.save()
