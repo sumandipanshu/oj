@@ -21,7 +21,7 @@ services:
 
     checker:
         build: ./checker
-        command: python3 redis_task_retrieve.py 
+        command: ls 
         volumes:
             - ./checker:/checker
         networks:

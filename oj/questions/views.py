@@ -9,14 +9,14 @@ from core.models import Profile
 import logging
 
 def get_submission(request):
-    solved = Submission.objects.filter(status = "success",user_id = request.user.id)
+    solved = Submission.objects.filter(user_id = request.user.id)
     submissions = []
     for i in solved:
         temp = {}
         temp["solution"] = i
         temp["question"] = Questions.objects.get(id = i.qid)
         submissions.append(temp)
-    print(submissions)
+    logging.warning(submissions)
     return render(request, 'get_submission.html',{'submissions':submissions})
     
 
@@ -80,7 +80,7 @@ def solution(request, qid):
                 if get_output(request.user.id)[b'status'].decode('utf-8')!="processing" and get_output(request.user.id)[b'question'].decode('utf-8')==str(qid):
                     submit = Submission.objects.filter(user_id = request.user.id , qid = qid)
                     print(submit)
-                    submit = submit[-1]
+                    submit = list(submit).pop()
                     if get_output(request.user.id)[b"status"].decode('utf-8')=="201":
                         user.score+=int(question["points"])
                         submit.status = "success"
@@ -91,6 +91,6 @@ def solution(request, qid):
                         submit.save()
                     break
     return render(request, 'post_form_upload.html', {
-        'form': form,
+        'form': form, "status" : get_output(request.user.id)[b'status'].decode('utf-8')
     })
 
