@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<p>Fill the form to register here.</p>
+{% if form.username.errors %}
+<p style="color: red">Username {{form.username.value}} already exists.</p>
+{% elif form.email.errors %}
+<p style="color: red">{{form.email.value}} is already registered.</p>
+{% elif form.password2.errors %}
+<p style="color: red">Passwords didn't match.</p>
+{% endif %}
 <div id="credentials-box">
     <div id="cred-header">Enter Your Details</div>
     <div id="cred-body">

@@ -1,10 +1,46 @@
-{% for submission in submissions %}
-<div>
-	{{ submission.solution.solution_code }}
-	<br>{{ submission.solution.lang}}
-	<br>{{ submission.solution.status}}
-	<br>{{ submission.question.title }}
-	<br>{{ submission.question.points }}
-	<br>{{ submission.question.author }}
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="middle">
+  <main>
+    <div id="submissions-database">
+      <div id="caption">Submissions</div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Problem</th>
+            <th>Language</th>
+            <th>Verdict</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for submission in submissions %}
+          <tr>
+            <td><a href="#openModal{{ forloop.counter}}">code</a></td>
+            <div id="openModal{{forloop.counter}}" class="modalDialog">
+              <div>
+                <a href="#close" title="Close" class="close">X</a>
+
+                <nav id="header-nav" style="border:0; margin-bottom:-12px;border-bottom: 5px double maroon;border-radius: 0;">
+                  <ul>
+                      <li>Title: {{ submission.question.title }}</li>
+                      <li>Verdict: {{ submission.solution.status}}</li>
+                  </ul>
+              </nav>
+                <pre class="prettyprint linenums"><code>{{submission.solution.solution_code}}</code></pre>
+              </div>
+            </div>
+            <td>{{ submission.question.title }}</td>
+            <td>{{ submission.solution.lang}}</td>
+            <td>{{ submission.solution.status}}</td>
+          </tr>
+
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
 </div>
-{% endfor %}
+
+{% endblock %}
