@@ -1,7 +1,30 @@
 {% extends 'base.html' %}
 {% block content %}
-<form action='' method='post'>{% csrf_token %}
-    {{ form.as_p }}
-    <input type='submit' value='Submit' />
-    </form>
+<div id="middle">
+    <main>
+        <form name="submit" class="submit-form" method="POST" >
+            {% csrf_token %}
+            <div id="submitpage-languageindex">
+                <label for="languageIndex">Language:</label>
+                <div class="submitpage-value">
+                    <select id="languageIndex" name="lang">
+                        <option value="cpp">C++</option>
+                        <option value="c">C</option>
+                        <option value="py">Python</option>
+                        <option value="java">Java</option>
+                    </select>
+                </div>
+            </div>
+            <div id="submitpage-sourcefield">
+                <label for="source">Source:</label>
+                <div>
+                    <textarea id="source" name="solution_code" rows="20" required></textarea>
+                </div>
+            </div>
+            <div class="submitpage-submitfield">
+                <input type="submit" value="Submit">
+            </div>
+        </form>
+    </main>
+</div>
 {% endblock %}

@@ -1,21 +1,87 @@
-
 {% extends 'base.html' %}
 {% block content %}
-<body>
-	<div class = "question-page">
-
-		<h1>{{question.title }}</h1>
-		<h2>Description: </h2>
-		<p>
-		{{ question.description }}
-		</p>
-		<br>
-		<h3>Points: <span> {{question.points}}</span></h3>
-		<h3>Author:
-			<span>  {{question.author }}</span> </h3>
+<div id="middle">
+	<main>
+		<div class="problem-statement">
+			<div class="problem-statement">
+				<div class="statement-header">
+					<div class="qs-title">{{question.title}}</div>
+					<div class="time-limit">
+						<div class="property-title">
+							time limit per test:
+						</div>
+						{{question.time_limit}}
+					</div>
+					<div class="memory-limit">
+						<div class="property-title">
+							memory limit per test:
+						</div>
+						{{question.memory_size}}
+					</div>
+					<div class="input-file">
+						<div class="property-title">
+							input:
+						</div>
+						standard input
+					</div>
+					<div class="output-file">
+						<div class="property-title">
+							output:
+						</div>
+						standard output
+					</div>
+				</div>
+				<div class="legend">
+					{{question.description}}
+				</div>
+				<p></p>
+				<p></p>
+				<div class="input-specification">
+					<div class="section-title">Input</div>
+					<p></p>
+					gfvhbjn
+				</div>
+				<p></p>
+				<p></p>
+				<div class="output-specification">
+					<div class="section-title">Output</div>
+					<p></p>
+					dfghj
+				</div>
+				<p></p>
+				<p></p>
+				<div class="sample-tests">
+					<div class="section-title">Examples</div>
+					<p></p>
+					<p></p>
+					<div class="sample-test">
+						<div class="input">
+							<div class="title">Input</div>
+							<pre class="content">{{question.sample_inputs}}</pre>
+						</div>
+						<div class="output">
+							<div class="title">Output</div>
+							<pre class="content">{{question.sample_outputs}}</pre>
+						</div>
+					</div>
+				</div>
+				<p></p>
+				<p></p>
+				{% if question.note %}
+				<div class="note">
+					<div class="section-title">Note</div>
+					<p></p>
+					
+				</div>
+				{% endif %}
+			</div>
+			<p></p>
+			<p></p>
+		</div>
 		<hr>
-		<h2><a href="/questions/submission/{{ question.id }}">Code</a></h2>
-	</div>
-   
-     </body>
-	 {% endblock %}
+		<div align="center">
+		<a  href="/questions/submission/{{ question.id }}"><button type="button">SUBMIT</button></a>
+		</div>
+	</main>
+</div>
+{% endblock %}
