@@ -1,7 +1,7 @@
 import redis
 import logging
 import filterout
-conn=redis.Redis('localhost')
+conn=redis.Redis('redis')
 
 fl=""
 def get_task():
