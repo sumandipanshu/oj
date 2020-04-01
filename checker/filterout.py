@@ -22,7 +22,7 @@ def check(fileName,timeOut=1):
             timeout=timeOut,                              # Time limit
             check=True                              # Set to true to check actual output against expected output
         )
-        print(status)
+        print(status, "check")
         if status[1]==201:
             return "correct",status[1]
         else:
