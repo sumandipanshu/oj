@@ -6,17 +6,23 @@
 			<div class="problem-statement">
 				<div class="statement-header">
 					<div class="qs-title">{{question.title}}</div>
+					<div class="author">
+						<div class="property-title">
+							author:
+						</div>
+						{{question.author}}
+					</div>
 					<div class="time-limit">
 						<div class="property-title">
 							time limit per test:
 						</div>
-						{{question.time_limit}}
+						{{question.time_limit}} sec
 					</div>
 					<div class="memory-limit">
 						<div class="property-title">
 							memory limit per test:
 						</div>
-						{{question.memory_size}}
+						{{question.memory_size}} megabytes
 					</div>
 					<div class="input-file">
 						<div class="property-title">
@@ -32,21 +38,21 @@
 					</div>
 				</div>
 				<div class="legend">
-					{{question.description}}
+					<pre><code>{{question.description}}</code></pre>
 				</div>
 				<p></p>
 				<p></p>
 				<div class="input-specification">
 					<div class="section-title">Input</div>
 					<p></p>
-					gfvhbjn
+					<pre><code>gfvhbjn</code></pre>
 				</div>
 				<p></p>
 				<p></p>
 				<div class="output-specification">
 					<div class="section-title">Output</div>
 					<p></p>
-					dfghj
+					<pre><code>dfghj</code></pre>
 				</div>
 				<p></p>
 				<p></p>
@@ -71,7 +77,7 @@
 				<div class="note">
 					<div class="section-title">Note</div>
 					<p></p>
-					
+					<pre><code>fghsfngfnfg</code></pre>
 				</div>
 				{% endif %}
 			</div>

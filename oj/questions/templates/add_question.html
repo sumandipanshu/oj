@@ -20,25 +20,25 @@
             <div id="submitpage-languageindex">
                 <label for="points">Points:</label>
                 <div class="submitpage-value">
-                    <input id="points" type="number" name="points">
+                    <input id="points" type="number" min="1" value="100" name="points">
                 </div>
             </div>
             <div id="submitpage-languageindex">
                 <label for="time_limit">Time Limit:</label>
                 <div class="submitpage-value">
-                    <input id="time_limit" type="number" name="time_limit">
+                    <input id="time_limit" type="number" min="1" value="1" name="time_limit"> sec
                 </div>
             </div>
             <div id="submitpage-languageindex">
                 <label for="memory_size">Memory Limit:</label>
                 <div class="submitpage-value">
-                    <input id="memory_size" type="text" name="memory_size">
+                    <input id="memory_size" type="number" min="1" value="256" name="memory_size"> megabytes
                 </div>
             </div>
             <div id="submitpage-sourcefield">
                 <label for="description">Description:</label>
                 <div>
-                    <textarea id="description" name="description" rows="15" style="width: 70% !important;"
+                    <textarea id="description" name="description" rows="15" 
                         required></textarea>
                 </div>
             </div>
