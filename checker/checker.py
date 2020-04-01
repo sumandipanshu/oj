@@ -163,7 +163,7 @@ def codechecker(filename, inputfile=None, expectedoutput=None, timeout=1, check=
         if compileErrors is not None:
             sys.stdout.flush()
             print(compileErrors, file=sys.stderr)
-            exit(0)
+            return (STATUS_CODES[compileResult], compileResult)
 
         # Run program
         runtimeResult, runtimeErrors = newprogram.run()
@@ -171,7 +171,7 @@ def codechecker(filename, inputfile=None, expectedoutput=None, timeout=1, check=
         if runtimeErrors is not None:
             sys.stdout.flush()
             print(runtimeErrors, file=sys.stderr)
-            exit(0)
+            return (STATUS_CODES[runtimeResult], runtimeResult)
 
         if check:
             # Match expected output
@@ -180,7 +180,7 @@ def codechecker(filename, inputfile=None, expectedoutput=None, timeout=1, check=
             if matchErrors is not None:
                 sys.stdout.flush()
                 print(matchErrors, file=sys.stderr)
-                exit(0)
+                return (STATUS_CODES[matchResult], matchResult)
             return (STATUS_CODES[matchResult], matchResult)
     else:
         print('FATAL: Invalid file', file=sys.stderr)

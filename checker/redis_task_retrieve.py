@@ -1,4 +1,5 @@
 import redis
+import logging
 import filterout
 conn=redis.Redis('redis')
 
@@ -11,12 +12,18 @@ def get_task():
 def create_files(data):
         print(data)
         temp_code=(data[b'code']).decode("utf-8").strip()
+        print("1")
         input_txt=(data[b'test_args']).decode("utf-8").strip()
+        print(2)
         output_txt=(data[b'expected_output']).decode("utf-8")+"\n"
-        print(r'{}'.format(output_txt))
+        print(r'{} check'.format(output_txt))
         lang=(data[b'lang']).decode("utf-8").strip()
        	question=(data[b'question']).decode("utf-8").strip()
-       	tempfl=open("Sample.{}".format(lang),"w")
+        print("check")
+        try:
+       	    tempfl=open("Sample.{}".format(lang),"w")
+        except Exception as e: print(e)
+        print(3)
        	fl="Sample.{}".format(lang)
        	tempfl.write(str(temp_code))
        	tempfl=open("input.txt","w")
@@ -28,6 +35,7 @@ def create_files(data):
        	conn.hdel(user_id,"question")
        	conn.hdel(user_id,"lang")
        	conn.hdel(user_id,"expected_output")
+        print(fl)
        	return fl,question
 def return_result(result,question,user_id,status):
 
@@ -39,7 +47,9 @@ while True:
     try:
         data,user_id=get_task()
         fl_name,qid=create_files(data)
+        print(fl_name)
         result,status=filterout.check(fl_name)
+        print(result,status)
         return_result(result,qid,user_id,status)
     except:
         pass
