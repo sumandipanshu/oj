@@ -6,17 +6,23 @@
 			<div class="problem-statement">
 				<div class="statement-header">
 					<div class="qs-title">{{question.title}}</div>
+					<div class="author">
+						<div class="property-title">
+							author:
+						</div>
+						{{question.author}}
+					</div>
 					<div class="time-limit">
 						<div class="property-title">
 							time limit per test:
 						</div>
-						{{question.time_limit}}
+						{{question.time_limit}} sec
 					</div>
 					<div class="memory-limit">
 						<div class="property-title">
 							memory limit per test:
 						</div>
-						{{question.memory_size}}
+						{{question.memory_size}} megabytes
 					</div>
 					<div class="input-file">
 						<div class="property-title">
@@ -32,21 +38,21 @@
 					</div>
 				</div>
 				<div class="legend">
-					{{question.description}}
+					<pre><code>{{question.description}}</code></pre>
 				</div>
 				<p></p>
 				<p></p>
 				<div class="input-specification">
 					<div class="section-title">Input</div>
 					<p></p>
-					gfvhbjn
+					<pre><code>{{question.input_format}}</code></pre>
 				</div>
 				<p></p>
 				<p></p>
 				<div class="output-specification">
 					<div class="section-title">Output</div>
 					<p></p>
-					dfghj
+					<pre><code>{{question.output_format}}</code></pre>
 				</div>
 				<p></p>
 				<p></p>
@@ -56,12 +62,16 @@
 					<p></p>
 					<div class="sample-test">
 						<div class="input">
-							<div class="title">Input</div>
-							<pre class="content">{{question.sample_inputs}}</pre>
+							<div class="title">Input
+								<a href="javascript:void(0);" onclick="copyFunction('input-data')"><small class="copy-text">copy</small></a>
+							</div>
+							<pre class="content" id="input-data">{{question.sample_inputs}}</pre>
 						</div>
 						<div class="output">
-							<div class="title">Output</div>
-							<pre class="content">{{question.sample_outputs}}</pre>
+							<div class="title">Output
+								<a href="javascript:void(0);" onclick="copyFunction('output-data')" ><small class="copy-text">copy</small></a>
+							</div>
+							<pre class="content" id="output-data">{{question.sample_outputs}}</pre>
 						</div>
 					</div>
 				</div>
@@ -71,7 +81,7 @@
 				<div class="note">
 					<div class="section-title">Note</div>
 					<p></p>
-					
+					<pre><code>{{question.note}}</code></pre>
 				</div>
 				{% endif %}
 			</div>
@@ -80,8 +90,21 @@
 		</div>
 		<hr>
 		<div align="center">
-		<a  href="/questions/submission/{{ question.id }}"><button type="button">SUBMIT</button></a>
+			<a  href="/questions/submission/{{ question.id }}"><button type="button">SUBMIT</button></a>
 		</div>
 	</main>
 </div>
+<script>
+	function copyFunction(id) {
+		const copyText = document.getElementById(id).textContent;
+		const textArea = document.createElement('textarea');
+		textArea.style.position="absolute";
+		textArea.style.left="-100%";
+		textArea.textContent = copyText;
+		document.body.append(textArea);
+		textArea.select();
+		document.execCommand("copy");
+		textArea.remove();
+		}
+</script>
 {% endblock %}

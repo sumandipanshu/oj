@@ -183,9 +183,9 @@ textarea {
 }
 
 @media print,
-  (-webkit-min-device-pixel-ratio: 1.25),
-  (min-resolution: 1.25dppx),
-  (min-resolution: 120dpi) {
+(-webkit-min-device-pixel-ratio: 1.25),
+(min-resolution: 1.25dppx),
+(min-resolution: 120dpi) {
   /* Style adjustments for high resolution devices */
 }
 
@@ -196,6 +196,7 @@ textarea {
    ========================================================================== */
 
 @media print {
+
   *,
   *:before,
   *:after {
@@ -205,16 +206,20 @@ textarea {
     box-shadow: none !important;
     text-shadow: none !important;
   }
+
   a,
   a:visited {
     text-decoration: none;
   }
+
   a[href]:after {
-    content: " (" attr(href) ")";
+    content: " ("attr(href) ")";
   }
+
   abbr[title]:after {
-    content: " (" attr(title) ")";
+    content: " ("attr(title) ")";
   }
+
   /*
      * Don't show links that are fragment identifiers,
      * or use the `javascript:` pseudo protocol
@@ -223,14 +228,17 @@ textarea {
   a[href^="javascript:"]:after {
     content: "";
   }
+
   pre {
     white-space: pre-wrap !important;
   }
+
   pre,
   blockquote {
     border: 1px solid #999;
     page-break-inside: avoid;
   }
+
   /*
      * Printing Tables:
      * https://web.archive.org/web/20180815150934/http://css-discuss.incutio.com/wiki/Printing_Tables
@@ -238,82 +246,110 @@ textarea {
   thead {
     display: table-header-group;
   }
+
   tr,
   img {
     page-break-inside: avoid;
   }
+
   p,
   h2,
   h3 {
     orphans: 3;
     widows: 3;
   }
+
   h2,
   h3 {
     page-break-after: avoid;
   }
 }
 
-html{
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+input,textarea{
+  background-color: gray;
+}
+input[type=submit]{
+  background-color: initial;
+}
+
+html {
   padding: 1rem;
   min-width: 600px;
   max-width: 1280px;
   margin: 0 auto;
 }
 
-body{
+body {
   margin: 0;
 }
 
 /* #container{
   margin: 0px 18%;
 } */
-#header{
+#header {
   padding: 0 0 50px 0;
 }
 
-#logo{
+#logo {
   float: left;
 }
-#logo h1{
-  font-family: 'Creepster',cursive;
+
+#logo h1 {
+  font-family: 'Creepster', cursive;
   font-size: 73px;
   margin-top: -15px;
   margin-bottom: 0;
 }
 
-#login-signup{
+#login-signup {
   float: right;
   list-style-type: none;
   margin-top: 2rem;
 }
 
-#loggedin{
+#loggedin {
   float: right;
   list-style-type: none;
 }
 
-#header-nav{
-  border: 1px solid rgb(185,185,185);
+#header-nav {
+  border: 1px solid rgb(185, 185, 185);
   border-radius: 6px;
   padding: 0.75rem 0.25rem;
   margin-top: 2rem;
 
 }
-#header-nav ul{
+
+#header-nav ul {
   margin: 0;
   padding: 0;
 }
-#header-nav ul li{
+
+#header-nav ul li {
   display: inline;
   margin-left: 1rem;
   font-weight: bold;
 }
-#header-nav a,#header-nav a:visited{
+
+#header-nav a,
+#header-nav a:visited {
   color: inherit;
   text-decoration: none;
 }
-#header-nav p{
+
+#header-nav p {
   margin: 0 0;
   text-align: center;
   font-weight: 800;
@@ -321,252 +357,268 @@ body{
   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
-#credentials-box{
-  border: 1px solid rgb(185,185,185);
+#credentials-box {
+  border: 1px solid rgb(185, 185, 185);
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
   width: 30rem;
   margin: 5em auto 2em auto;
 }
 
-#cred-header{
-  border-bottom: 1px solid rgb(185,185,185);
+#cred-header {
+  border-bottom: 1px solid rgb(185, 185, 185);
   color: #3B5998;
   font-weight: bold;
   padding: 0.25rem 0.5rem;
 }
 
-.field{
+.field {
   margin: 1.5rem 0;
   overflow: hidden;
 }
 
-.name{
+.name {
   width: 11rem;
   float: left;
   text-align: right;
   padding-right: 1rem;
 }
 
-.value{
+.value {
   width: 15rem;
   float: left;
   margin-bottom: 1rem;
 }
 
-.button-field{
+.button-field {
   margin: 1.5rem;
   margin-left: 12rem;
 }
 
-.forgotPassword{
+.forgotPassword {
   text-align: right;
   bottom: 0.75rem;
   padding-right: 0.5rem;
   font-size: 0.9rem;
 }
 
-footer{
-  margin-top:2rem;
-  border-top: 1px solid rgb(185,185,185);
+footer {
+  margin-top: 2rem;
+  border-top: 1px solid rgb(185, 185, 185);
   padding-top: 0.5rem;
   text-align: center;
 }
 
-#middle{
+#middle {
   margin-top: 1rem;
   overflow: auto;
 }
 
-main{
+main {
   /* margin-right: 21rem; */
 }
 
-#contest-database{
+#contest-database {
   /* margin-right: 22rem; */
 }
 
-#contest-database #caption{
+#contest-database #caption {
   background-color: #e1e1e1;
   font-size: 1rem;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
-  padding:0.25rem 0.5rem;
+  padding: 0.25rem 0.5rem;
 }
 
-#contest-database table{
+#contest-database table {
   width: 100%;
   text-align: center;
   border-collapse: collapse;
 }
 
-#contest-database td, #contest-database th{
+#contest-database td,
+#contest-database th {
   border: 1px solid #e1e1e1;
   padding: 0.5em;
   font-size: 0.9rem;
 }
 
-#contest-database tbody tr:nth-child(2n-1){
+#contest-database tbody tr:nth-child(2n-1) {
   background-color: #f8f8f8;
 }
 
-#problem-database #caption{
+#problem-database #caption {
   background-color: #e1e1e1;
   font-size: 0.9rem;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
-  padding:0.25rem 0.5rem;
+  padding: 0.25rem 0.5rem;
 }
 
-#problem-database table{
+#problem-database table {
   width: 100%;
   text-align: center;
   border-collapse: collapse;
 }
 
-#problem-database td, #problem-database th{
+#problem-database td,
+#problem-database th {
   border: 1px solid #e1e1e1;
   padding: 0.5em;
   font-size: 0.8rem;
 }
 
-#problem-database tbody tr:nth-child(2n-1){
+#problem-database tbody tr:nth-child(2n-1) {
   background-color: #f8f8f8;
 }
-#problem-database tbody tr td:nth-child(1){
+
+#problem-database tbody tr td:nth-child(1) {
   width: 17%;
 }
-#problem-database thead tr th:nth-child(1){
+
+#problem-database thead tr th:nth-child(1) {
   width: 17%;
 }
 
-#problem-database thead tr th:nth-child(2){
+#problem-database thead tr th:nth-child(2) {
   text-align: left;
 }
-#problem-database tbody tr td:nth-child(2){
+
+#problem-database tbody tr td:nth-child(2) {
   text-align: left;
 }
 
 
-.submit-form{
+.submit-form {
   margin-top: 1rem;
 }
 
-#submitpage-problemindex{
+#submitpage-problemindex {
   margin-bottom: 1rem;
   overflow: auto;
 }
 
-#submitpage-problemindex label{
+#submitpage-problemindex label {
   display: inline-block;
   width: 8rem;
 }
-#submitpage-languageindex{
+
+#submitpage-languageindex {
   margin-bottom: 1rem;
   overflow: auto;
 }
 
-#submitpage-languageindex label{
+#submitpage-languageindex label {
   display: inline-block;
   width: 8rem;
 }
 
-.submitpage-value{
+.submitpage-value {
   display: inline-block;
 }
 
-.submitpage-value select{
-  width:20rem;
+.submitpage-value select {
+  width: 20rem;
 }
 
-#submitpage-sourcefield{
+#submitpage-sourcefield {
   margin-bottom: 1rem;
 }
 
-#submitpage-sourcefield textarea{
+#submitpage-sourcefield textarea {
   box-sizing: border-box;
   width: 100%;
 }
 
-#submissions-database #caption{
+#submissions-database #caption {
   background-color: #e1e1e1;
   font-size: 0.9rem;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
-  padding:0.25rem 0.5rem;
+  padding: 0.25rem 0.5rem;
 }
 
-#submissions-database table{
+#submissions-database table {
   width: 100%;
   text-align: center;
   border-collapse: collapse;
 }
 
-#submissions-database td, #submissions-database th{
+#submissions-database td,
+#submissions-database th {
   border: 1px solid #e1e1e1;
   padding: 0.5em;
   font-size: 0.8rem;
 }
 
-#submissions-database tbody tr:nth-child(2n-1){
+#submissions-database tbody tr:nth-child(2n-1) {
   background-color: #f8f8f8;
 }
-#leaderboard-database #caption{
+
+#leaderboard-database #caption {
   background-color: #e1e1e1;
   font-size: 0.9rem;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
-  padding:0.25rem 0.5rem;
+  padding: 0.25rem 0.5rem;
 }
 
-#leaderboard-database table{
+#leaderboard-database table {
   width: 100%;
   text-align: center;
   border-collapse: collapse;
 }
 
-#leaderboard-database td, #leaderboard-database th{
+#leaderboard-database td,
+#leaderboard-database th {
   border: 1px solid #e1e1e1;
   padding: 0.5em;
   font-size: 0.8rem;
 }
 
-#leaderboard-database tbody tr:nth-child(2n-1){
+#leaderboard-database tbody tr:nth-child(2n-1) {
   background-color: #f8f8f8;
 }
 
-.problem-statement{
+.problem-statement {
   margin: 0.5em;
-  font-family: "Helvetica Neue",  Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   line-height: 1.2rem;
   font-size: 1rem;
 }
 
-.problem-statement .statement-header{
+.problem-statement .statement-header {
   margin-bottom: 1em;
   text-align: center;
 }
 
-.problem-statement .statement-header .qs-title{
+.problem-statement .statement-header .qs-title {
   margin-bottom: 1em;
   text-align: center;
   font-size: 150%;
-  font-family: "Helvetica Neue",  Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-.problem-statement .time-limit, .problem-statement .memory-limit, .problem-statement .input-file, .problem-statement .output-file {
+.problem-statement .time-limit,
+.problem-statement .memory-limit,
+.problem-statement .input-file,
+.problem-statement .output-file {
   margin: 0 auto;
 }
+
 .problem-statement .property-title {
   display: inline;
   padding-right: 4px;
 }
+
 .problem-statement .legend {
   margin-bottom: 1em;
 }
+
 .problem-statement p {
   margin: 0 0 1em 0 !important;
 }
+
 .problem-statement ul {
   list-style: disc;
   list-style-type: disc;
@@ -591,23 +643,59 @@ main{
 .problem-statement .output-specification {
   margin-bottom: 1em;
 }
+
 .problem-statement .sample-tests {
   font-family: Consolas, "Lucida Console", "Andale Mono", "Bitstream Vera Sans Mono", "Courier New", Courier;
   font-size: 0.9em;
 }
+
 .problem-statement .section-title {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 115%;
   font-weight: bold;
 }
-.problem-statement .sample-tests .input, .problem-statement .sample-tests .output {
+
+.problem-statement .sample-tests .input,
+.problem-statement .sample-tests .output {
   border: 1px solid #888;
 }
+
+.CodeMirror {
+  font-size: 16px;
+  border-radius: 15px;
+  box-shadow: 3px 5px 5px 6px rgb(68, 68, 68, 0.6);
+  width: 80%;
+  height: 500px !important;
+}
+
+.copy-text {
+  border: 1px solid #888;
+  border-radius: 8px;
+  padding: 0px 5px 3px 5px;
+  float: right;
+  height: 16px;
+  font-family: monospace, monospace;
+  font-weight: lighter;
+  margin: -1px auto;
+  color: rgb(34, 34, 34);
+  font-size: 80%;
+}
+
+.sol_code {
+  position: relative;
+  top: 20px;
+}
+
+.sol_code small {
+  font-weight: inherit !important;
+}
+
 .problem-statement .sample-tests .output {
   margin-bottom: 1em;
   position: relative;
   top: -1px;
 }
+
 .problem-statement .sample-tests .title {
   font-size: 1.3em;
   padding: 0.25em;
@@ -615,6 +703,7 @@ main{
   text-transform: lowercase;
   font-weight: bold;
 }
+
 .problem-statement .sample-tests pre {
   line-height: 1.25em;
   padding: 0.25em;
@@ -629,15 +718,16 @@ main{
   right: 0;
   bottom: 0;
   left: 0;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.8);
   z-index: 99999;
-  opacity:0;
+  opacity: 0;
   -webkit-transition: opacity 400ms ease-in;
   -moz-transition: opacity 400ms ease-in;
   transition: opacity 400ms ease-in;
   pointer-events: none;
 }
-.modalDialog pre{
+
+.modalDialog pre {
   font-family: Consolas, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif;
   margin-bottom: 10px;
   overflow: auto;
@@ -651,19 +741,31 @@ main{
   white-space: pre-line;
 }
 
-li.L0, li.L1, li.L2, li.L3,
-li.L5, li.L6, li.L7, li.L8 {
+li.L0,
+li.L1,
+li.L2,
+li.L3,
+li.L5,
+li.L6,
+li.L7,
+li.L8 {
   list-style-type: decimal !important;
 }
-li.L1, li.L3, li.L5, li.L7, li.L9 {
+
+li.L1,
+li.L3,
+li.L5,
+li.L7,
+li.L9 {
   background: inherit !important;
 }
+
 .modalDialog:target {
-  opacity:1;
+  opacity: 1;
   pointer-events: auto;
 }
 
-.modalDialog > div {
+.modalDialog>div {
   width: 650px;
   height: 80%;
   position: relative;
@@ -695,4 +797,6 @@ li.L1, li.L3, li.L5, li.L7, li.L9 {
   box-shadow: 1px 1px 3px #000;
 }
 
-.close:hover { background: #00d9ff; }
+.close:hover {
+  background: #00d9ff;
+}
