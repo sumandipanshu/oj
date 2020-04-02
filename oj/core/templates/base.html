@@ -14,6 +14,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'js/codemirror/lib/codemirror.css' %}">
+    <link rel="stylesheet" href="{% static 'js/codemirror/theme/dracula.css' %}">
+    <link rel="stylesheet" href="{% static 'js/codemirror/addon/fold/foldgutter.css' %}">
+    <link rel="stylesheet" href="{% static 'js/codemirror/addon/dialog/dialog.css' %}">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="{% static 'js/codemirror/lib/codemirror.js' %}"></script>
+    <script src="{% static 'js/codemirror/mode/clike/clike.js' %}"></script>
+    <script src="{% static 'js/codemirror/mode/python/python.js' %}"></script>
+    <script src="{% static 'js/codemirror/keymap/sublime.js' %}"></script>
+    <script src="{% static 'js/codemirror/addon/selection/active-line.js' %}"></script>
+    <script src="{% static 'js/codemirror/addon/edit/matchbrackets.js' %}"></script>
+    <script src="{% static 'js/codemirror/addon/edit/closebrackets.js' %}"></script>
+    <script src="{% static 'js/codemirror/addon/fold/foldcode.js' %}"></script>
+    <script src="{% static 'js/codemirror/addon/fold/foldgutter.js' %}"></script>
+    <script src="{% static 'js/codemirror/addon/fold/brace-fold.js' %}"></script>
+    <script src="{% static 'js/codemirror/addon/fold/indent-fold.js' %}"></script>
+    <script src="{% static 'js/codemirror/addon/fold/comment-fold.js' %}"></script>
+    <script src="{% static 'js/codemirror/addon/comment/comment.js' %}"></script>
+    <script src="{% static 'js/codemirror/addon/dialog/dialog.js' %}"></script>
+    <script src="{% static 'js/codemirror/addon/search/search.js' %}"></script>
+    <script src="{% static 'js/codemirror/addon/search/jump-to-line.js' %}"></script>
+    <script src="{% static 'js/codemirror/addon/search/searchcursor.js' %}"></script>
+    <script src="{% static 'js/vendor/modernizr-3.8.0.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+    <script src="{% static 'js/vendor/jquery-3.4.1.min.js' %}"></script>
+    <script src="{% static 'js/plugins.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    
 
     {% if user.is_authenticated %}
     {% if "/accounts/login/" == request.path or "/accounts/signup/" == request.path or "/accounts/fgtpswd/" == request.path %}
@@ -93,16 +121,7 @@
         </div>
     </footer>
 
-    <script src="{% static 'js/vendor/modernizr-3.8.0.min.js' %}"></script>
-    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
-    <script src="{% static 'https://code.jquery.com/jquery-3.4.1.min.js' %}"
-        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script>
-        window.jQuery || document.write('<script src="{% static '
-            js / vendor / jquery - 3.4 .1.min.js ' %}"><\/script>')
-    </script>
-    <script src="{% static 'js/plugins.js' %}"></script>
-    <script src="{% static 'js/main.js' %}"></script>
+    
 
     <!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
     <!-- <script>

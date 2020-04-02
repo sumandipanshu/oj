@@ -22,18 +22,60 @@
               <div>
                 <a href="#close" title="Close" class="close">X</a>
 
-                <nav id="header-nav" style="border:0; margin-bottom:-12px;border-bottom: 5px double maroon;border-radius: 0;">
+                <nav id="header-nav"
+                  style="border:0; margin-bottom:-12px;border-bottom: 5px double maroon;border-radius: 0;">
                   <ul>
-                      <li>Title: {{ submission.question.title }}</li>
-                      <li>Verdict: {{ submission.solution.status}}</li>
+                    <li>Title: {{ submission.question.title }}</li>
+                    {% if submission.status_code == 201 %}
+                    <li>Verdict: AC</li>
+                    {% elif submission.status_code == 400 %}
+                    <li>Verdict: WA</li>
+                    {% elif submission.status_code == 401 %}
+                    <li>Verdict: CE</li>
+                    {% elif submission.status_code == 402 %}
+                    <li>Verdict: RE</li>
+                    {% elif submission.status_code == 408 %}
+                    <li>Verdict: TLE</li>
+                    {% elif submission.status_code == '200' %}
+                    <td>Verdict: OK</td>
+                    {% elif submission.status_code == '403' %}
+                    <td>Verdict: INVALID FILE</td>
+                    {% elif submission.status_code == '404' %}
+                    <td>Verdict: FILE NOT FOUND</td>
+                    {% else %}
+                    <li>Verdict: processing</li>
+                    {% endif %}
                   </ul>
-              </nav>
+                </nav>
+                <div class="sol_code">
+                  <a href="javascript:void(0);" onclick="copyFunction('code{{forloop.counter}}')"><small
+                      class="copy-text">copy</small></a>
+                  <pre id="code{{forloop.counter}}" style="display: none;">{{submission.solution.solution_code}}</pre>
+                </div>
                 <pre class="prettyprint linenums"><code>{{submission.solution.solution_code}}</code></pre>
               </div>
             </div>
             <td>{{ submission.question.title }}</td>
-            <td>{{ submission.solution.lang}}</td>
-            <td>{{ submission.solution.status}}</td>
+            <td>{{ submission.solution.lang }}</td>
+            {% if submission.status_code == '201' %}
+            <td>AC</td>
+            {% elif submission.status_code == '400' %}
+            <td>WA</td>
+            {% elif submission.status_code == '401' %}
+            <td>CE</td>
+            {% elif submission.status_code == '402' %}
+            <td>RE</td>
+            {% elif submission.status_code == '408' %}
+            <td>TLE</td>
+            {% elif submission.status_code == '200' %}
+            <td>OK</td>
+            {% elif submission.status_code == '403' %}
+            <td>INVALID FILE</td>
+            {% elif submission.status_code == '404' %}
+            <td>FILE NOT FOUND</td>
+            {% else %}
+            <td>processing</td>
+            {% endif %}
           </tr>
 
           {% endfor %}
@@ -42,8 +84,21 @@
     </div>
   </main>
 </div>
+<script>
+  function copyFunction(id) {
+    const copyText = document.getElementById(id).textContent;
+    const textArea = document.createElement('textarea');
+    textArea.style.position = "absolute";
+    textArea.style.left = "-100%";
+    textArea.textContent = copyText;
+    document.body.append(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    textArea.remove();
+  }
+</script>
 
-STATUS_CODES = {
+<!-- STATUS_CODES = {
     200: 'OK',
     201: 'ACCEPTED',
     400: 'WRONG ANSWER',
@@ -52,5 +107,5 @@ STATUS_CODES = {
     403: 'INVALID FILE',
     404: 'FILE NOT FOUND',
     408: 'TIME LIMIT EXCEEDED'
-}
+} -->
 {% endblock %}

@@ -1,24 +1,52 @@
 {% extends 'base.html' %}
 {% block content %}
+{% if form.errors %}
+<p style="text-align:center; color: red">Your username and password didn't match. Please try again.</p>
+{% endif %}
+{% if status %}
+<div align="center" style="border-top: 1px solid #888; border-bottom: 1px solid #888; margin:10px auto;">
+    <h2 style="margin:10px auto; font-weight:normal;"><strong>Status:</strong>
+        {% if status == '201' %}
+        Accepted(AC)
+        {% elif status == '400' %}
+        Wrong Answer(WA)
+        {% elif status == '401' %}
+        Compilation Error(CE)
+        {% elif status == '402' %}
+        Runtime Error(RE)
+        {% elif status == '408' %}
+        Time Limit Exceeded(TLE)
+        {% elif status == '200' %}
+        OK
+        {% elif status == '403' %}
+        INVALID FILE
+        {% elif status == '404' %}
+        FILE NOT FOUND
+        {% else %}
+        processing
+        {% endif %}
+    </h2>
+</div>
+{% endif %}
 <div id="middle">
     <main>
-        <form name="submit" class="submit-form" method="POST" >
+        <form name="submit" class="submit-form" method="POST">
             {% csrf_token %}
             <div id="submitpage-languageindex">
                 <label for="languageIndex">Language:</label>
                 <div class="submitpage-value">
-                    <select id="languageIndex" name="lang">
-                        <option value="cpp">C++</option>
-                        <option value="c">C</option>
-                        <option value="py">Python</option>
-                        <option value="java">Java</option>
+                    <select id="languageIndex" name="lang" onchange="change()">
+                        <option id="text/x-c++src" value="cpp" selected>C++</option>
+                        <option id="text/x-csrc" value="c">C</option>
+                        <option id="python" value="py">Python</option>
+                        <option id="text/x-java" value="java">Java</option>
                     </select>
                 </div>
             </div>
             <div id="submitpage-sourcefield">
                 <label for="source">Source:</label>
                 <div>
-                    <textarea id="source" name="solution_code" rows="20" required></textarea>
+                    <textarea id="codeeditor" name="solution_code" rows="20" required></textarea>
                 </div>
             </div>
             <div class="submitpage-submitfield">
@@ -27,5 +55,73 @@
         </form>
     </main>
 </div>
-{{ status }}
+<!-- {{ status }} -->
+
+<script>
+    var editor = CodeMirror.fromTextArea(document.getElementById("codeeditor"), {
+        mode: "text/x-c++src",
+        theme: "dracula",
+        keyMap: "sublime",
+        indentUnit: 4,
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        closeBrackets: true,
+        autoCloseTags: true,
+        styleActiveLine: true,
+        indentWithTabs: true,
+        lineWrapping: true,
+        showCursorWhenSelecting: true,
+        dragDrop: false,
+        foldGutter: true,
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+        extraKeys: {
+            'Ctrl-/': function (cm) {
+                cm.toggleComment();
+            }
+        },
+        extraKeys: {
+            'Ctrl-F': "findPersistent"
+        },
+    });
+
+    editor.on("change", function (cm, change) {
+        editor.save();
+    });
+
+    //-----------------LazyLoading Themes---------------
+    // var input = document.getElementById("select");
+
+    // function selectTheme() {
+    //   var theme = input.options[input.selectedIndex].id;
+    //   editor.setOption("theme", theme);
+    //   CodeMirror.autoLoadMode(editor,theme);
+
+    //   location.hash = "#" + theme;
+    // }
+    // var choice = (location.hash && location.hash.slice(1)) ||
+    //   (document.location.search &&
+    //     decodeURIComponent(document.location.search.slice(1)));
+    // if (choice) {
+    //   input.options[input.selectedIndex].id = choice;
+    //   editor.setOption("theme", choice);
+    // }
+    // CodeMirror.on(window, "hashchange", function () {
+    //   var theme = location.hash.slice(1);
+    //   if (theme) {
+    //     input.options[input.selectedIndex].id = theme;
+    //     selectTheme();
+    //   }
+    // });
+
+    //-----------------LazyLoading Modes---------------
+
+    var modeInput = document.getElementById("languageIndex");
+
+    function change() {
+        var mode = modeInput.options[modeInput.selectedIndex].id;
+        editor.setOption("mode", mode);
+        //CodeMirror.autoLoadMode(editor,mode);
+    }
+</script>
 {% endblock %}

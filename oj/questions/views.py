@@ -9,15 +9,15 @@ from core.models import Profile
 import logging
 
 def get_submission(request):
-    symbols = '< > & \' \"'.split()
-    replace = '&lt; &gt; &amp; &apos; &quot;'.split()
+    # symbols = '< > & \' \"'.split()
+    # replace = '&lt; &gt; &amp; &apos; &quot;'.split()
     solved = Submission.objects.filter(user_id = request.user.id)
     submissions = []
     for i in solved:
         temp = {}
         temp["solution"] = i
-        for sym,rep in zip(symbols,replace):
-            temp["solution"].solution_code = temp["solution"].solution_code.replace(sym,rep)
+        # for sym,rep in zip(symbols,replace):
+        #     temp["solution"].solution_code = temp["solution"].solution_code.replace(sym,rep)
         temp["question"] = Questions.objects.get(id = i.qid)
         submissions.append(temp)
     return render(request, 'get_submission.html',{'submissions':submissions})
