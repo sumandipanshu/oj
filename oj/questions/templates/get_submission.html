@@ -8,8 +8,7 @@
       <table>
         <thead>
           <tr>
-            <th>Process ID</th>
-			<th>Code</th>
+            <th>#</th>
             <th>Problem</th>
             <th>Language</th>
             <th>Verdict</th>
@@ -18,8 +17,7 @@
         <tbody>
           {% for submission in submissions %}
 			<tr>
-				<td> {{submission.solution.id}} </td>
-            <td><a href="#openModal{{ forloop.counter}}">code</a></td>
+            <td><a href="#openModal{{ forloop.counter}}">{{submission.solution.id}}</a></td>
             <div id="openModal{{forloop.counter}}" class="modalDialog">
               <div>
                 <a href="#close" title="Close" class="close">X</a>
@@ -27,7 +25,7 @@
                 <nav id="header-nav"
                   style="border:0; margin-bottom:-12px;border-bottom: 5px double maroon;border-radius: 0;">
                   <ul>
-                    <li>Title: {{ submission.question.title }}</li>
+                    <li>Title: <a href="/questions/{{ submission.question.id }}">{{ submission.question.title }}</a></li>
                     {% if submission.solution.status == '201' %}
                     <li>Verdict: AC</li>
                     {% elif submission.solution.status == '400' %}
@@ -49,15 +47,15 @@
                     {% endif %}
                   </ul>
                 </nav>
-                <div class="sol_code">
+                <!-- <div class="sol_code">
                   <a href="javascript:void(0);" onclick="copyFunction('code{{forloop.counter}}')"><small
                       class="copy-text">copy</small></a>
                   <pre id="code{{forloop.counter}}" style="display: none;">{{submission.solution.solution_code}}</pre>
-                </div>
-                <pre class="prettyprint linenums"><code>{{submission.solution.solution_code}}</code></pre>
+                </div> -->
+                <pre class="language-{{submission.solution.lang}} line-numbers"><code>{{submission.solution.solution_code}}</code></pre>
               </div>
             </div>
-            <td>{{ submission.question.title }}</td>
+            <td><a href="/questions/{{ submission.question.id }}">{{ submission.question.title }}</a></td>
             <td>{{ submission.solution.lang }}</td>
             {% if submission.solution.status == '201' %}
             <td>AC</td>
@@ -86,7 +84,7 @@
     </div>
   </main>
 </div>
-<script>
+<!-- <script>
   function copyFunction(id) {
     const copyText = document.getElementById(id).textContent;
     const textArea = document.createElement('textarea');
@@ -98,7 +96,7 @@
     document.execCommand("copy");
     textArea.remove();
   }
-</script>
+</script> -->
 
 <!--.solution.statusS = {
     200: 'OK',

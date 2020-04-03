@@ -14,11 +14,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'js/prism/prism.css' %}">
     <link rel="stylesheet" href="{% static 'js/codemirror/lib/codemirror.css' %}">
     <link rel="stylesheet" href="{% static 'js/codemirror/theme/dracula.css' %}">
     <link rel="stylesheet" href="{% static 'js/codemirror/addon/fold/foldgutter.css' %}">
     <link rel="stylesheet" href="{% static 'js/codemirror/addon/dialog/dialog.css' %}">
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="{% static 'js/prism/prism.js' %}"></script>
     <script src="{% static 'js/codemirror/lib/codemirror.js' %}"></script>
     <script src="{% static 'js/codemirror/mode/clike/clike.js' %}"></script>
     <script src="{% static 'js/codemirror/mode/python/python.js' %}"></script>
@@ -37,7 +38,6 @@
     <script src="{% static 'js/codemirror/addon/search/jump-to-line.js' %}"></script>
     <script src="{% static 'js/codemirror/addon/search/searchcursor.js' %}"></script>
     <script src="{% static 'js/vendor/modernizr-3.8.0.min.js' %}"></script>
-    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
     <script src="{% static 'js/vendor/jquery-3.4.1.min.js' %}"></script>
     <script src="{% static 'js/plugins.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
@@ -56,7 +56,7 @@
 <body>
 
     <div id="header">
-        <div id="logo">
+        <div id="logo" class="disable-select">
             <h1>Solve&Learn</h1>
         </div>
         {% if user.is_authenticated %}
