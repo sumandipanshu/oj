@@ -1,7 +1,7 @@
 <!doctype html>
 
 <title>CodeMirror: Closebrackets Demo</title>
-<meta charset="utf-8"/>
+<meta charset="utf-8" />
 <link rel=stylesheet href="../doc/docs.css">
 
 <link rel="stylesheet" href="../lib/codemirror.css">
@@ -9,10 +9,15 @@
 <script src="../addon/edit/closebrackets.js"></script>
 <script src="../mode/javascript/javascript.js"></script>
 <style>
-      .CodeMirror {border-top: 1px solid #888; border-bottom: 1px solid #888;}
-    </style>
+  .CodeMirror {
+    border-top: 1px solid #888;
+    border-bottom: 1px solid #888;
+  }
+</style>
 <div id=nav>
-  <a href="https://codemirror.net"><h1>CodeMirror</h1><img id=logo src="../doc/logo.png"></a>
+  <a href="https://codemirror.net">
+    <h1>CodeMirror</h1><img id=logo src="../doc/logo.png">
+  </a>
 
   <ul>
     <li><a href="../index.html">Home</a>
@@ -25,8 +30,8 @@
 </div>
 
 <article>
-<h2>Closebrackets Demo</h2>
-<form><textarea id="code" name="code">function Grid(width, height) {
+  <h2>Closebrackets Demo</h2>
+  <form><textarea id="code" name="code">function Grid(width, height) {
   this.width = width;
   this.height = height;
   this.cells = new Array(width * height);
@@ -46,7 +51,9 @@ Grid.prototype.moveValue = function(from, to) {
   this.setValueAt(from, undefined);
 };</textarea></form>
 
-    <script>
-      var editor = CodeMirror.fromTextArea(document.getElementById("code"), {autoCloseBrackets: true});
-    </script>
-  </article>
+  <script>
+    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+      autoCloseBrackets: true
+    });
+  </script>
+</article>

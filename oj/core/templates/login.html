@@ -15,7 +15,8 @@
                     <label for="username">Username</label>
                 </div>
                 <div class="value">
-                    <input type="text" id="username" title="Enter your username or email" name="username" value="" required>
+                    <input type="text" id="username" title="Enter your username or email" name="username" value=""
+                        required>
                 </div>
             </div>
             <div class="field">
@@ -23,7 +24,10 @@
                     <label for="password">Password</label>
                 </div>
                 <div class="value">
-                    <input id="password" type="password" name="password" title="Password must be 8 characters including 1 uppercase letter, 1 lowercase letter and numeric characters" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" value="" required>
+                    <input id="password" type="password" name="password"
+                        title="Password must be 8 characters including 1 uppercase letter, 1 lowercase letter, 1 numeric and 1 special characters"
+                        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}" value=""
+                        required>
                 </div>
             </div>
             <div class="button-field">

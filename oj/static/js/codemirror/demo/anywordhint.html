@@ -1,7 +1,7 @@
 <!doctype html>
 
 <title>CodeMirror: Any Word Completion Demo</title>
-<meta charset="utf-8"/>
+<meta charset="utf-8" />
 <link rel=stylesheet href="../doc/docs.css">
 
 <link rel="stylesheet" href="../lib/codemirror.css">
@@ -11,7 +11,9 @@
 <script src="../addon/hint/anyword-hint.js"></script>
 <script src="../mode/javascript/javascript.js"></script>
 <div id=nav>
-  <a href="https://codemirror.net"><h1>CodeMirror</h1><img id=logo src="../doc/logo.png"></a>
+  <a href="https://codemirror.net">
+    <h1>CodeMirror</h1><img id=logo src="../doc/logo.png">
+  </a>
 
   <ul>
     <li><a href="../index.html">Home</a>
@@ -24,8 +26,8 @@
 </div>
 
 <article>
-<h2>Any Word Completion Demo</h2>
-<form><textarea id="code" name="code">
+  <h2>Any Word Completion Demo</h2>
+  <form><textarea id="code" name="code">
 (function() {
   "use strict";
 
@@ -61,19 +63,23 @@
 })();
 </textarea></form>
 
-<p>Press <strong>ctrl-space</strong> to activate autocompletion. The
-completion uses
-the <a href="../doc/manual.html#addon_anyword-hint">anyword-hint.js</a>
-module, which simply looks at nearby words in the buffer and completes
-to those.</p>
+  <p>Press <strong>ctrl-space</strong> to activate autocompletion. The
+    completion uses
+    the <a href="../doc/manual.html#addon_anyword-hint">anyword-hint.js</a>
+    module, which simply looks at nearby words in the buffer and completes
+    to those.</p>
 
-    <script>
-      CodeMirror.commands.autocomplete = function(cm) {
-        cm.showHint({hint: CodeMirror.hint.anyword});
-      }
-      var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
-        lineNumbers: true,
-        extraKeys: {"Ctrl-Space": "autocomplete"}
+  <script>
+    CodeMirror.commands.autocomplete = function (cm) {
+      cm.showHint({
+        hint: CodeMirror.hint.anyword
       });
-    </script>
-  </article>
+    }
+    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+      lineNumbers: true,
+      extraKeys: {
+        "Ctrl-Space": "autocomplete"
+      }
+    });
+  </script>
+</article>

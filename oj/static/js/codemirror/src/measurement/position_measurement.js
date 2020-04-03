@@ -1,31 +1,84 @@
-import { buildLineContent, LineView } from "../line/line_data.js"
-import { clipPos, Pos } from "../line/pos.js"
-import { collapsedSpanAround, heightAtLine, lineIsHidden, visualLine } from "../line/spans.js"
-import { getLine, lineAtHeight, lineNo, updateLineHeight } from "../line/utils_line.js"
-import { bidiOther, getBidiPartAt, getOrder } from "../util/bidi.js"
-import { chrome, android, ie, ie_version } from "../util/browser.js"
-import { elt, removeChildren, range, removeChildrenAndAdd } from "../util/dom.js"
-import { e_target } from "../util/event.js"
-import { hasBadZoomedRects } from "../util/feature_detection.js"
-import { countColumn, findFirst, isExtendingChar, scrollerGap, skipExtendingChars } from "../util/misc.js"
-import { updateLineForChanges } from "../display/update_line.js"
+import {
+  buildLineContent,
+  LineView
+} from "../line/line_data.js"
+import {
+  clipPos,
+  Pos
+} from "../line/pos.js"
+import {
+  collapsedSpanAround,
+  heightAtLine,
+  lineIsHidden,
+  visualLine
+} from "../line/spans.js"
+import {
+  getLine,
+  lineAtHeight,
+  lineNo,
+  updateLineHeight
+} from "../line/utils_line.js"
+import {
+  bidiOther,
+  getBidiPartAt,
+  getOrder
+} from "../util/bidi.js"
+import {
+  chrome,
+  android,
+  ie,
+  ie_version
+} from "../util/browser.js"
+import {
+  elt,
+  removeChildren,
+  range,
+  removeChildrenAndAdd
+} from "../util/dom.js"
+import {
+  e_target
+} from "../util/event.js"
+import {
+  hasBadZoomedRects
+} from "../util/feature_detection.js"
+import {
+  countColumn,
+  findFirst,
+  isExtendingChar,
+  scrollerGap,
+  skipExtendingChars
+} from "../util/misc.js"
+import {
+  updateLineForChanges
+} from "../display/update_line.js"
 
-import { widgetHeight } from "./widgets.js"
+import {
+  widgetHeight
+} from "./widgets.js"
 
 // POSITION MEASUREMENT
 
-export function paddingTop(display) {return display.lineSpace.offsetTop}
-export function paddingVert(display) {return display.mover.offsetHeight - display.lineSpace.offsetHeight}
+export function paddingTop(display) {
+  return display.lineSpace.offsetTop
+}
+export function paddingVert(display) {
+  return display.mover.offsetHeight - display.lineSpace.offsetHeight
+}
 export function paddingH(display) {
   if (display.cachedPaddingH) return display.cachedPaddingH
   let e = removeChildrenAndAdd(display.measure, elt("pre", "x", "CodeMirror-line-like"))
   let style = window.getComputedStyle ? window.getComputedStyle(e) : e.currentStyle
-  let data = {left: parseInt(style.paddingLeft), right: parseInt(style.paddingRight)}
+  let data = {
+    left: parseInt(style.paddingLeft),
+    right: parseInt(style.paddingRight)
+  }
   if (!isNaN(data.left) && !isNaN(data.right)) display.cachedPaddingH = data
   return data
 }
 
-export function scrollGap(cm) { return scrollerGap - cm.display.nativeBarWidth }
+export function scrollGap(cm) {
+  return scrollerGap - cm.display.nativeBarWidth
+}
 export function displayWidth(cm) {
   return cm.display.scroller.clientWidth - scrollGap(cm) - cm.display.barWidth
 }
@@ -46,7 +99,8 @@ function ensureLineHeights(cm, lineView, rect) {
       lineView.measure.width = curWidth
       let rects = lineView.text.firstChild.getClientRects()
       for (let i = 0; i < rects.length - 1; i++) {
-        let cur = rects[i], next = rects[i + 1]
+        let cur = rects[i],
+          next = rects[i + 1]
         if (Math.abs(cur.bottom - next.bottom) > 2)
           heights.push((cur.bottom + next.top) / 2 - rect.top)
       }
@@ -60,13 +114,23 @@ function ensureLineHeights(cm, lineView, rect) {
 // contain multiple lines when collapsed ranges are present.)
 export function mapFromLineView(lineView, line, lineN) {
   if (lineView.line == line)
-    return {map: lineView.measure.map, cache: lineView.measure.cache}
+    return {
+      map: lineView.measure.map,
+      cache: lineView.measure.cache
+    }
   for (let i = 0; i < lineView.rest.length; i++)
     if (lineView.rest[i] == line)
-      return {map: lineView.measure.maps[i], cache: lineView.measure.caches[i]}
+      return {
+        map: lineView.measure.maps[i],
+        cache: lineView.measure.caches[i]
+      }
   for (let i = 0; i < lineView.rest.length; i++)
     if (lineNo(lineView.rest[i]) > lineN)
-      return {map: lineView.measure.maps[i], cache: lineView.measure.caches[i], before: true}
+      return {
+        map: lineView.measure.maps[i],
+        cache: lineView.measure.caches[i],
+        before: true
+      }
 }
 
 // Render a line into the hidden node display.externalMeasured. Used
@@ -116,8 +180,12 @@ export function prepareMeasureForLine(cm, line) {
 
   let info = mapFromLineView(view, line, lineN)
   return {
-    line: line, view: view, rect: null,
-    map: info.map, cache: info.cache, before: info.before,
+    line: line,
+    view: view,
+    rect: null,
+    map: info.map,
+    cache: info.cache,
+    before: info.before,
     hasHeights: false
   }
 }
@@ -126,7 +194,8 @@ export function prepareMeasureForLine(cm, line) {
 // actual character (or fetches it from the cache).
 export function measureCharPrepared(cm, prepared, ch, bias, varHeight) {
   if (prepared.before) ch = -1
-  let key = ch + (bias || ""), found
+  let key = ch + (bias || ""),
+    found
   if (prepared.cache.hasOwnProperty(key)) {
     found = prepared.cache[key]
   } else {
@@ -139,12 +208,20 @@ export function measureCharPrepared(cm, prepared, ch, bias, varHeight) {
     found = measureCharInner(cm, prepared, ch, bias)
     if (!found.bogus) prepared.cache[key] = found
   }
-  return {left: found.left, right: found.right,
-          top: varHeight ? found.rtop : found.top,
-          bottom: varHeight ? found.rbottom : found.bottom}
+  return {
+    left: found.left,
+    right: found.right,
+    top: varHeight ? found.rtop : found.top,
+    bottom: varHeight ? found.rbottom : found.bottom
+  }
 }
 
-let nullRect = {left: 0, right: 0, top: 0, bottom: 0}
+let nullRect = {
+  left: 0,
+  right: 0,
+  top: 0,
+  bottom: 0
+}
 
 export function nodeAndOffsetInLineMap(map, ch, bias) {
   let node, start, end, collapse, mStart, mEnd
@@ -154,7 +231,8 @@ export function nodeAndOffsetInLineMap(map, ch, bias) {
     mStart = map[i]
     mEnd = map[i + 1]
     if (ch < mStart) {
-      start = 0; end = 1
+      start = 0;
+      end = 1
       collapse = "left"
     } else if (ch < mEnd) {
       start = ch - mStart
@@ -181,22 +259,34 @@ export function nodeAndOffsetInLineMap(map, ch, bias) {
       break
     }
   }
-  return {node: node, start: start, end: end, collapse: collapse, coverStart: mStart, coverEnd: mEnd}
+  return {
+    node: node,
+    start: start,
+    end: end,
+    collapse: collapse,
+    coverStart: mStart,
+    coverEnd: mEnd
+  }
 }
 
 function getUsefulRect(rects, bias) {
   let rect = nullRect
-  if (bias == "left") for (let i = 0; i < rects.length; i++) {
-    if ((rect = rects[i]).left != rect.right) break
-  } else for (let i = rects.length - 1; i >= 0; i--) {
-    if ((rect = rects[i]).left != rect.right) break
-  }
+  if (bias == "left")
+    for (let i = 0; i < rects.length; i++) {
+      if ((rect = rects[i]).left != rect.right) break
+    } else
+      for (let i = rects.length - 1; i >= 0; i--) {
+        if ((rect = rects[i]).left != rect.right) break
+      }
   return rect
 }
 
 function measureCharInner(cm, prepared, ch, bias) {
   let place = nodeAndOffsetInLineMap(prepared.map, ch, bias)
-  let node = place.node, start = place.start, end = place.end, collapse = place.collapse
+  let node = place.node,
+    start = place.start,
+    end = place.end,
+    collapse = place.collapse
 
   let rect
   if (node.nodeType == 3) { // If it is a text node, use a range to retrieve the coordinates.
@@ -224,23 +314,36 @@ function measureCharInner(cm, prepared, ch, bias) {
   if (ie && ie_version < 9 && !start && (!rect || !rect.left && !rect.right)) {
     let rSpan = node.parentNode.getClientRects()[0]
     if (rSpan)
-      rect = {left: rSpan.left, right: rSpan.left + charWidth(cm.display), top: rSpan.top, bottom: rSpan.bottom}
+      rect = {
+        left: rSpan.left,
+        right: rSpan.left + charWidth(cm.display),
+        top: rSpan.top,
+        bottom: rSpan.bottom
+      }
     else
       rect = nullRect
   }
 
-  let rtop = rect.top - prepared.rect.top, rbot = rect.bottom - prepared.rect.top
+  let rtop = rect.top - prepared.rect.top,
+    rbot = rect.bottom - prepared.rect.top
   let mid = (rtop + rbot) / 2
   let heights = prepared.view.measure.heights
   let i = 0
   for (; i < heights.length - 1; i++)
     if (mid < heights[i]) break
-  let top = i ? heights[i - 1] : 0, bot = heights[i]
-  let result = {left: (collapse == "right" ? rect.right : rect.left) - prepared.rect.left,
-                right: (collapse == "left" ? rect.left : rect.right) - prepared.rect.left,
-                top: top, bottom: bot}
+  let top = i ? heights[i - 1] : 0,
+    bot = heights[i]
+  let result = {
+    left: (collapse == "right" ? rect.right : rect.left) - prepared.rect.left,
+    right: (collapse == "left" ? rect.left : rect.right) - prepared.rect.left,
+    top: top,
+    bottom: bot
+  }
   if (!rect.left && !rect.right) result.bogus = true
-  if (!cm.options.singleCursorHeightPerLine) { result.rtop = rtop; result.rbottom = rbot }
+  if (!cm.options.singleCursorHeightPerLine) {
+    result.rtop = rtop;
+    result.rbottom = rbot
+  }
 
   return result
 }
@@ -249,20 +352,25 @@ function measureCharInner(cm, prepared, ch, bias) {
 // returned incorrectly when zoomed on IE10 and below.
 function maybeUpdateRectForZooming(measure, rect) {
   if (!window.screen || screen.logicalXDPI == null ||
-      screen.logicalXDPI == screen.deviceXDPI || !hasBadZoomedRects(measure))
+    screen.logicalXDPI == screen.deviceXDPI || !hasBadZoomedRects(measure))
     return rect
   let scaleX = screen.logicalXDPI / screen.deviceXDPI
   let scaleY = screen.logicalYDPI / screen.deviceYDPI
-  return {left: rect.left * scaleX, right: rect.right * scaleX,
-          top: rect.top * scaleY, bottom: rect.bottom * scaleY}
+  return {
+    left: rect.left * scaleX,
+    right: rect.right * scaleX,
+    top: rect.top * scaleY,
+    bottom: rect.bottom * scaleY
+  }
 }
 
 export function clearLineMeasurementCacheFor(lineView) {
   if (lineView.measure) {
     lineView.measure.cache = {}
     lineView.measure.heights = null
-    if (lineView.rest) for (let i = 0; i < lineView.rest.length; i++)
-      lineView.measure.caches[i] = {}
+    if (lineView.rest)
+      for (let i = 0; i < lineView.rest.length; i++)
+        lineView.measure.caches[i] = {}
   }
 }
 
@@ -287,6 +395,7 @@ function pageScrollX() {
   if (chrome && android) return -(document.body.getBoundingClientRect().left - parseInt(getComputedStyle(document.body).marginLeft))
   return window.pageXOffset || (document.documentElement || document.body).scrollLeft
 }
+
 function pageScrollY() {
   if (chrome && android) return -(document.body.getBoundingClientRect().top - parseInt(getComputedStyle(document.body).marginTop))
   return window.pageYOffset || (document.documentElement || document.body).scrollTop
@@ -294,8 +403,10 @@ function pageScrollY() {
 
 function widgetTopHeight(lineObj) {
   let height = 0
-  if (lineObj.widgets) for (let i = 0; i < lineObj.widgets.length; ++i) if (lineObj.widgets[i].above)
-    height += widgetHeight(lineObj.widgets[i])
+  if (lineObj.widgets)
+    for (let i = 0; i < lineObj.widgets.length; ++i)
+      if (lineObj.widgets[i].above)
+        height += widgetHeight(lineObj.widgets[i])
   return height
 }
 
@@ -306,7 +417,8 @@ function widgetTopHeight(lineObj) {
 export function intoCoordSystem(cm, lineObj, rect, context, includeWidgets) {
   if (!includeWidgets) {
     let height = widgetTopHeight(lineObj)
-    rect.top += height; rect.bottom += height
+    rect.top += height;
+    rect.bottom += height
   }
   if (context == "line") return rect
   if (!context) context = "local"
@@ -317,9 +429,11 @@ export function intoCoordSystem(cm, lineObj, rect, context, includeWidgets) {
     let lOff = cm.display.lineSpace.getBoundingClientRect()
     yOff += lOff.top + (context == "window" ? 0 : pageScrollY())
     let xOff = lOff.left + (context == "window" ? 0 : pageScrollX())
-    rect.left += xOff; rect.right += xOff
+    rect.left += xOff;
+    rect.right += xOff
   }
-  rect.top += yOff; rect.bottom += yOff
+  rect.top += yOff;
+  rect.bottom += yOff
   return rect
 }
 
@@ -327,7 +441,8 @@ export function intoCoordSystem(cm, lineObj, rect, context, includeWidgets) {
 // Context may be "window", "page", "div", or "local"./null.
 export function fromCoordSystem(cm, coords, context) {
   if (context == "div") return coords
-  let left = coords.left, top = coords.top
+  let left = coords.left,
+    top = coords.top
   // First move into "page" coordinate system
   if (context == "page") {
     left -= pageScrollX()
@@ -339,7 +454,10 @@ export function fromCoordSystem(cm, coords, context) {
   }
 
   let lineSpaceBox = cm.display.lineSpace.getBoundingClientRect()
-  return {left: left - lineSpaceBox.left, top: top - lineSpaceBox.top}
+  return {
+    left: left - lineSpaceBox.left,
+    top: top - lineSpaceBox.top
+  }
 }
 
 export function charCoords(cm, pos, context, lineObj, bias) {
@@ -366,12 +484,16 @@ export function charCoords(cm, pos, context, lineObj, bias) {
 export function cursorCoords(cm, pos, context, lineObj, preparedMeasure, varHeight) {
   lineObj = lineObj || getLine(cm.doc, pos.line)
   if (!preparedMeasure) preparedMeasure = prepareMeasureForLine(cm, lineObj)
+
   function get(ch, right) {
     let m = measureCharPrepared(cm, preparedMeasure, ch, right ? "right" : "left", varHeight)
-    if (right) m.left = m.right; else m.right = m.left
+    if (right) m.left = m.right;
+    else m.right = m.left
     return intoCoordSystem(cm, lineObj, m, context)
   }
-  let order = getOrder(lineObj, cm.doc.direction), ch = pos.ch, sticky = pos.sticky
+  let order = getOrder(lineObj, cm.doc.direction),
+    ch = pos.ch,
+    sticky = pos.sticky
   if (ch >= lineObj.text.length) {
     ch = lineObj.text.length
     sticky = "before"
@@ -382,7 +504,8 @@ export function cursorCoords(cm, pos, context, lineObj, preparedMeasure, varHeig
   if (!order) return get(sticky == "before" ? ch - 1 : ch, sticky == "before")
 
   function getBidi(ch, partPos, invert) {
-    let part = order[partPos], right = part.level == 1
+    let part = order[partPos],
+      right = part.level == 1
     return get(invert ? ch - 1 : ch, right != invert)
   }
   let partPos = getBidiPartAt(order, ch, sticky)
@@ -400,7 +523,12 @@ export function estimateCoords(cm, pos) {
   if (!cm.options.lineWrapping) left = charWidth(cm.display) * pos.ch
   let lineObj = getLine(cm.doc, pos.line)
   let top = heightAtLine(lineObj) + paddingTop(cm.display)
-  return {left: left, right: left, top: top, bottom: top + lineObj.height}
+  return {
+    left: left,
+    right: left,
+    top: top,
+    bottom: top + lineObj.height
+  }
 }
 
 // Positions returned by coordsChar contain some extra information.
@@ -422,7 +550,8 @@ export function coordsChar(cm, x, y) {
   let doc = cm.doc
   y += cm.display.viewOffset
   if (y < 0) return PosWithInfo(doc.first, 0, null, -1, -1)
-  let lineN = lineAtHeight(doc, y), last = doc.first + doc.size - 1
+  let lineN = lineAtHeight(doc, y),
+    last = doc.first + doc.size - 1
   if (lineN > last)
     return PosWithInfo(doc.first + doc.size - 1, getLine(doc, last).text.length, null, 1, 1)
   if (x < 0) x = 0
@@ -443,7 +572,10 @@ function wrappedLineExtent(cm, lineObj, preparedMeasure, y) {
   let end = lineObj.text.length
   let begin = findFirst(ch => measureCharPrepared(cm, preparedMeasure, ch - 1).bottom <= y, end, 0)
   end = findFirst(ch => measureCharPrepared(cm, preparedMeasure, ch).top > y, begin, end)
-  return {begin, end}
+  return {
+    begin,
+    end
+  }
 }
 
 export function wrappedLineExtentChar(cm, lineObj, preparedMeasure, target) {
@@ -465,14 +597,16 @@ function coordsCharInner(cm, lineObj, lineNo, x, y) {
   // When directly calling `measureCharPrepared`, we have to adjust
   // for the widgets at this line.
   let widgetHeight = widgetTopHeight(lineObj)
-  let begin = 0, end = lineObj.text.length, ltr = true
+  let begin = 0,
+    end = lineObj.text.length,
+    ltr = true
 
   let order = getOrder(lineObj, cm.doc.direction)
   // If the line isn't plain left-to-right text, first figure out
   // which bidi section the coordinates fall into.
   if (order) {
     let part = (cm.options.lineWrapping ? coordsBidiPartWrapped : coordsBidiPart)
-                 (cm, lineObj, lineNo, preparedMeasure, order, x, y)
+      (cm, lineObj, lineNo, preparedMeasure, order, x, y)
     ltr = part.level != 1
     // The awkward -1 offsets are needed because findFirst (called
     // on these below) will treat its first bound as inclusive,
@@ -485,10 +619,12 @@ function coordsCharInner(cm, lineObj, lineNo, x, y) {
   // A binary search to find the first character whose bounding box
   // starts after the coordinates. If we run across any whose box wrap
   // the coordinates, store that.
-  let chAround = null, boxAround = null
+  let chAround = null,
+    boxAround = null
   let ch = findFirst(ch => {
     let box = measureCharPrepared(cm, preparedMeasure, ch)
-    box.top += widgetHeight; box.bottom += widgetHeight
+    box.top += widgetHeight;
+    box.bottom += widgetHeight
     if (!boxIsAfter(box, x, y, false)) return false
     if (box.top <= y && box.left <= x) {
       chAround = ch
@@ -501,7 +637,8 @@ function coordsCharInner(cm, lineObj, lineNo, x, y) {
   // If a box around the coordinates was found, use that
   if (boxAround) {
     // Distinguish coordinates nearer to the left or right side of the box
-    let atLeft = x - boxAround.left < boxAround.right - x, atStart = atLeft == ltr
+    let atLeft = x - boxAround.left < boxAround.right - x,
+      atStart = atLeft == ltr
     ch = chAround + (atStart ? 0 : 1)
     sticky = atStart ? "after" : "before"
     baseX = atLeft ? boxAround.left : boxAround.right
@@ -531,9 +668,10 @@ function coordsBidiPart(cm, lineObj, lineNo, preparedMeasure, order, x, y) {
   // ordering. This finds the first part whose end is after the given
   // coordinates.
   let index = findFirst(i => {
-    let part = order[i], ltr = part.level != 1
+    let part = order[i],
+      ltr = part.level != 1
     return boxIsAfter(cursorCoords(cm, Pos(lineNo, ltr ? part.to : part.from, ltr ? "before" : "after"),
-                                   "line", lineObj, preparedMeasure), x, y, true)
+      "line", lineObj, preparedMeasure), x, y, true)
   }, 0, order.length - 1)
   let part = order[index]
   // If this isn't the first part, the part's start is also after
@@ -542,7 +680,7 @@ function coordsBidiPart(cm, lineObj, lineNo, preparedMeasure, order, x, y) {
   if (index > 0) {
     let ltr = part.level != 1
     let start = cursorCoords(cm, Pos(lineNo, ltr ? part.from : part.to, ltr ? "after" : "before"),
-                             "line", lineObj, preparedMeasure)
+      "line", lineObj, preparedMeasure)
     if (boxIsAfter(start, x, y, true) && start.top > y)
       part = order[index - 1]
   }
@@ -557,9 +695,13 @@ function coordsBidiPartWrapped(cm, lineObj, _lineNo, preparedMeasure, order, x, 
   // coordsCharInner is safe. As such, we first find the extent of the
   // wrapped line, and then do a flat search in which we discard any
   // spans that aren't on the line.
-  let {begin, end} = wrappedLineExtent(cm, lineObj, preparedMeasure, y)
+  let {
+    begin,
+    end
+  } = wrappedLineExtent(cm, lineObj, preparedMeasure, y)
   if (/\s/.test(lineObj.text.charAt(end - 1))) end--
-  let part = null, closestDist = null
+  let part = null,
+    closestDist = null
   for (let i = 0; i < order.length; i++) {
     let p = order[i]
     if (p.from >= end || p.to <= begin) continue
@@ -575,8 +717,16 @@ function coordsBidiPartWrapped(cm, lineObj, _lineNo, preparedMeasure, order, x, 
   }
   if (!part) part = order[order.length - 1]
   // Clip the part to the wrapped line.
-  if (part.from < begin) part = {from: begin, to: part.to, level: part.level}
-  if (part.to > end) part = {from: part.from, to: end, level: part.level}
+  if (part.from < begin) part = {
+    from: begin,
+    to: part.to,
+    level: part.level
+  }
+  if (part.to > end) part = {
+    from: part.from,
+    to: end,
+    level: part.level
+  }
   return part
 }
 
@@ -607,7 +757,8 @@ export function charWidth(display) {
   let anchor = elt("span", "xxxxxxxxxx")
   let pre = elt("pre", [anchor], "CodeMirror-line-like")
   removeChildrenAndAdd(display.measure, pre)
-  let rect = anchor.getBoundingClientRect(), width = (rect.right - rect.left) / 10
+  let rect = anchor.getBoundingClientRect(),
+    width = (rect.right - rect.left) / 10
   if (width > 2) display.cachedCharWidth = width
   return width || 10
 }
@@ -615,18 +766,22 @@ export function charWidth(display) {
 // Do a bulk-read of the DOM positions and sizes needed to draw the
 // view, so that we don't interleave reading and writing to the DOM.
 export function getDimensions(cm) {
-  let d = cm.display, left = {}, width = {}
+  let d = cm.display,
+    left = {},
+    width = {}
   let gutterLeft = d.gutters.clientLeft
   for (let n = d.gutters.firstChild, i = 0; n; n = n.nextSibling, ++i) {
     let id = cm.display.gutterSpecs[i].className
     left[id] = n.offsetLeft + n.clientLeft + gutterLeft
     width[id] = n.clientWidth
   }
-  return {fixedPos: compensateForHScroll(d),
-          gutterTotalWidth: d.gutters.offsetWidth,
-          gutterLeft: left,
-          gutterWidth: width,
-          wrapperWidth: d.wrapper.clientWidth}
+  return {
+    fixedPos: compensateForHScroll(d),
+    gutterTotalWidth: d.gutters.offsetWidth,
+    gutterLeft: left,
+    gutterWidth: width,
+    wrapperWidth: d.wrapper.clientWidth
+  }
 }
 
 // Computes display.scroller.scrollLeft + display.gutters.offsetWidth,
@@ -640,15 +795,17 @@ export function compensateForHScroll(display) {
 // first approximation until the line becomes visible (and is thus
 // properly measurable).
 export function estimateHeight(cm) {
-  let th = textHeight(cm.display), wrapping = cm.options.lineWrapping
+  let th = textHeight(cm.display),
+    wrapping = cm.options.lineWrapping
   let perLine = wrapping && Math.max(5, cm.display.scroller.clientWidth / charWidth(cm.display) - 3)
   return line => {
     if (lineIsHidden(cm.doc, line)) return 0
 
     let widgetsHeight = 0
-    if (line.widgets) for (let i = 0; i < line.widgets.length; i++) {
-      if (line.widgets[i].height) widgetsHeight += line.widgets[i].height
-    }
+    if (line.widgets)
+      for (let i = 0; i < line.widgets.length; i++) {
+        if (line.widgets[i].height) widgetsHeight += line.widgets[i].height
+      }
 
     if (wrapping)
       return widgetsHeight + (Math.ceil(line.text.length / perLine) || 1) * th
@@ -658,7 +815,8 @@ export function estimateHeight(cm) {
 }
 
 export function estimateLineHeights(cm) {
-  let doc = cm.doc, est = estimateHeight(cm)
+  let doc = cm.doc,
+    est = estimateHeight(cm)
   doc.iter(line => {
     let estHeight = est(line)
     if (estHeight != line.height) updateLineHeight(line, estHeight)
@@ -676,9 +834,14 @@ export function posFromMouse(cm, e, liberal, forRect) {
 
   let x, y, space = display.lineSpace.getBoundingClientRect()
   // Fails unpredictably on IE[67] when mouse is dragged around quickly.
-  try { x = e.clientX - space.left; y = e.clientY - space.top }
-  catch (e) { return null }
-  let coords = coordsChar(cm, x, y), line
+  try {
+    x = e.clientX - space.left;
+    y = e.clientY - space.top
+  } catch (e) {
+    return null
+  }
+  let coords = coordsChar(cm, x, y),
+    line
   if (forRect && coords.xRel > 0 && (line = getLine(cm.doc, coords.line).text).length == coords.ch) {
     let colDiff = countColumn(line, line.length, cm.options.tabSize) - line.length
     coords = Pos(coords.line, Math.max(0, Math.round((x - paddingH(cm.display).left) / charWidth(cm.display)) - colDiff))

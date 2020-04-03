@@ -1,20 +1,25 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
-(function() {
-  var mode = CodeMirror.getMode({indentUnit: 2}, "text/x-xu");
-  function MT(name) { test.mode(name, mode, Array.prototype.slice.call(arguments, 1), "xu"); }
+(function () {
+  var mode = CodeMirror.getMode({
+    indentUnit: 2
+  }, "text/x-xu");
+
+  function MT(name) {
+    test.mode(name, mode, Array.prototype.slice.call(arguments, 1), "xu");
+  }
 
   MT("empty chart",
-     "[keyword msc][bracket {]",
-     "[base   ]",
-     "[bracket }]"
+    "[keyword msc][bracket {]",
+    "[base   ]",
+    "[bracket }]"
   );
 
   MT("empty chart",
-     "[keyword xu][bracket {]",
-     "[base   ]",
-     "[bracket }]"
+    "[keyword xu][bracket {]",
+    "[base   ]",
+    "[bracket }]"
   );
 
   MT("comments",
@@ -32,7 +37,7 @@
 
   MT("xù/ msgenny keywords classify as 'keyword'",
     "[keyword watermark]",
-    "[keyword alt]","[keyword loop]","[keyword opt]","[keyword ref]","[keyword else]","[keyword break]","[keyword par]","[keyword seq]","[keyword assert]"
+    "[keyword alt]", "[keyword loop]", "[keyword opt]", "[keyword ref]", "[keyword else]", "[keyword break]", "[keyword par]", "[keyword seq]", "[keyword assert]"
   );
 
   MT("xù/ msgenny constants classify as 'variable'",
@@ -45,7 +50,7 @@
   );
 
   MT("mscgen arcs classify as keyword",
-    "[keyword note]","[keyword abox]","[keyword rbox]","[keyword box]",
+    "[keyword note]", "[keyword abox]", "[keyword rbox]", "[keyword box]",
     "[keyword |||...---]", "[keyword ..--==::]",
     "[keyword ->]", "[keyword <-]", "[keyword <->]",
     "[keyword =>]", "[keyword <=]", "[keyword <=>]",
@@ -57,18 +62,18 @@
 
   MT("within an attribute list, attributes classify as attribute",
     "[bracket [[][attribute label]",
-    "[attribute id]","[attribute url]","[attribute idurl]",
-    "[attribute linecolor]","[attribute linecolour]","[attribute textcolor]","[attribute textcolour]","[attribute textbgcolor]","[attribute textbgcolour]",
-    "[attribute arclinecolor]","[attribute arclinecolour]","[attribute arctextcolor]","[attribute arctextcolour]","[attribute arctextbgcolor]","[attribute arctextbgcolour]",
-    "[attribute arcskip]","[attribute title]",
-    "[attribute activate]","[attribute deactivate]","[attribute activation][bracket ]]]"
+    "[attribute id]", "[attribute url]", "[attribute idurl]",
+    "[attribute linecolor]", "[attribute linecolour]", "[attribute textcolor]", "[attribute textcolour]", "[attribute textbgcolor]", "[attribute textbgcolour]",
+    "[attribute arclinecolor]", "[attribute arclinecolour]", "[attribute arctextcolor]", "[attribute arctextcolour]", "[attribute arctextbgcolor]", "[attribute arctextbgcolour]",
+    "[attribute arcskip]", "[attribute title]",
+    "[attribute activate]", "[attribute deactivate]", "[attribute activation][bracket ]]]"
   );
 
   MT("outside an attribute list, attributes classify as base",
     "[base label]",
-    "[base id]","[base url]","[base idurl]",
-    "[base linecolor]","[base linecolour]","[base textcolor]","[base textcolour]","[base textbgcolor]","[base textbgcolour]",
-    "[base arclinecolor]","[base arclinecolour]","[base arctextcolor]","[base arctextcolour]","[base arctextbgcolor]","[base arctextbgcolour]",
+    "[base id]", "[base url]", "[base idurl]",
+    "[base linecolor]", "[base linecolour]", "[base textcolor]", "[base textcolour]", "[base textbgcolor]", "[base textbgcolour]",
+    "[base arclinecolor]", "[base arclinecolour]", "[base arctextcolor]", "[base arctextcolour]", "[base arctextbgcolor]", "[base arctextbgcolour]",
     "[base arcskip]", "[base title]"
   );
 

@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
-(function(mod) {
+(function (mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../../mode/sql/sql"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../../mode/sql/sql"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+})(function (CodeMirror) {
   "use strict";
 
   var tables;
@@ -19,9 +19,12 @@
     QUERY_DIV: ";",
     ALIAS_KEYWORD: "AS"
   };
-  var Pos = CodeMirror.Pos, cmpPos = CodeMirror.cmpPos;
+  var Pos = CodeMirror.Pos,
+    cmpPos = CodeMirror.cmpPos;
 
-  function isArray(val) { return Object.prototype.toString.call(val) == "[object Array]" }
+  function isArray(val) {
+    return Object.prototype.toString.call(val) == "[object Array]"
+  }
 
   function getKeywords(editor) {
     var mode = editor.doc.modeOption;
@@ -40,7 +43,9 @@
   }
 
   function wrapTable(name, value) {
-    if (isArray(value)) value = {columns: value}
+    if (isArray(value)) value = {
+      columns: value
+    }
     if (!value.text) value.text = name
     return value
   }
@@ -65,8 +70,9 @@
 
   function shallowClone(object) {
     var result = {};
-    for (var key in object) if (object.hasOwnProperty(key))
-      result[key] = object[key];
+    for (var key in object)
+      if (object.hasOwnProperty(key))
+        result[key] = object[key];
     return result;
   }
 
@@ -81,14 +87,18 @@
       for (var i = 0; i < wordlist.length; i++)
         if (match(search, wordlist[i])) result.push(formatter(wordlist[i]))
     } else {
-      for (var word in wordlist) if (wordlist.hasOwnProperty(word)) {
-        var val = wordlist[word]
-        if (!val || val === true)
-          val = word
-        else
-          val = val.displayText ? {text: val.text, displayText: val.displayText} : val.text
-        if (match(search, val)) result.push(formatter(val))
-      }
+      for (var word in wordlist)
+        if (wordlist.hasOwnProperty(word)) {
+          var val = wordlist[word]
+          if (!val || val === true)
+            val = word
+          else
+            val = val.displayText ? {
+              text: val.text,
+              displayText: val.displayText
+            } : val.text
+          if (match(search, val)) result.push(formatter(val))
+        }
     }
   }
 
@@ -99,9 +109,9 @@
     }
     // replace doublicated identifierQuotes with single identifierQuotes
     // and remove single identifierQuotes
-    var nameParts = name.split(identifierQuote+identifierQuote);
+    var nameParts = name.split(identifierQuote + identifierQuote);
     for (var i = 0; i < nameParts.length; i++)
-      nameParts[i] = nameParts[i].replace(new RegExp(identifierQuote,"g"), "");
+      nameParts[i] = nameParts[i].replace(new RegExp(identifierQuote, "g"), "");
     return nameParts.join(identifierQuote);
   }
 
@@ -109,9 +119,9 @@
     var nameParts = getText(name).split(".");
     for (var i = 0; i < nameParts.length; i++)
       nameParts[i] = identifierQuote +
-        // doublicate identifierQuotes
-        nameParts[i].replace(new RegExp(identifierQuote,"g"), identifierQuote+identifierQuote) +
-        identifierQuote;
+      // doublicate identifierQuotes
+      nameParts[i].replace(new RegExp(identifierQuote, "g"), identifierQuote + identifierQuote) +
+      identifierQuote;
     var escaped = nameParts.join(".");
     if (typeof name == "string") return escaped;
     name = shallowClone(name);
@@ -141,12 +151,12 @@
 
     // Try to complete table names
     var string = nameParts.join(".");
-    addMatches(result, string, tables, function(w) {
+    addMatches(result, string, tables, function (w) {
       return useIdentifierQuotes ? insertIdentifierQuotes(w) : w;
     });
 
     // Try to complete columns from defaultTable
-    addMatches(result, string, defaultTable, function(w) {
+    addMatches(result, string, defaultTable, function (w) {
       return useIdentifierQuotes ? insertIdentifierQuotes(w) : w;
     });
 
@@ -168,7 +178,7 @@
       columns = columns.columns;
 
     if (columns) {
-      addMatches(result, string, columns, function(w) {
+      addMatches(result, string, columns, function (w) {
         var tableInsert = table;
         if (alias == true) tableInsert = aliasTable;
         if (typeof w == "string") {
@@ -204,9 +214,9 @@
 
     //add separator
     var indexOfSeparator = fullQuery.indexOf(CONS.QUERY_DIV);
-    while(indexOfSeparator != -1) {
+    while (indexOfSeparator != -1) {
       separator.push(doc.posFromIndex(indexOfSeparator));
-      indexOfSeparator = fullQuery.indexOf(CONS.QUERY_DIV, indexOfSeparator+1);
+      indexOfSeparator = fullQuery.indexOf(CONS.QUERY_DIV, indexOfSeparator + 1);
     }
     separator.unshift(Pos(0, 0));
     separator.push(Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).text.length));
@@ -216,7 +226,10 @@
     var current = editor.getCursor()
     for (var i = 0; i < separator.length; i++) {
       if ((prevItem == null || cmpPos(current, prevItem) > 0) && cmpPos(current, separator[i]) <= 0) {
-        validRange = {start: prevItem, end: separator[i]};
+        validRange = {
+          start: prevItem,
+          end: separator[i]
+        };
         break;
       }
       prevItem = separator[i];
@@ -227,7 +240,7 @@
 
       for (var i = 0; i < query.length; i++) {
         var lineText = query[i];
-        eachWord(lineText, function(word) {
+        eachWord(lineText, function (word) {
           var wordUpperCase = word.toUpperCase();
           if (wordUpperCase === aliasUpperCase && getTable(previousWord))
             table = previousWord;
@@ -240,7 +253,7 @@
     return table;
   }
 
-  CodeMirror.registerHelper("hint", "sql", function(editor, options) {
+  CodeMirror.registerHelper("hint", "sql", function (editor, options) {
     tables = parseTables(options && options.tables)
     var defaultTableName = options && options.defaultTable;
     var disableKeywords = options && options.disableKeywords;
@@ -258,7 +271,8 @@
 
     var cur = editor.getCursor();
     var result = [];
-    var token = editor.getTokenAt(cur), start, end, search;
+    var token = editor.getTokenAt(cur),
+      start, end, search;
     if (token.end > cur.ch) {
       token.end = cur.ch;
       token.string = token.string.slice(0, cur.ch - token.start);
@@ -275,30 +289,38 @@
     if (search.charAt(0) == "." || search.charAt(0) == identifierQuote) {
       start = nameCompletion(cur, token, result, editor);
     } else {
-      var objectOrClass = function(w, className) {
+      var objectOrClass = function (w, className) {
         if (typeof w === "object") {
           w.className = className;
         } else {
-          w = { text: w, className: className };
+          w = {
+            text: w,
+            className: className
+          };
         }
         return w;
       };
-    addMatches(result, search, defaultTable, function(w) {
+      addMatches(result, search, defaultTable, function (w) {
         return objectOrClass(w, "CodeMirror-hint-table CodeMirror-hint-default-table");
-    });
-    addMatches(
+      });
+      addMatches(
         result,
         search,
-        tables, function(w) {
+        tables,
+        function (w) {
           return objectOrClass(w, "CodeMirror-hint-table");
         }
-    );
-    if (!disableKeywords)
-      addMatches(result, search, keywords, function(w) {
+      );
+      if (!disableKeywords)
+        addMatches(result, search, keywords, function (w) {
           return objectOrClass(w.toUpperCase(), "CodeMirror-hint-keyword");
-      });
-  }
+        });
+    }
 
-    return {list: result, from: Pos(cur.line, start), to: Pos(cur.line, end)};
+    return {
+      list: result,
+      from: Pos(cur.line, start),
+      to: Pos(cur.line, end)
+    };
   });
 });

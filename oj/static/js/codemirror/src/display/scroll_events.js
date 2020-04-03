@@ -1,8 +1,23 @@
-import { chrome, gecko, ie, mac, presto, safari, webkit } from "../util/browser.js"
-import { e_preventDefault } from "../util/event.js"
+import {
+  chrome,
+  gecko,
+  ie,
+  mac,
+  presto,
+  safari,
+  webkit
+} from "../util/browser.js"
+import {
+  e_preventDefault
+} from "../util/event.js"
 
-import { updateDisplaySimple } from "./update_display.js"
-import { setScrollLeft, updateScrollTop } from "./scrolling.js"
+import {
+  updateDisplaySimple
+} from "./update_display.js"
+import {
+  setScrollLeft,
+  updateScrollTop
+} from "./scrolling.js"
 
 // Since the delta values reported on mouse wheel events are
 // unstandardized between browsers and even browser versions, and
@@ -15,7 +30,8 @@ import { setScrollLeft, updateScrollTop } from "./scrolling.js"
 // is that it gives us a chance to update the display before the
 // actual scrolling happens, reducing flickering.
 
-let wheelSamples = 0, wheelPixelsPerUnit = null
+let wheelSamples = 0,
+  wheelPixelsPerUnit = null
 // Fill in a browser-detected starting value on browsers where we
 // know one. These don't have to be accurate -- the result of them
 // being wrong would just be a slight flicker on the first wheel
@@ -23,14 +39,18 @@ let wheelSamples = 0, wheelPixelsPerUnit = null
 if (ie) wheelPixelsPerUnit = -.53
 else if (gecko) wheelPixelsPerUnit = 15
 else if (chrome) wheelPixelsPerUnit = -.7
-else if (safari) wheelPixelsPerUnit = -1/3
+else if (safari) wheelPixelsPerUnit = -1 / 3
 
 function wheelEventDelta(e) {
-  let dx = e.wheelDeltaX, dy = e.wheelDeltaY
+  let dx = e.wheelDeltaX,
+    dy = e.wheelDeltaY
   if (dx == null && e.detail && e.axis == e.HORIZONTAL_AXIS) dx = e.detail
   if (dy == null && e.detail && e.axis == e.VERTICAL_AXIS) dy = e.detail
   else if (dy == null) dy = e.wheelDelta
-  return {x: dx, y: dy}
+  return {
+    x: dx,
+    y: dy
+  }
 }
 export function wheelEventPixels(e) {
   let delta = wheelEventDelta(e)
@@ -40,9 +60,12 @@ export function wheelEventPixels(e) {
 }
 
 export function onScrollWheel(cm, e) {
-  let delta = wheelEventDelta(e), dx = delta.x, dy = delta.y
+  let delta = wheelEventDelta(e),
+    dx = delta.x,
+    dy = delta.y
 
-  let display = cm.display, scroll = display.scroller
+  let display = cm.display,
+    scroll = display.scroller
   // Quit if there's nothing to scroll here
   let canScrollX = scroll.scrollWidth > scroll.clientWidth
   let canScrollY = scroll.scrollHeight > scroll.clientHeight
@@ -87,16 +110,22 @@ export function onScrollWheel(cm, e) {
   // scrolled into view (if we know enough to estimate it).
   if (dy && wheelPixelsPerUnit != null) {
     let pixels = dy * wheelPixelsPerUnit
-    let top = cm.doc.scrollTop, bot = top + display.wrapper.clientHeight
+    let top = cm.doc.scrollTop,
+      bot = top + display.wrapper.clientHeight
     if (pixels < 0) top = Math.max(0, top + pixels - 50)
     else bot = Math.min(cm.doc.height, bot + pixels + 50)
-    updateDisplaySimple(cm, {top: top, bottom: bot})
+    updateDisplaySimple(cm, {
+      top: top,
+      bottom: bot
+    })
   }
 
   if (wheelSamples < 20) {
     if (display.wheelStartX == null) {
-      display.wheelStartX = scroll.scrollLeft; display.wheelStartY = scroll.scrollTop
-      display.wheelDX = dx; display.wheelDY = dy
+      display.wheelStartX = scroll.scrollLeft;
+      display.wheelStartY = scroll.scrollTop
+      display.wheelDX = dx;
+      display.wheelDY = dy
       setTimeout(() => {
         if (display.wheelStartX == null) return
         let movedX = scroll.scrollLeft - display.wheelStartX
@@ -106,10 +135,11 @@ export function onScrollWheel(cm, e) {
         display.wheelStartX = display.wheelStartY = null
         if (!sample) return
         wheelPixelsPerUnit = (wheelPixelsPerUnit * wheelSamples + sample) / (wheelSamples + 1)
-        ++wheelSamples
+          ++wheelSamples
       }, 200)
     } else {
-      display.wheelDX += dx; display.wheelDY += dy
+      display.wheelDX += dx;
+      display.wheelDY += dy
     }
   }
 }

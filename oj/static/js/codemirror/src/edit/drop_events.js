@@ -1,16 +1,49 @@
-import { drawSelectionCursor } from "../display/selection.js"
-import { operation } from "../display/operations.js"
-import { clipPos } from "../line/pos.js"
-import { posFromMouse } from "../measurement/position_measurement.js"
-import { eventInWidget } from "../measurement/widgets.js"
-import { makeChange, replaceRange } from "../model/changes.js"
-import { changeEnd } from "../model/change_measurement.js"
-import { simpleSelection } from "../model/selection.js"
-import { setSelectionNoUndo, setSelectionReplaceHistory } from "../model/selection_updates.js"
-import { ie, presto, safari } from "../util/browser.js"
-import { elt, removeChildrenAndAdd } from "../util/dom.js"
-import { e_preventDefault, e_stop, signalDOMEvent } from "../util/event.js"
-import { indexOf } from "../util/misc.js"
+import {
+  drawSelectionCursor
+} from "../display/selection.js"
+import {
+  operation
+} from "../display/operations.js"
+import {
+  clipPos
+} from "../line/pos.js"
+import {
+  posFromMouse
+} from "../measurement/position_measurement.js"
+import {
+  eventInWidget
+} from "../measurement/widgets.js"
+import {
+  makeChange,
+  replaceRange
+} from "../model/changes.js"
+import {
+  changeEnd
+} from "../model/change_measurement.js"
+import {
+  simpleSelection
+} from "../model/selection.js"
+import {
+  setSelectionNoUndo,
+  setSelectionReplaceHistory
+} from "../model/selection_updates.js"
+import {
+  ie,
+  presto,
+  safari
+} from "../util/browser.js"
+import {
+  elt,
+  removeChildrenAndAdd
+} from "../util/dom.js"
+import {
+  e_preventDefault,
+  e_stop,
+  signalDOMEvent
+} from "../util/event.js"
+import {
+  indexOf
+} from "../util/misc.js"
 
 // Kludge to work around strange IE behavior where it'll sometimes
 // re-fire a series of drag-related events right after the drop (#1551)
@@ -23,20 +56,26 @@ export function onDrop(e) {
     return
   e_preventDefault(e)
   if (ie) lastDrop = +new Date
-  let pos = posFromMouse(cm, e, true), files = e.dataTransfer.files
+  let pos = posFromMouse(cm, e, true),
+    files = e.dataTransfer.files
   if (!pos || cm.isReadOnly()) return
   // Might be a file drop, in which case we simply extract the text
   // and insert it.
   if (files && files.length && window.FileReader && window.File) {
-    let n = files.length, text = Array(n), read = 0
+    let n = files.length,
+      text = Array(n),
+      read = 0
     const markAsReadAndPasteIfAllFilesAreRead = () => {
       if (++read == n) {
         operation(cm, () => {
           pos = clipPos(cm.doc, pos)
-          let change = {from: pos, to: pos,
-                        text: cm.doc.splitLines(
-                            text.filter(t => t != null).join(cm.doc.lineSeparator())),
-                        origin: "paste"}
+          let change = {
+            from: pos,
+            to: pos,
+            text: cm.doc.splitLines(
+              text.filter(t => t != null).join(cm.doc.lineSeparator())),
+            origin: "paste"
+          }
           makeChange(cm.doc, change)
           setSelectionReplaceHistory(cm.doc, simpleSelection(clipPos(cm.doc, pos), clipPos(cm.doc, changeEnd(change))))
         })()
@@ -44,7 +83,7 @@ export function onDrop(e) {
     }
     const readTextFromFile = (file, i) => {
       if (cm.options.allowDropFileTypes &&
-          indexOf(cm.options.allowDropFileTypes, file.type) == -1) {
+        indexOf(cm.options.allowDropFileTypes, file.type) == -1) {
         markAsReadAndPasteIfAllFilesAreRead()
         return
       }
@@ -77,18 +116,21 @@ export function onDrop(e) {
         if (cm.state.draggingText && !cm.state.draggingText.copy)
           selected = cm.listSelections()
         setSelectionNoUndo(cm.doc, simpleSelection(pos, pos))
-        if (selected) for (let i = 0; i < selected.length; ++i)
-          replaceRange(cm.doc, "", selected[i].anchor, selected[i].head, "drag")
+        if (selected)
+          for (let i = 0; i < selected.length; ++i)
+            replaceRange(cm.doc, "", selected[i].anchor, selected[i].head, "drag")
         cm.replaceSelection(text, "around", "paste")
         cm.display.input.focus()
       }
-    }
-    catch(e){}
+    } catch (e) {}
   }
 }
 
 export function onDragStart(cm, e) {
-  if (ie && (!cm.state.draggingText || +new Date - lastDrop < 100)) { e_stop(e); return }
+  if (ie && (!cm.state.draggingText || +new Date - lastDrop < 100)) {
+    e_stop(e);
+    return
+  }
   if (signalDOMEvent(cm, e) || eventInWidget(cm.display, e)) return
 
   e.dataTransfer.setData("Text", cm.getSelection())

@@ -1,19 +1,70 @@
-import { eltP } from "../util/dom.js"
-import { eventMixin, hasHandler, on } from "../util/event.js"
-import { endOperation, operation, runInOp, startOperation } from "../display/operations.js"
-import { clipPos, cmp, Pos } from "../line/pos.js"
-import { lineNo, updateLineHeight } from "../line/utils_line.js"
-import { clearLineMeasurementCacheFor, findViewForLine, textHeight } from "../measurement/position_measurement.js"
-import { seeReadOnlySpans, seeCollapsedSpans } from "../line/saw_special_spans.js"
-import { addMarkedSpan, conflictingCollapsedRange, getMarkedSpanFor, lineIsHidden, lineLength, MarkedSpan, removeMarkedSpan, visualLine } from "../line/spans.js"
-import { copyObj, indexOf, lst } from "../util/misc.js"
-import { signalLater } from "../util/operation_group.js"
-import { widgetHeight } from "../measurement/widgets.js"
-import { regChange, regLineChange } from "../display/view_tracking.js"
+import {
+  eltP
+} from "../util/dom.js"
+import {
+  eventMixin,
+  hasHandler,
+  on
+} from "../util/event.js"
+import {
+  endOperation,
+  operation,
+  runInOp,
+  startOperation
+} from "../display/operations.js"
+import {
+  clipPos,
+  cmp,
+  Pos
+} from "../line/pos.js"
+import {
+  lineNo,
+  updateLineHeight
+} from "../line/utils_line.js"
+import {
+  clearLineMeasurementCacheFor,
+  findViewForLine,
+  textHeight
+} from "../measurement/position_measurement.js"
+import {
+  seeReadOnlySpans,
+  seeCollapsedSpans
+} from "../line/saw_special_spans.js"
+import {
+  addMarkedSpan,
+  conflictingCollapsedRange,
+  getMarkedSpanFor,
+  lineIsHidden,
+  lineLength,
+  MarkedSpan,
+  removeMarkedSpan,
+  visualLine
+} from "../line/spans.js"
+import {
+  copyObj,
+  indexOf,
+  lst
+} from "../util/misc.js"
+import {
+  signalLater
+} from "../util/operation_group.js"
+import {
+  widgetHeight
+} from "../measurement/widgets.js"
+import {
+  regChange,
+  regLineChange
+} from "../display/view_tracking.js"
 
-import { linkedDocs } from "./document_data.js"
-import { addChangeToHistory } from "./history.js"
-import { reCheckSelection } from "./selection_updates.js"
+import {
+  linkedDocs
+} from "./document_data.js"
+import {
+  addChangeToHistory
+} from "./history.js"
+import {
+  reCheckSelection
+} from "./selection_updates.js"
 
 // TEXTMARKERS
 
@@ -43,13 +94,15 @@ export class TextMarker {
   // Clear the marker.
   clear() {
     if (this.explicitlyCleared) return
-    let cm = this.doc.cm, withOp = cm && !cm.curOp
+    let cm = this.doc.cm,
+      withOp = cm && !cm.curOp
     if (withOp) startOperation(cm)
     if (hasHandler(this, "clear")) {
       let found = this.find()
       if (found) signalLater(this, "clear", found.from, found.to)
     }
-    let min = null, max = null
+    let min = null,
+      max = null
     for (let i = 0; i < this.lines.length; ++i) {
       let line = this.lines[i]
       let span = getMarkedSpanFor(line.markedSpans, this)
@@ -62,14 +115,16 @@ export class TextMarker {
       if (span.from == null && this.collapsed && !lineIsHidden(this.doc, line) && cm)
         updateLineHeight(line, textHeight(cm.display))
     }
-    if (cm && this.collapsed && !cm.options.lineWrapping) for (let i = 0; i < this.lines.length; ++i) {
-      let visual = visualLine(this.lines[i]), len = lineLength(visual)
-      if (len > cm.display.maxLineLength) {
-        cm.display.maxLine = visual
-        cm.display.maxLineLength = len
-        cm.display.maxLineChanged = true
+    if (cm && this.collapsed && !cm.options.lineWrapping)
+      for (let i = 0; i < this.lines.length; ++i) {
+        let visual = visualLine(this.lines[i]),
+          len = lineLength(visual)
+        if (len > cm.display.maxLineLength) {
+          cm.display.maxLine = visual
+          cm.display.maxLineLength = len
+          cm.display.maxLineChanged = true
+        }
       }
-    }
 
     if (min != null && cm && this.collapsed) regChange(cm, min, max + 1)
     this.lines.length = 0
@@ -103,16 +158,22 @@ export class TextMarker {
         if (side == 1) return to
       }
     }
-    return from && {from: from, to: to}
+    return from && {
+      from: from,
+      to: to
+    }
   }
 
   // Signals that the marker's widget changed, and surrounding layout
   // should be recomputed.
   changed() {
-    let pos = this.find(-1, true), widget = this, cm = this.doc.cm
+    let pos = this.find(-1, true),
+      widget = this,
+      cm = this.doc.cm
     if (!pos || !cm) return
     runInOp(cm, () => {
-      let line = pos.line, lineN = lineNo(pos.line)
+      let line = pos.line,
+        lineN = lineNo(pos.line)
       let view = findViewForLine(cm, lineN)
       if (view) {
         clearLineMeasurementCacheFor(view)
@@ -142,8 +203,8 @@ export class TextMarker {
   detachLine(line) {
     this.lines.splice(indexOf(this.lines, line), 1)
     if (!this.lines.length && this.doc.cm) {
-      let op = this.doc.cm.curOp
-      ;(op.maybeHiddenMarkers || (op.maybeHiddenMarkers = [])).push(this)
+      let op = this.doc.cm.curOp;
+      (op.maybeHiddenMarkers || (op.maybeHiddenMarkers = [])).push(this)
     }
   }
 }
@@ -158,7 +219,8 @@ export function markText(doc, from, to, options, type) {
   // Ensure we are in an operation.
   if (doc.cm && !doc.cm.curOp) return operation(doc.cm, markText)(doc, from, to, options, type)
 
-  let marker = new TextMarker(doc, type), diff = cmp(from, to)
+  let marker = new TextMarker(doc, type),
+    diff = cmp(from, to)
   if (options) copyObj(options, marker, false)
   // Don't connect empty markers unless clearWhenEmpty is false
   if (diff > 0 || diff == 0 && marker.clearWhenEmpty !== false)
@@ -172,23 +234,29 @@ export function markText(doc, from, to, options, type) {
   }
   if (marker.collapsed) {
     if (conflictingCollapsedRange(doc, from.line, from, to, marker) ||
-        from.line != to.line && conflictingCollapsedRange(doc, to.line, from, to, marker))
+      from.line != to.line && conflictingCollapsedRange(doc, to.line, from, to, marker))
       throw new Error("Inserting collapsed marker partially overlapping an existing one")
     seeCollapsedSpans()
   }
 
   if (marker.addToHistory)
-    addChangeToHistory(doc, {from: from, to: to, origin: "markText"}, doc.sel, NaN)
+    addChangeToHistory(doc, {
+      from: from,
+      to: to,
+      origin: "markText"
+    }, doc.sel, NaN)
 
-  let curLine = from.line, cm = doc.cm, updateMaxLine
+  let curLine = from.line,
+    cm = doc.cm,
+    updateMaxLine
   doc.iter(curLine, to.line + 1, line => {
     if (cm && marker.collapsed && !cm.options.lineWrapping && visualLine(line) == cm.display.maxLine)
       updateMaxLine = true
     if (marker.collapsed && curLine != from.line) updateLineHeight(line, 0)
     addMarkedSpan(line, new MarkedSpan(marker,
-                                       curLine == from.line ? from.ch : null,
-                                       curLine == to.line ? to.ch : null))
-    ++curLine
+        curLine == from.line ? from.ch : null,
+        curLine == to.line ? to.ch : null))
+      ++curLine
   })
   // lineIsHidden depends on the presence of the spans, so needs a second pass
   if (marker.collapsed) doc.iter(from.line, to.line + 1, line => {
@@ -212,7 +280,7 @@ export function markText(doc, from, to, options, type) {
     if (marker.collapsed)
       regChange(cm, from.line, to.line + 1)
     else if (marker.className || marker.startStyle || marker.endStyle || marker.css ||
-             marker.attributes || marker.title)
+      marker.attributes || marker.title)
       for (let i = from.line; i <= to.line; i++) regLineChange(cm, i, "text")
     if (marker.atomic) reCheckSelection(cm.doc)
     signalLater(cm, "markerAdded", cm, marker)
@@ -250,7 +318,8 @@ eventMixin(SharedTextMarker)
 function markTextShared(doc, from, to, options, type) {
   options = copyObj(options)
   options.shared = false
-  let markers = [markText(doc, from, to, options, type)], primary = markers[0]
+  let markers = [markText(doc, from, to, options, type)],
+    primary = markers[0]
   let widget = options.widgetNode
   linkedDocs(doc, doc => {
     if (widget) options.widgetNode = widget.cloneNode(true)
@@ -268,8 +337,10 @@ export function findSharedMarkers(doc) {
 
 export function copySharedMarkers(doc, markers) {
   for (let i = 0; i < markers.length; i++) {
-    let marker = markers[i], pos = marker.find()
-    let mFrom = doc.clipPos(pos.from), mTo = doc.clipPos(pos.to)
+    let marker = markers[i],
+      pos = marker.find()
+    let mFrom = doc.clipPos(pos.from),
+      mTo = doc.clipPos(pos.to)
     if (cmp(mFrom, mTo)) {
       let subMark = markText(doc, mFrom, mTo, marker.primary, marker.primary.type)
       marker.markers.push(subMark)
@@ -280,7 +351,8 @@ export function copySharedMarkers(doc, markers) {
 
 export function detachSharedMarkers(markers) {
   for (let i = 0; i < markers.length; i++) {
-    let marker = markers[i], linked = [marker.primary.doc]
+    let marker = markers[i],
+      linked = [marker.primary.doc]
     linkedDocs(marker.primary.doc, d => linked.push(d))
     for (let j = 0; j < marker.markers.length; j++) {
       let subMarker = marker.markers[j]

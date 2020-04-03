@@ -1,16 +1,51 @@
-import { clipPos } from "../line/pos.js"
-import { findMaxLine } from "../line/spans.js"
-import { displayWidth, measureChar, scrollGap } from "../measurement/position_measurement.js"
-import { signal } from "../util/event.js"
-import { activeElt } from "../util/dom.js"
-import { finishOperation, pushOperation } from "../util/operation_group.js"
+import {
+  clipPos
+} from "../line/pos.js"
+import {
+  findMaxLine
+} from "../line/spans.js"
+import {
+  displayWidth,
+  measureChar,
+  scrollGap
+} from "../measurement/position_measurement.js"
+import {
+  signal
+} from "../util/event.js"
+import {
+  activeElt
+} from "../util/dom.js"
+import {
+  finishOperation,
+  pushOperation
+} from "../util/operation_group.js"
 
-import { ensureFocus } from "./focus.js"
-import { measureForScrollbars, updateScrollbars } from "./scrollbars.js"
-import { restartBlink } from "./selection.js"
-import { maybeScrollWindow, scrollPosIntoView, setScrollLeft, setScrollTop } from "./scrolling.js"
-import { DisplayUpdate, maybeClipScrollbars, postUpdateDisplay, setDocumentHeight, updateDisplayIfNeeded } from "./update_display.js"
-import { updateHeightsInViewport } from "./update_lines.js"
+import {
+  ensureFocus
+} from "./focus.js"
+import {
+  measureForScrollbars,
+  updateScrollbars
+} from "./scrollbars.js"
+import {
+  restartBlink
+} from "./selection.js"
+import {
+  maybeScrollWindow,
+  scrollPosIntoView,
+  setScrollLeft,
+  setScrollTop
+} from "./scrolling.js"
+import {
+  DisplayUpdate,
+  maybeClipScrollbars,
+  postUpdateDisplay,
+  setDocumentHeight,
+  updateDisplayIfNeeded
+} from "./update_display.js"
+import {
+  updateHeightsInViewport
+} from "./update_lines.js"
 
 // Operations are used to wrap a series of changes to the editor
 // state in such a way that each change won't have to update the
@@ -23,20 +58,21 @@ let nextOpId = 0
 export function startOperation(cm) {
   cm.curOp = {
     cm: cm,
-    viewChanged: false,      // Flag that indicates that lines might need to be redrawn
+    viewChanged: false, // Flag that indicates that lines might need to be redrawn
     startHeight: cm.doc.height, // Used to detect need to update scrollbar
-    forceUpdate: false,      // Used to force a redraw
-    updateInput: 0,       // Whether to reset the input textarea
-    typing: false,           // Whether this reset should be careful to leave existing text (for compositing)
-    changeObjs: null,        // Accumulated changes, for firing change events
+    forceUpdate: false, // Used to force a redraw
+    updateInput: 0, // Whether to reset the input textarea
+    typing: false, // Whether this reset should be careful to leave existing text (for compositing)
+    changeObjs: null, // Accumulated changes, for firing change events
     cursorActivityHandlers: null, // Set of handlers to fire cursorActivity on
     cursorActivityCalled: 0, // Tracks which cursorActivity handlers have been called already
     selectionChanged: false, // Whether the selection needs to be redrawn
-    updateMaxLine: false,    // Set when the widest line needs to be determined anew
-    scrollLeft: null, scrollTop: null, // Intermediate scroll position, not pushed to DOM yet
-    scrollToPos: null,       // Used to scroll to a specific position
+    updateMaxLine: false, // Set when the widest line needs to be determined anew
+    scrollLeft: null,
+    scrollTop: null, // Intermediate scroll position, not pushed to DOM yet
+    scrollToPos: null, // Used to scroll to a specific position
     focus: false,
-    id: ++nextOpId           // Unique ID
+    id: ++nextOpId // Unique ID
   }
   pushOperation(cm.curOp)
 }
@@ -68,16 +104,20 @@ function endOperations(group) {
 }
 
 function endOperation_R1(op) {
-  let cm = op.cm, display = cm.display
+  let cm = op.cm,
+    display = cm.display
   maybeClipScrollbars(cm)
   if (op.updateMaxLine) findMaxLine(cm)
 
   op.mustUpdate = op.viewChanged || op.forceUpdate || op.scrollTop != null ||
     op.scrollToPos && (op.scrollToPos.from.line < display.viewFrom ||
-                       op.scrollToPos.to.line >= display.viewTo) ||
+      op.scrollToPos.to.line >= display.viewTo) ||
     display.maxLineChanged && cm.options.lineWrapping
   op.update = op.mustUpdate &&
-    new DisplayUpdate(cm, op.mustUpdate && {top: op.scrollTop, ensure: op.scrollToPos}, op.forceUpdate)
+    new DisplayUpdate(cm, op.mustUpdate && {
+      top: op.scrollTop,
+      ensure: op.scrollToPos
+    }, op.forceUpdate)
 }
 
 function endOperation_W1(op) {
@@ -85,7 +125,8 @@ function endOperation_W1(op) {
 }
 
 function endOperation_R2(op) {
-  let cm = op.cm, display = cm.display
+  let cm = op.cm,
+    display = cm.display
   if (op.updatedDisplay) updateHeightsInViewport(cm)
 
   op.barMeasure = measureForScrollbars(cm)
@@ -131,7 +172,9 @@ function endOperation_W2(op) {
 }
 
 function endOperation_finish(op) {
-  let cm = op.cm, display = cm.display, doc = cm.doc
+  let cm = op.cm,
+    display = cm.display,
+    doc = cm.doc
 
   if (op.updatedDisplay) postUpdateDisplay(cm, op.update)
 
@@ -146,17 +189,20 @@ function endOperation_finish(op) {
   // If we need to scroll a specific position into view, do so.
   if (op.scrollToPos) {
     let rect = scrollPosIntoView(cm, clipPos(doc, op.scrollToPos.from),
-                                 clipPos(doc, op.scrollToPos.to), op.scrollToPos.margin)
+      clipPos(doc, op.scrollToPos.to), op.scrollToPos.margin)
     maybeScrollWindow(cm, rect)
   }
 
   // Fire events for markers that are hidden/unidden by editing or
   // undoing
-  let hidden = op.maybeHiddenMarkers, unhidden = op.maybeUnhiddenMarkers
-  if (hidden) for (let i = 0; i < hidden.length; ++i)
-    if (!hidden[i].lines.length) signal(hidden[i], "hide")
-  if (unhidden) for (let i = 0; i < unhidden.length; ++i)
-    if (unhidden[i].lines.length) signal(unhidden[i], "unhide")
+  let hidden = op.maybeHiddenMarkers,
+    unhidden = op.maybeUnhiddenMarkers
+  if (hidden)
+    for (let i = 0; i < hidden.length; ++i)
+      if (!hidden[i].lines.length) signal(hidden[i], "hide")
+  if (unhidden)
+    for (let i = 0; i < unhidden.length; ++i)
+      if (unhidden[i].lines.length) signal(unhidden[i], "unhide")
 
   if (display.wrapper.offsetHeight)
     doc.scrollTop = cm.display.scroller.scrollTop
@@ -172,34 +218,46 @@ function endOperation_finish(op) {
 export function runInOp(cm, f) {
   if (cm.curOp) return f()
   startOperation(cm)
-  try { return f() }
-  finally { endOperation(cm) }
+  try {
+    return f()
+  } finally {
+    endOperation(cm)
+  }
 }
 // Wraps a function in an operation. Returns the wrapped function.
 export function operation(cm, f) {
-  return function() {
+  return function () {
     if (cm.curOp) return f.apply(cm, arguments)
     startOperation(cm)
-    try { return f.apply(cm, arguments) }
-    finally { endOperation(cm) }
+    try {
+      return f.apply(cm, arguments)
+    } finally {
+      endOperation(cm)
+    }
   }
 }
 // Used to add methods to editor and doc instances, wrapping them in
 // operations.
 export function methodOp(f) {
-  return function() {
+  return function () {
     if (this.curOp) return f.apply(this, arguments)
     startOperation(this)
-    try { return f.apply(this, arguments) }
-    finally { endOperation(this) }
+    try {
+      return f.apply(this, arguments)
+    } finally {
+      endOperation(this)
+    }
   }
 }
 export function docMethodOp(f) {
-  return function() {
+  return function () {
     let cm = this.cm
     if (!cm || cm.curOp) return f.apply(this, arguments)
     startOperation(cm)
-    try { return f.apply(this, arguments) }
-    finally { endOperation(cm) }
+    try {
+      return f.apply(this, arguments)
+    } finally {
+      endOperation(cm)
+    }
   }
 }

@@ -1,12 +1,36 @@
-import { signalLater } from "../util/operation_group.js"
-import { ensureCursorVisible } from "../display/scrolling.js"
-import { clipPos, cmp, Pos } from "../line/pos.js"
-import { getLine } from "../line/utils_line.js"
-import { hasHandler, signal, signalCursorActivity } from "../util/event.js"
-import { lst, sel_dontScroll } from "../util/misc.js"
+import {
+  signalLater
+} from "../util/operation_group.js"
+import {
+  ensureCursorVisible
+} from "../display/scrolling.js"
+import {
+  clipPos,
+  cmp,
+  Pos
+} from "../line/pos.js"
+import {
+  getLine
+} from "../line/utils_line.js"
+import {
+  hasHandler,
+  signal,
+  signalCursorActivity
+} from "../util/event.js"
+import {
+  lst,
+  sel_dontScroll
+} from "../util/misc.js"
 
-import { addSelectionToHistory } from "./history.js"
-import { normalizeSelection, Range, Selection, simpleSelection } from "./selection.js"
+import {
+  addSelectionToHistory
+} from "./history.js"
+import {
+  normalizeSelection,
+  Range,
+  Selection,
+  simpleSelection
+} from "./selection.js"
 
 // The 'scroll' parameter given to many of these indicated whether
 // the new cursor position should be scrolled into view after
@@ -68,11 +92,11 @@ export function setSimpleSelection(doc, anchor, head, options) {
 function filterSelectionChange(doc, sel, options) {
   let obj = {
     ranges: sel.ranges,
-    update: function(ranges) {
+    update: function (ranges) {
       this.ranges = []
       for (let i = 0; i < ranges.length; i++)
         this.ranges[i] = new Range(clipPos(doc, ranges[i].anchor),
-                                   clipPos(doc, ranges[i].head))
+          clipPos(doc, ranges[i].head))
     },
     origin: options && options.origin
   }
@@ -83,7 +107,8 @@ function filterSelectionChange(doc, sel, options) {
 }
 
 export function setSelectionReplaceHistory(doc, sel, options) {
-  let done = doc.history.done, last = lst(done)
+  let done = doc.history.done,
+    last = lst(done)
   if (last && last.ranges) {
     done[done.length - 1] = sel
     setSelectionNoUndo(doc, sel, options)
@@ -148,40 +173,46 @@ function skipAtomicInSelection(doc, sel, bias, mayClear) {
 
 function skipAtomicInner(doc, pos, oldPos, dir, mayClear) {
   let line = getLine(doc, pos.line)
-  if (line.markedSpans) for (let i = 0; i < line.markedSpans.length; ++i) {
-    let sp = line.markedSpans[i], m = sp.marker
+  if (line.markedSpans)
+    for (let i = 0; i < line.markedSpans.length; ++i) {
+      let sp = line.markedSpans[i],
+        m = sp.marker
 
-    // Determine if we should prevent the cursor being placed to the left/right of an atomic marker
-    // Historically this was determined using the inclusiveLeft/Right option, but the new way to control it
-    // is with selectLeft/Right
-    let preventCursorLeft = ("selectLeft" in m) ? !m.selectLeft : m.inclusiveLeft
-    let preventCursorRight = ("selectRight" in m) ? !m.selectRight : m.inclusiveRight
+      // Determine if we should prevent the cursor being placed to the left/right of an atomic marker
+      // Historically this was determined using the inclusiveLeft/Right option, but the new way to control it
+      // is with selectLeft/Right
+      let preventCursorLeft = ("selectLeft" in m) ? !m.selectLeft : m.inclusiveLeft
+      let preventCursorRight = ("selectRight" in m) ? !m.selectRight : m.inclusiveRight
 
-    if ((sp.from == null || (preventCursorLeft ? sp.from <= pos.ch : sp.from < pos.ch)) &&
+      if ((sp.from == null || (preventCursorLeft ? sp.from <= pos.ch : sp.from < pos.ch)) &&
         (sp.to == null || (preventCursorRight ? sp.to >= pos.ch : sp.to > pos.ch))) {
-      if (mayClear) {
-        signal(m, "beforeCursorEnter")
-        if (m.explicitlyCleared) {
-          if (!line.markedSpans) break
-          else {--i; continue}
+        if (mayClear) {
+          signal(m, "beforeCursorEnter")
+          if (m.explicitlyCleared) {
+            if (!line.markedSpans) break
+            else {
+              --i;
+              continue
+            }
+          }
         }
-      }
-      if (!m.atomic) continue
+        if (!m.atomic) continue
 
-      if (oldPos) {
-        let near = m.find(dir < 0 ? 1 : -1), diff
-        if (dir < 0 ? preventCursorRight : preventCursorLeft)
-          near = movePos(doc, near, -dir, near && near.line == pos.line ? line : null)
-        if (near && near.line == pos.line && (diff = cmp(near, oldPos)) && (dir < 0 ? diff < 0 : diff > 0))
-          return skipAtomicInner(doc, near, pos, dir, mayClear)
-      }
+        if (oldPos) {
+          let near = m.find(dir < 0 ? 1 : -1),
+            diff
+          if (dir < 0 ? preventCursorRight : preventCursorLeft)
+            near = movePos(doc, near, -dir, near && near.line == pos.line ? line : null)
+          if (near && near.line == pos.line && (diff = cmp(near, oldPos)) && (dir < 0 ? diff < 0 : diff > 0))
+            return skipAtomicInner(doc, near, pos, dir, mayClear)
+        }
 
-      let far = m.find(dir < 0 ? -1 : 1)
-      if (dir < 0 ? preventCursorLeft : preventCursorRight)
-        far = movePos(doc, far, dir, far.line == pos.line ? line : null)
-      return far ? skipAtomicInner(doc, far, pos, dir, mayClear) : null
+        let far = m.find(dir < 0 ? -1 : 1)
+        if (dir < 0 ? preventCursorLeft : preventCursorRight)
+          far = movePos(doc, far, dir, far.line == pos.line ? line : null)
+        return far ? skipAtomicInner(doc, far, pos, dir, mayClear) : null
+      }
     }
-  }
   return pos
 }
 
@@ -189,9 +220,9 @@ function skipAtomicInner(doc, pos, oldPos, dir, mayClear) {
 export function skipAtomic(doc, pos, oldPos, bias, mayClear) {
   let dir = bias || 1
   let found = skipAtomicInner(doc, pos, oldPos, dir, mayClear) ||
-      (!mayClear && skipAtomicInner(doc, pos, oldPos, dir, true)) ||
-      skipAtomicInner(doc, pos, oldPos, -dir, mayClear) ||
-      (!mayClear && skipAtomicInner(doc, pos, oldPos, -dir, true))
+    (!mayClear && skipAtomicInner(doc, pos, oldPos, dir, true)) ||
+    skipAtomicInner(doc, pos, oldPos, -dir, mayClear) ||
+    (!mayClear && skipAtomicInner(doc, pos, oldPos, -dir, true))
   if (!found) {
     doc.cantEdit = true
     return Pos(doc.first, 0)

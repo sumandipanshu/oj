@@ -10,7 +10,9 @@
     mod(CodeMirror)
 })(function (CodeMirror) {
 
-  var START = 0, FRONTMATTER = 1, BODY = 2
+  var START = 0,
+    FRONTMATTER = 1,
+    BODY = 2
 
   // a mixed mode for Markdown text with an optional YAML front matter
   CodeMirror.defineMode("yaml-frontmatter", function (config, parserConfig) {
@@ -57,7 +59,10 @@
         }
       },
       innerMode: function (state) {
-        return {mode: curMode(state), state: state.inner}
+        return {
+          mode: curMode(state),
+          state: state.inner
+        }
       },
       blankLine: function (state) {
         var mode = curMode(state)

@@ -103,8 +103,12 @@
         }
       }
       var editorheight = newHeight - info.panels
-        .map(function (p) { return p.node.getBoundingClientRect().height; })
-        .reduce(function (a, b) { return a + b; }, 0);
+        .map(function (p) {
+          return p.node.getBoundingClientRect().height;
+        })
+        .reduce(function (a, b) {
+          return a + b;
+        }, 0);
       cm._setSize(width, editorheight);
       height = newHeight;
     };

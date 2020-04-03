@@ -1,27 +1,53 @@
-import { runInOp } from "../display/operations.js"
-import { addToScrollTop } from "../display/scrolling.js"
-import { regLineChange } from "../display/view_tracking.js"
-import { heightAtLine, lineIsHidden } from "../line/spans.js"
-import { lineNo, updateLineHeight } from "../line/utils_line.js"
-import { widgetHeight } from "../measurement/widgets.js"
-import { changeLine } from "./changes.js"
-import { eventMixin } from "../util/event.js"
-import { signalLater } from "../util/operation_group.js"
+import {
+  runInOp
+} from "../display/operations.js"
+import {
+  addToScrollTop
+} from "../display/scrolling.js"
+import {
+  regLineChange
+} from "../display/view_tracking.js"
+import {
+  heightAtLine,
+  lineIsHidden
+} from "../line/spans.js"
+import {
+  lineNo,
+  updateLineHeight
+} from "../line/utils_line.js"
+import {
+  widgetHeight
+} from "../measurement/widgets.js"
+import {
+  changeLine
+} from "./changes.js"
+import {
+  eventMixin
+} from "../util/event.js"
+import {
+  signalLater
+} from "../util/operation_group.js"
 
 // Line widgets are block elements displayed above or below a line.
 
 export class LineWidget {
   constructor(doc, node, options) {
-    if (options) for (let opt in options) if (options.hasOwnProperty(opt))
-      this[opt] = options[opt]
+    if (options)
+      for (let opt in options)
+        if (options.hasOwnProperty(opt))
+          this[opt] = options[opt]
     this.doc = doc
     this.node = node
   }
 
   clear() {
-    let cm = this.doc.cm, ws = this.line.widgets, line = this.line, no = lineNo(line)
+    let cm = this.doc.cm,
+      ws = this.line.widgets,
+      line = this.line,
+      no = lineNo(line)
     if (no == null || !ws) return
-    for (let i = 0; i < ws.length; ++i) if (ws[i] == this) ws.splice(i--, 1)
+    for (let i = 0; i < ws.length; ++i)
+      if (ws[i] == this) ws.splice(i--, 1)
     if (!ws.length) line.widgets = null
     let height = widgetHeight(this)
     updateLineHeight(line, Math.max(0, line.height - height))
@@ -35,7 +61,9 @@ export class LineWidget {
   }
 
   changed() {
-    let oldH = this.height, cm = this.doc.cm, line = this.line
+    let oldH = this.height,
+      cm = this.doc.cm,
+      line = this.line
     this.height = null
     let diff = widgetHeight(this) - oldH
     if (!diff) return

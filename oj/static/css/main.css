@@ -302,6 +302,30 @@ input[type=submit] {
 }
 
 html {
+  --scrollbarBG: #CFD8DC;
+  --thumbBG: #90A4AE;
+}
+
+html::-webkit-scrollbar {
+  width: 11px;
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+}
+
+html::-webkit-scrollbar-track {
+  background: var(--scrollbarBG);
+}
+
+html::-webkit-scrollbar-thumb {
+  background-color: var(--thumbBG);
+  border-radius: 6px;
+  border: 3px solid var(--scrollbarBG);
+}
+
+html {
   padding: 1rem;
   min-width: 600px;
   max-width: 1280px;
@@ -742,6 +766,51 @@ main {
   -moz-transition: opacity 400ms ease-in;
   transition: opacity 400ms ease-in;
   pointer-events: none;
+  overflow: auto;
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE 10+ */
+}
+
+.modalDialog pre::-webkit-scrollbar {
+  width: 11px;
+}
+
+.modalDialog pre {
+  scrollbar-width: thin;
+  scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+}
+
+.modalDialog pre::-webkit-scrollbar-track {
+  background: var(--scrollbarBG);
+}
+
+.modalDialog pre::-webkit-scrollbar-thumb {
+  background-color: var(--thumbBG);
+  border-radius: 6px;
+  border: 3px solid var(--scrollbarBG);
+}
+
+/* html {
+  background: lightgrey;
+  overflow: hidden;
+}
+body {
+  height: 100vh;
+  overflow-y: auto;
+  max-width: 310px;
+}
+p {
+  margin: 0 0 1.5em;
+}
+//* {
+  box-sizing: border-box;
+} */
+
+.modalDialog::-webkit-scrollbar {
+  display: none;
+  /* Chrome Safari */
 }
 
 .modalDialog pre {
@@ -758,6 +827,7 @@ main {
   white-space: pre-line;
   margin-top: 18px !important;
 }
+
 
 
 /* li.L0,
@@ -788,7 +858,7 @@ main {
   width: 650px;
   /* height: 80%; */
   position: relative;
-  margin: 5% auto;
+  margin: 5% auto 2% auto;
   padding: 5px 20px 13px 20px;
   border-radius: 10px;
   background: #fff;

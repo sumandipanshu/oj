@@ -1,9 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
-(function() {
-  var mode = CodeMirror.getMode({indentUnit: 2}, "text/x-msgenny");
-  function MT(name) { test.mode(name, mode, Array.prototype.slice.call(arguments, 1), "msgenny"); }
+(function () {
+  var mode = CodeMirror.getMode({
+    indentUnit: 2
+  }, "text/x-msgenny");
+
+  function MT(name) {
+    test.mode(name, mode, Array.prototype.slice.call(arguments, 1), "msgenny");
+  }
 
   MT("comments",
     "[comment // a single line comment]",
@@ -21,7 +26,7 @@
   MT("xù/ msgenny keywords classify as 'keyword'",
     "[keyword watermark]",
     "[keyword wordwrapentities]",
-    "[keyword alt]","[keyword loop]","[keyword opt]","[keyword ref]","[keyword else]","[keyword break]","[keyword par]","[keyword seq]","[keyword assert]"
+    "[keyword alt]", "[keyword loop]", "[keyword opt]", "[keyword ref]", "[keyword else]", "[keyword break]", "[keyword par]", "[keyword seq]", "[keyword assert]"
   );
 
   MT("xù/ msgenny constants classify as 'variable'",
@@ -34,7 +39,7 @@
   );
 
   MT("mscgen arcs classify as keyword",
-    "[keyword note]","[keyword abox]","[keyword rbox]","[keyword box]",
+    "[keyword note]", "[keyword abox]", "[keyword rbox]", "[keyword box]",
     "[keyword |||...---]", "[keyword ..--==::]",
     "[keyword ->]", "[keyword <-]", "[keyword <->]",
     "[keyword =>]", "[keyword <=]", "[keyword <=>]",

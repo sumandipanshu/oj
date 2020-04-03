@@ -1,4 +1,6 @@
-import { getHandlers } from "./event.js"
+import {
+  getHandlers
+} from "./event.js"
 
 let operationGroup = null
 
@@ -16,7 +18,8 @@ export function pushOperation(op) {
 function fireCallbacksForOps(group) {
   // Calls delayed callbacks and cursorActivity handlers until no
   // new ones appear
-  let callbacks = group.delayedCallbacks, i = 0
+  let callbacks = group.delayedCallbacks,
+    i = 0
   do {
     for (; i < callbacks.length; i++)
       callbacks[i].call(null)
@@ -33,8 +36,9 @@ export function finishOperation(op, endCb) {
   let group = op.ownsGroup
   if (!group) return
 
-  try { fireCallbacksForOps(group) }
-  finally {
+  try {
+    fireCallbacksForOps(group)
+  } finally {
     operationGroup = null
     endCb(group)
   }
@@ -49,10 +53,11 @@ let orphanDelayedCallbacks = null
 // signalLater looks whether there are any handlers, and schedules
 // them to be executed when the last operation ends, or, if no
 // operation is active, when a timeout fires.
-export function signalLater(emitter, type /*, values...*/) {
+export function signalLater(emitter, type /*, values...*/ ) {
   let arr = getHandlers(emitter, type)
   if (!arr.length) return
-  let args = Array.prototype.slice.call(arguments, 2), list
+  let args = Array.prototype.slice.call(arguments, 2),
+    list
   if (operationGroup) {
     list = operationGroup.delayedCallbacks
   } else if (orphanDelayedCallbacks) {

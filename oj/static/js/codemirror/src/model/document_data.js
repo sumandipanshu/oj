@@ -1,13 +1,35 @@
-import { loadMode } from "../display/mode_state.js"
-import { runInOp } from "../display/operations.js"
-import { regChange } from "../display/view_tracking.js"
-import { Line, updateLine } from "../line/line_data.js"
-import { findMaxLine } from "../line/spans.js"
-import { getLine } from "../line/utils_line.js"
-import { estimateLineHeights } from "../measurement/position_measurement.js"
-import { addClass, rmClass } from "../util/dom.js"
-import { lst } from "../util/misc.js"
-import { signalLater } from "../util/operation_group.js"
+import {
+  loadMode
+} from "../display/mode_state.js"
+import {
+  runInOp
+} from "../display/operations.js"
+import {
+  regChange
+} from "../display/view_tracking.js"
+import {
+  Line,
+  updateLine
+} from "../line/line_data.js"
+import {
+  findMaxLine
+} from "../line/spans.js"
+import {
+  getLine
+} from "../line/utils_line.js"
+import {
+  estimateLineHeights
+} from "../measurement/position_measurement.js"
+import {
+  addClass,
+  rmClass
+} from "../util/dom.js"
+import {
+  lst
+} from "../util/misc.js"
+import {
+  signalLater
+} from "../util/operation_group.js"
 
 // DOCUMENT DATA STRUCTURE
 
@@ -21,11 +43,15 @@ export function isWholeLineUpdate(doc, change) {
 
 // Perform a change on the document data structure.
 export function updateDoc(doc, change, markedSpans, estimateHeight) {
-  function spansFor(n) {return markedSpans ? markedSpans[n] : null}
+  function spansFor(n) {
+    return markedSpans ? markedSpans[n] : null
+  }
+
   function update(line, text, spans) {
     updateLine(line, text, spans, estimateHeight)
     signalLater(line, "change", line, change)
   }
+
   function linesFor(start, end) {
     let result = []
     for (let i = start; i < end; ++i)
@@ -33,9 +59,14 @@ export function updateDoc(doc, change, markedSpans, estimateHeight) {
     return result
   }
 
-  let from = change.from, to = change.to, text = change.text
-  let firstLine = getLine(doc, from.line), lastLine = getLine(doc, to.line)
-  let lastText = lst(text), lastSpans = spansFor(text.length - 1), nlines = to.line - from.line
+  let from = change.from,
+    to = change.to,
+    text = change.text
+  let firstLine = getLine(doc, from.line),
+    lastLine = getLine(doc, to.line)
+  let lastText = lst(text),
+    lastSpans = spansFor(text.length - 1),
+    nlines = to.line - from.line
 
   // Adjust the line structure
   if (change.full) {
@@ -74,14 +105,15 @@ export function updateDoc(doc, change, markedSpans, estimateHeight) {
 // Call f for all linked documents.
 export function linkedDocs(doc, f, sharedHistOnly) {
   function propagate(doc, skip, sharedHist) {
-    if (doc.linked) for (let i = 0; i < doc.linked.length; ++i) {
-      let rel = doc.linked[i]
-      if (rel.doc == skip) continue
-      let shared = sharedHist && rel.sharedHist
-      if (sharedHistOnly && !shared) continue
-      f(rel.doc, shared)
-      propagate(rel.doc, doc, shared)
-    }
+    if (doc.linked)
+      for (let i = 0; i < doc.linked.length; ++i) {
+        let rel = doc.linked[i]
+        if (rel.doc == skip) continue
+        let shared = sharedHist && rel.sharedHist
+        if (sharedHistOnly && !shared) continue
+        f(rel.doc, shared)
+        propagate(rel.doc, doc, shared)
+      }
   }
   propagate(doc, null, true)
 }
@@ -100,7 +132,8 @@ export function attachDoc(cm, doc) {
 }
 
 function setDirectionClass(cm) {
-  ;(cm.doc.direction == "rtl" ? addClass : rmClass)(cm.display.lineDiv, "CodeMirror-rtl")
+  ;
+  (cm.doc.direction == "rtl" ? addClass : rmClass)(cm.display.lineDiv, "CodeMirror-rtl")
 }
 
 export function directionChanged(cm) {

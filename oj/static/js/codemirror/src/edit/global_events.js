@@ -1,5 +1,9 @@
-import { onBlur } from "../display/focus.js"
-import { on } from "../util/event.js"
+import {
+  onBlur
+} from "../display/focus.js"
+import {
+  on
+} from "../util/event.js"
 
 // These must be handled carefully, because naively registering a
 // handler for each editor will cause the editors to never be
@@ -7,7 +11,8 @@ import { on } from "../util/event.js"
 
 function forEachCodeMirror(f) {
   if (!document.getElementsByClassName) return
-  let byClass = document.getElementsByClassName("CodeMirror"), editors = []
+  let byClass = document.getElementsByClassName("CodeMirror"),
+    editors = []
   for (let i = 0; i < byClass.length; i++) {
     let cm = byClass[i].CodeMirror
     if (cm) editors.push(cm)
@@ -23,6 +28,7 @@ export function ensureGlobalHandlers() {
   registerGlobalHandlers()
   globalsRegistered = true
 }
+
 function registerGlobalHandlers() {
   // When the window resizes, we need to refresh active editors.
   let resizeTimer

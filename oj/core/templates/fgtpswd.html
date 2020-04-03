@@ -10,8 +10,10 @@
     <br>
     <br>
     <h1>Password reset sent</h1>
-    <p>We’ve emailed you instructions for setting your password, if an account exists with the email you entered. You should receive them shortly.</p>
-    <p>If you don’t receive an email, please make sure you’ve entered the address you registered with, and check your spam folder.</p>
+    <p>We’ve emailed you instructions for setting your password, if an account exists with the email you entered. You
+        should receive them shortly.</p>
+    <p>If you don’t receive an email, please make sure you’ve entered the address you registered with, and check your
+        spam folder.</p>
     <br>
     <a href="{% url 'login' %}">Login again</a>
     <br>
@@ -20,7 +22,6 @@
     <br>
     <br>
     <br>
-    
     <br>
     <br>
 </div>
@@ -31,14 +32,14 @@
     <div id="cred-header">Enter Your Email</div>
 
     <div id="cred-body">
-        <form name="fgtpswd" method="post" >
+        <form name="fgtpswd" method="post">
             {% csrf_token %}
             <div class="field">
                 <div class="name">
                     <label for="email">Email</label>
                 </div>
                 <div class="value">
-                    <input id="email" name="email" value="" required>
+                    <input id="email" name="email" type="email" value="" required>
                 </div>
             </div>
             <div class="button-field">

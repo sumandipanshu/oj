@@ -63,13 +63,15 @@
 					<div class="sample-test">
 						<div class="input">
 							<div class="title">Input
-								<a href="javascript:void(0);" onclick="copyFunction('input-data')"><small class="copy-text">copy</small></a>
+								<a href="javascript:void(0);" onclick="copyFunction('input-data')"><small
+										class="copy-text">copy</small></a>
 							</div>
 							<pre class="content" id="input-data">{{question.sample_inputs}}</pre>
 						</div>
 						<div class="output">
 							<div class="title">Output
-								<a href="javascript:void(0);" onclick="copyFunction('output-data')" ><small class="copy-text">copy</small></a>
+								<a href="javascript:void(0);" onclick="copyFunction('output-data')"><small
+										class="copy-text">copy</small></a>
 							</div>
 							<pre class="content" id="output-data">{{question.sample_outputs}}</pre>
 						</div>
@@ -90,7 +92,7 @@
 		</div>
 		<hr>
 		<div align="center">
-			<a  href="/questions/submission/{{ question.id }}"><button type="button">SUBMIT</button></a>
+			<a href="/questions/submission/{{ question.id }}"><button type="button">SUBMIT</button></a>
 		</div>
 	</main>
 </div>
@@ -98,13 +100,13 @@
 	function copyFunction(id) {
 		const copyText = document.getElementById(id).textContent;
 		const textArea = document.createElement('textarea');
-		textArea.style.position="absolute";
-		textArea.style.left="-100%";
+		textArea.style.position = "absolute";
+		textArea.style.left = "-100%";
 		textArea.textContent = copyText;
 		document.body.append(textArea);
 		textArea.select();
 		document.execCommand("copy");
 		textArea.remove();
-		}
+	}
 </script>
 {% endblock %}

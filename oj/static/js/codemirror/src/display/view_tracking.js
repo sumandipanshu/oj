@@ -1,8 +1,19 @@
-import { buildViewArray } from "../line/line_data.js"
-import { sawCollapsedSpans } from "../line/saw_special_spans.js"
-import { visualLineEndNo, visualLineNo } from "../line/spans.js"
-import { findViewIndex } from "../measurement/position_measurement.js"
-import { indexOf } from "../util/misc.js"
+import {
+  buildViewArray
+} from "../line/line_data.js"
+import {
+  sawCollapsedSpans
+} from "../line/saw_special_spans.js"
+import {
+  visualLineEndNo,
+  visualLineNo
+} from "../line/spans.js"
+import {
+  findViewIndex
+} from "../measurement/position_measurement.js"
+import {
+  indexOf
+} from "../util/misc.js"
 
 // Updates the display.view data structure for a given change to the
 // document. From and to are in pre-change coordinates. Lendiff is
@@ -17,7 +28,7 @@ export function regChange(cm, from, to, lendiff) {
 
   let display = cm.display
   if (lendiff && to < display.viewTo &&
-      (display.updateLineNumbers == null || display.updateLineNumbers > from))
+    (display.updateLineNumbers == null || display.updateLineNumbers > from))
     display.updateLineNumbers = from
 
   cm.curOp.viewChanged = true
@@ -77,7 +88,8 @@ export function regChange(cm, from, to, lendiff) {
 // "gutter", "class", "widget"
 export function regLineChange(cm, line, type) {
   cm.curOp.viewChanged = true
-  let display = cm.display, ext = cm.display.externalMeasured
+  let display = cm.display,
+    ext = cm.display.externalMeasured
   if (ext && line >= ext.lineN && line < ext.lineN + ext.size)
     display.externalMeasured = null
 
@@ -96,9 +108,13 @@ export function resetView(cm) {
 }
 
 function viewCuttingPoint(cm, oldN, newN, dir) {
-  let index = findViewIndex(cm, oldN), diff, view = cm.display.view
+  let index = findViewIndex(cm, oldN),
+    diff, view = cm.display.view
   if (!sawCollapsedSpans || newN == cm.doc.first + cm.doc.size)
-    return {index: index, lineN: newN}
+    return {
+      index: index,
+      lineN: newN
+    }
   let n = cm.display.viewFrom
   for (let i = 0; i < index; i++)
     n += view[i].size
@@ -110,20 +126,25 @@ function viewCuttingPoint(cm, oldN, newN, dir) {
     } else {
       diff = n - oldN
     }
-    oldN += diff; newN += diff
+    oldN += diff;
+    newN += diff
   }
   while (visualLineNo(cm.doc, newN) != newN) {
     if (index == (dir < 0 ? 0 : view.length - 1)) return null
     newN += dir * view[index - (dir < 0 ? 1 : 0)].size
     index += dir
   }
-  return {index: index, lineN: newN}
+  return {
+    index: index,
+    lineN: newN
+  }
 }
 
 // Force the view to cover a given range, adding empty view element
 // or clipping off existing ones as needed.
 export function adjustView(cm, from, to) {
-  let display = cm.display, view = display.view
+  let display = cm.display,
+    view = display.view
   if (view.length == 0 || from >= display.viewTo || to <= display.viewFrom) {
     display.view = buildViewArray(cm, from, to)
     display.viewFrom = from
@@ -144,7 +165,8 @@ export function adjustView(cm, from, to) {
 // Count the number of lines in the view whose DOM representation is
 // out of date (or nonexistent).
 export function countDirtyView(cm) {
-  let view = cm.display.view, dirty = 0
+  let view = cm.display.view,
+    dirty = 0
   for (let i = 0; i < view.length; i++) {
     let lineView = view[i]
     if (!lineView.hidden && (!lineView.node || lineView.changes)) ++dirty

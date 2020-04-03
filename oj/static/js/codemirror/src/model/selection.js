@@ -1,5 +1,13 @@
-import { cmp, copyPos, equalCursorPos, maxPos, minPos } from "../line/pos.js"
-import { indexOf } from "../util/misc.js"
+import {
+  cmp,
+  copyPos,
+  equalCursorPos,
+  maxPos,
+  minPos
+} from "../line/pos.js"
+import {
+  indexOf
+} from "../util/misc.js"
 
 // Selection objects are immutable. A new one is created every time
 // the selection changes. A selection is one or more non-overlapping
@@ -12,13 +20,16 @@ export class Selection {
     this.primIndex = primIndex
   }
 
-  primary() { return this.ranges[this.primIndex] }
+  primary() {
+    return this.ranges[this.primIndex]
+  }
 
   equals(other) {
     if (other == this) return true
     if (other.primIndex != this.primIndex || other.ranges.length != this.ranges.length) return false
     for (let i = 0; i < this.ranges.length; i++) {
-      let here = this.ranges[i], there = other.ranges[i]
+      let here = this.ranges[i],
+        there = other.ranges[i]
       if (!equalCursorPos(here.anchor, there.anchor) || !equalCursorPos(here.head, there.head)) return false
     }
     return true
@@ -50,12 +61,19 @@ export class Selection {
 
 export class Range {
   constructor(anchor, head) {
-    this.anchor = anchor; this.head = head
+    this.anchor = anchor;
+    this.head = head
   }
 
-  from() { return minPos(this.anchor, this.head) }
-  to() { return maxPos(this.anchor, this.head) }
-  empty() { return this.head.line == this.anchor.line && this.head.ch == this.anchor.ch }
+  from() {
+    return minPos(this.anchor, this.head)
+  }
+  to() {
+    return maxPos(this.anchor, this.head)
+  }
+  empty() {
+    return this.head.line == this.anchor.line && this.head.ch == this.anchor.ch
+  }
 }
 
 // Take an unsorted, potentially overlapping set of ranges, and
@@ -67,10 +85,12 @@ export function normalizeSelection(cm, ranges, primIndex) {
   ranges.sort((a, b) => cmp(a.from(), b.from()))
   primIndex = indexOf(ranges, prim)
   for (let i = 1; i < ranges.length; i++) {
-    let cur = ranges[i], prev = ranges[i - 1]
+    let cur = ranges[i],
+      prev = ranges[i - 1]
     let diff = cmp(prev.to(), cur.from())
     if (mayTouch && !cur.empty() ? diff > 0 : diff >= 0) {
-      let from = minPos(prev.from(), cur.from()), to = maxPos(prev.to(), cur.to())
+      let from = minPos(prev.from(), cur.from()),
+        to = maxPos(prev.to(), cur.to())
       let inv = prev.empty() ? cur.from() == cur.head : prev.from() == prev.head
       if (i <= primIndex) --primIndex
       ranges.splice(--i, 2, new Range(inv ? to : from, inv ? from : to))

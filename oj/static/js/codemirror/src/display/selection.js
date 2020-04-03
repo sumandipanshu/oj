@@ -1,16 +1,34 @@
-import { Pos } from "../line/pos.js"
-import { visualLine } from "../line/spans.js"
-import { getLine } from "../line/utils_line.js"
-import { charCoords, cursorCoords, displayWidth, paddingH, wrappedLineExtentChar } from "../measurement/position_measurement.js"
-import { getOrder, iterateBidiSections } from "../util/bidi.js"
-import { elt } from "../util/dom.js"
+import {
+  Pos
+} from "../line/pos.js"
+import {
+  visualLine
+} from "../line/spans.js"
+import {
+  getLine
+} from "../line/utils_line.js"
+import {
+  charCoords,
+  cursorCoords,
+  displayWidth,
+  paddingH,
+  wrappedLineExtentChar
+} from "../measurement/position_measurement.js"
+import {
+  getOrder,
+  iterateBidiSections
+} from "../util/bidi.js"
+import {
+  elt
+} from "../util/dom.js"
 
 export function updateSelection(cm) {
   cm.display.input.showSelection(cm.display.input.prepareSelection())
 }
 
 export function prepareSelection(cm, primary = true) {
-  let doc = cm.doc, result = {}
+  let doc = cm.doc,
+    result = {}
   let curFragment = result.cursors = document.createDocumentFragment()
   let selFragment = result.selection = document.createDocumentFragment()
 
@@ -46,13 +64,17 @@ export function drawSelectionCursor(cm, head, output) {
   }
 }
 
-function cmpCoords(a, b) { return a.top - b.top || a.left - b.left }
+function cmpCoords(a, b) {
+  return a.top - b.top || a.left - b.left
+}
 
 // Draws the given range as a highlighted selection
 function drawSelectionRange(cm, range, output) {
-  let display = cm.display, doc = cm.doc
+  let display = cm.display,
+    doc = cm.doc
   let fragment = document.createDocumentFragment()
-  let padding = paddingH(cm.display), leftSide = padding.left
+  let padding = paddingH(cm.display),
+    leftSide = padding.left
   let rightSide = Math.max(display.sizerWidth, displayWidth(cm) - display.sizer.offsetLeft) - padding.right
   let docLTR = doc.direction == "ltr"
 
@@ -69,6 +91,7 @@ function drawSelectionRange(cm, range, output) {
     let lineObj = getLine(doc, line)
     let lineLen = lineObj.text.length
     let start, end
+
     function coords(ch, bias) {
       return charCoords(cm, Pos(line, ch), "div", lineObj, bias)
     }
@@ -86,8 +109,10 @@ function drawSelectionRange(cm, range, output) {
       let fromPos = coords(from, ltr ? "left" : "right")
       let toPos = coords(to - 1, ltr ? "right" : "left")
 
-      let openStart = fromArg == null && from == 0, openEnd = toArg == null && to == lineLen
-      let first = i == 0, last = !order || i == order.length - 1
+      let openStart = fromArg == null && from == 0,
+        openEnd = toArg == null && to == lineLen
+      let first = i == 0,
+        last = !order || i == order.length - 1
       if (toPos.top - fromPos.top <= 3) { // Single line
         let openLeft = (docLTR ? openStart : openEnd) && first
         let openRight = (docLTR ? openEnd : openStart) && last
@@ -117,14 +142,19 @@ function drawSelectionRange(cm, range, output) {
       if (!end || cmpCoords(fromPos, end) < 0) end = fromPos
       if (cmpCoords(toPos, end) < 0) end = toPos
     })
-    return {start: start, end: end}
+    return {
+      start: start,
+      end: end
+    }
   }
 
-  let sFrom = range.from(), sTo = range.to()
+  let sFrom = range.from(),
+    sTo = range.to()
   if (sFrom.line == sTo.line) {
     drawForLine(sFrom.line, sFrom.ch, sTo.ch)
   } else {
-    let fromLine = getLine(doc, sFrom.line), toLine = getLine(doc, sTo.line)
+    let fromLine = getLine(doc, sFrom.line),
+      toLine = getLine(doc, sTo.line)
     let singleVLine = visualLine(fromLine) == visualLine(toLine)
     let leftEnd = drawForLine(sFrom.line, sFrom.ch, singleVLine ? fromLine.text.length + 1 : null).end
     let rightStart = drawForLine(sTo.line, singleVLine ? 0 : null, sTo.ch).start

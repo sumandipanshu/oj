@@ -1,18 +1,19 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
-(function(mod) {
+(function (mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../htmlmixed/htmlmixed"), require("../clike/clike"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../htmlmixed/htmlmixed", "../clike/clike"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+})(function (CodeMirror) {
   "use strict";
 
   function keywords(str) {
-    var obj = {}, words = str.split(" ");
+    var obj = {},
+      words = str.split(" ");
     for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
     return obj;
   }
@@ -22,17 +23,22 @@
     if (list.length == 0) return phpString(end);
     return function (stream, state) {
       var patterns = list[0];
-      for (var i = 0; i < patterns.length; i++) if (stream.match(patterns[i][0])) {
-        state.tokenize = matchSequence(list.slice(1), end);
-        return patterns[i][1];
-      }
+      for (var i = 0; i < patterns.length; i++)
+        if (stream.match(patterns[i][0])) {
+          state.tokenize = matchSequence(list.slice(1), end);
+          return patterns[i][1];
+        }
       state.tokenize = phpString(end, escapes);
       return "string";
     };
   }
+
   function phpString(closing, escapes) {
-    return function(stream, state) { return phpString_(stream, state, closing, escapes); };
+    return function (stream, state) {
+      return phpString_(stream, state, closing, escapes);
+    };
   }
+
   function phpString_(stream, state, closing, escapes) {
     // "Complex" syntax
     if (escapes !== false && stream.match("${", false) || stream.match("{$", false)) {
@@ -46,18 +52,28 @@
       if (stream.match("[", false)) {
         // Match array operator
         state.tokenize = matchSequence([
-          [["[", null]],
-          [[/\d[\w\.]*/, "number"],
-           [/\$[a-zA-Z_][a-zA-Z0-9_]*/, "variable-2"],
-           [/[\w\$]+/, "variable"]],
-          [["]", null]]
+          [
+            ["[", null]
+          ],
+          [
+            [/\d[\w\.]*/, "number"],
+            [/\$[a-zA-Z_][a-zA-Z0-9_]*/, "variable-2"],
+            [/[\w\$]+/, "variable"]
+          ],
+          [
+            ["]", null]
+          ]
         ], closing, escapes);
       }
       if (stream.match(/\-\>\w/, false)) {
         // Match object operator
         state.tokenize = matchSequence([
-          [["->", null]],
-          [[/[\w]+/, "variable"]]
+          [
+            ["->", null]
+          ],
+          [
+            [/[\w]+/, "variable"]
+          ]
         ], closing, escapes);
       }
       return "variable-2";
@@ -66,12 +82,13 @@
     var escaped = false;
     // Normal string
     while (!stream.eol() &&
-           (escaped || escapes === false ||
-            (!stream.match("{$", false) &&
-             !stream.match(/^(\$[a-zA-Z_][a-zA-Z0-9_]*|\$\{)/, false)))) {
+      (escaped || escapes === false ||
+        (!stream.match("{$", false) &&
+          !stream.match(/^(\$[a-zA-Z_][a-zA-Z0-9_]*|\$\{)/, false)))) {
       if (!escaped && stream.match(closing)) {
         state.tokenize = null;
-        state.tokStack.pop(); state.tokStack.pop();
+        state.tokStack.pop();
+        state.tokStack.pop();
         break;
       }
       escaped = stream.next() == "\\" && !escaped;
@@ -100,11 +117,11 @@
     builtin: keywords(phpBuiltin),
     multiLineStrings: true,
     hooks: {
-      "$": function(stream) {
+      "$": function (stream) {
         stream.eatWhile(/[\w\$_]/);
         return "variable-2";
       },
-      "<": function(stream, state) {
+      "<": function (stream, state) {
         var before;
         if (before = stream.match(/<<\s*/)) {
           var quoted = stream.eat(/['"]/);
@@ -119,30 +136,30 @@
         }
         return false;
       },
-      "#": function(stream) {
+      "#": function (stream) {
         while (!stream.eol() && !stream.match("?>", false)) stream.next();
         return "comment";
       },
-      "/": function(stream) {
+      "/": function (stream) {
         if (stream.eat("/")) {
           while (!stream.eol() && !stream.match("?>", false)) stream.next();
           return "comment";
         }
         return false;
       },
-      '"': function(_stream, state) {
+      '"': function (_stream, state) {
         (state.tokStack || (state.tokStack = [])).push('"', 0);
         state.tokenize = phpString('"');
         return "string";
       },
-      "{": function(_stream, state) {
+      "{": function (_stream, state) {
         if (state.tokStack && state.tokStack.length)
           state.tokStack[state.tokStack.length - 1]++;
         return false;
       },
-      "}": function(_stream, state) {
+      "}": function (_stream, state) {
         if (state.tokStack && state.tokStack.length > 0 &&
-            !--state.tokStack[state.tokStack.length - 1]) {
+          !--state.tokStack[state.tokStack.length - 1]) {
           state.tokenize = phpString(state.tokStack[state.tokStack.length - 2]);
         }
         return false;
@@ -150,7 +167,7 @@
     }
   };
 
-  CodeMirror.defineMode("php", function(config, parserConfig) {
+  CodeMirror.defineMode("php", function (config, parserConfig) {
     var htmlMode = CodeMirror.getMode(config, (parserConfig && parserConfig.htmlMode) || "text/html");
     var phpMode = CodeMirror.getMode(config, phpConfig);
 
@@ -174,10 +191,15 @@
           var style = htmlMode.token(stream, state.curState);
         }
         if (state.pending) state.pending = null;
-        var cur = stream.current(), openPHP = cur.search(/<\?/), m;
+        var cur = stream.current(),
+          openPHP = cur.search(/<\?/),
+          m;
         if (openPHP != -1) {
           if (style == "string" && (m = cur.match(/[\'\"]$/)) && !/\?>/.test(cur)) state.pending = m[0];
-          else state.pending = {end: stream.pos, style: style};
+          else state.pending = {
+            end: stream.pos,
+            style: style
+          };
           stream.backUp(cur.length - openPHP);
         }
         return style;
@@ -192,30 +214,40 @@
     }
 
     return {
-      startState: function() {
+      startState: function () {
         var html = CodeMirror.startState(htmlMode)
         var php = parserConfig.startOpen ? CodeMirror.startState(phpMode) : null
-        return {html: html,
-                php: php,
-                curMode: parserConfig.startOpen ? phpMode : htmlMode,
-                curState: parserConfig.startOpen ? php : html,
-                pending: null};
+        return {
+          html: html,
+          php: php,
+          curMode: parserConfig.startOpen ? phpMode : htmlMode,
+          curState: parserConfig.startOpen ? php : html,
+          pending: null
+        };
       },
 
-      copyState: function(state) {
-        var html = state.html, htmlNew = CodeMirror.copyState(htmlMode, html),
-            php = state.php, phpNew = php && CodeMirror.copyState(phpMode, php), cur;
+      copyState: function (state) {
+        var html = state.html,
+          htmlNew = CodeMirror.copyState(htmlMode, html),
+          php = state.php,
+          phpNew = php && CodeMirror.copyState(phpMode, php),
+          cur;
         if (state.curMode == htmlMode) cur = htmlNew;
         else cur = phpNew;
-        return {html: htmlNew, php: phpNew, curMode: state.curMode, curState: cur,
-                pending: state.pending};
+        return {
+          html: htmlNew,
+          php: phpNew,
+          curMode: state.curMode,
+          curState: cur,
+          pending: state.pending
+        };
       },
 
       token: dispatch,
 
-      indent: function(state, textAfter, line) {
+      indent: function (state, textAfter, line) {
         if ((state.curMode != phpMode && /^\s*<\//.test(textAfter)) ||
-            (state.curMode == phpMode && /^\?>/.test(textAfter)))
+          (state.curMode == phpMode && /^\?>/.test(textAfter)))
           return htmlMode.indent(state.html, textAfter, line);
         return state.curMode.indent(state.curState, textAfter, line);
       },
@@ -224,11 +256,19 @@
       blockCommentEnd: "*/",
       lineComment: "//",
 
-      innerMode: function(state) { return {state: state.curState, mode: state.curMode}; }
+      innerMode: function (state) {
+        return {
+          state: state.curState,
+          mode: state.curMode
+        };
+      }
     };
   }, "htmlmixed", "clike");
 
   CodeMirror.defineMIME("application/x-httpd-php", "php");
-  CodeMirror.defineMIME("application/x-httpd-php-open", {name: "php", startOpen: true});
+  CodeMirror.defineMIME("application/x-httpd-php-open", {
+    name: "php",
+    startOpen: true
+  });
   CodeMirror.defineMIME("text/x-php", phpConfig);
 });

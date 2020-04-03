@@ -1,19 +1,65 @@
-import { sawCollapsedSpans } from "../line/saw_special_spans.js"
-import { heightAtLine, visualLineEndNo, visualLineNo } from "../line/spans.js"
-import { getLine, lineNumberFor } from "../line/utils_line.js"
-import { displayHeight, displayWidth, getDimensions, paddingVert, scrollGap } from "../measurement/position_measurement.js"
-import { mac, webkit } from "../util/browser.js"
-import { activeElt, removeChildren, contains } from "../util/dom.js"
-import { hasHandler, signal } from "../util/event.js"
-import { indexOf } from "../util/misc.js"
+import {
+  sawCollapsedSpans
+} from "../line/saw_special_spans.js"
+import {
+  heightAtLine,
+  visualLineEndNo,
+  visualLineNo
+} from "../line/spans.js"
+import {
+  getLine,
+  lineNumberFor
+} from "../line/utils_line.js"
+import {
+  displayHeight,
+  displayWidth,
+  getDimensions,
+  paddingVert,
+  scrollGap
+} from "../measurement/position_measurement.js"
+import {
+  mac,
+  webkit
+} from "../util/browser.js"
+import {
+  activeElt,
+  removeChildren,
+  contains
+} from "../util/dom.js"
+import {
+  hasHandler,
+  signal
+} from "../util/event.js"
+import {
+  indexOf
+} from "../util/misc.js"
 
-import { buildLineElement, updateLineForChanges } from "./update_line.js"
-import { startWorker } from "./highlight_worker.js"
-import { maybeUpdateLineNumberWidth } from "./line_numbers.js"
-import { measureForScrollbars, updateScrollbars } from "./scrollbars.js"
-import { updateSelection } from "./selection.js"
-import { updateHeightsInViewport, visibleLines } from "./update_lines.js"
-import { adjustView, countDirtyView, resetView } from "./view_tracking.js"
+import {
+  buildLineElement,
+  updateLineForChanges
+} from "./update_line.js"
+import {
+  startWorker
+} from "./highlight_worker.js"
+import {
+  maybeUpdateLineNumberWidth
+} from "./line_numbers.js"
+import {
+  measureForScrollbars,
+  updateScrollbars
+} from "./scrollbars.js"
+import {
+  updateSelection
+} from "./selection.js"
+import {
+  updateHeightsInViewport,
+  visibleLines
+} from "./update_lines.js"
+import {
+  adjustView,
+  countDirtyView,
+  resetView
+} from "./view_tracking.js"
 
 // DISPLAY DRAWING
 
@@ -58,7 +104,9 @@ function selectionSnapshot(cm) {
   if (cm.hasFocus()) return null
   let active = activeElt()
   if (!active || !contains(cm.display.lineDiv, active)) return null
-  let result = {activeElt: active}
+  let result = {
+    activeElt: active
+  }
   if (window.getSelection) {
     let sel = window.getSelection()
     if (sel.anchorNode && sel.extend && contains(cm.display.lineDiv, sel.anchorNode)) {
@@ -75,7 +123,8 @@ function restoreSelection(snapshot) {
   if (!snapshot || !snapshot.activeElt || snapshot.activeElt == activeElt()) return
   snapshot.activeElt.focus()
   if (snapshot.anchorNode && contains(document.body, snapshot.anchorNode) && contains(document.body, snapshot.focusNode)) {
-    let sel = window.getSelection(), range = document.createRange()
+    let sel = window.getSelection(),
+      range = document.createRange()
     range.setEnd(snapshot.anchorNode, snapshot.anchorOffset)
     range.collapse(false)
     sel.removeAllRanges()
@@ -88,7 +137,8 @@ function restoreSelection(snapshot) {
 // (returning false) when there is nothing to be done and forced is
 // false.
 export function updateDisplayIfNeeded(cm, update) {
-  let display = cm.display, doc = cm.doc
+  let display = cm.display,
+    doc = cm.doc
 
   if (update.editorIsHidden) {
     resetView(cm)
@@ -97,9 +147,9 @@ export function updateDisplayIfNeeded(cm, update) {
 
   // Bail out if the visible area is already rendered and nothing changed.
   if (!update.force &&
-      update.visible.from >= display.viewFrom && update.visible.to <= display.viewTo &&
-      (display.updateLineNumbers == null || display.updateLineNumbers >= display.viewTo) &&
-      display.renderedView == display.view && countDirtyView(cm) == 0)
+    update.visible.from >= display.viewFrom && update.visible.to <= display.viewTo &&
+    (display.updateLineNumbers == null || display.updateLineNumbers >= display.viewTo) &&
+    display.renderedView == display.view && countDirtyView(cm) == 0)
     return false
 
   if (maybeUpdateLineNumberWidth(cm)) {
@@ -128,7 +178,7 @@ export function updateDisplayIfNeeded(cm, update) {
 
   let toUpdate = countDirtyView(cm)
   if (!different && toUpdate == 0 && !update.force && display.renderedView == display.view &&
-      (display.updateLineNumbers == null || display.updateLineNumbers >= display.viewTo))
+    (display.updateLineNumbers == null || display.updateLineNumbers >= display.viewTo))
     return false
 
   // For big changes, we hide the enclosing element during the
@@ -166,7 +216,9 @@ export function postUpdateDisplay(cm, update) {
     if (!first || !cm.options.lineWrapping || update.oldDisplayWidth == displayWidth(cm)) {
       // Clip forced viewport to actual scrollable area.
       if (viewport && viewport.top != null)
-        viewport = {top: Math.min(cm.doc.height + paddingVert(cm.display) - displayHeight(cm), viewport.top)}
+        viewport = {
+          top: Math.min(cm.doc.height + paddingVert(cm.display) - displayHeight(cm), viewport.top)
+        }
       // Updated line heights might result in the drawn area not
       // actually covering the viewport. Keep looping until it does.
       update.visible = visibleLines(cm.display, cm.doc, viewport)
@@ -187,7 +239,8 @@ export function postUpdateDisplay(cm, update) {
   update.signal(cm, "update", cm)
   if (cm.display.viewFrom != cm.display.reportedViewFrom || cm.display.viewTo != cm.display.reportedViewTo) {
     update.signal(cm, "viewportChange", cm, cm.display.viewFrom, cm.display.viewTo)
-    cm.display.reportedViewFrom = cm.display.viewFrom; cm.display.reportedViewTo = cm.display.viewTo
+    cm.display.reportedViewFrom = cm.display.viewFrom;
+    cm.display.reportedViewTo = cm.display.viewTo
   }
 }
 
@@ -209,8 +262,10 @@ export function updateDisplaySimple(cm, viewport) {
 // that are not there yet, and updating the ones that are out of
 // date.
 function patchDisplay(cm, updateNumbersFrom, dims) {
-  let display = cm.display, lineNumbers = cm.options.lineNumbers
-  let container = display.lineDiv, cur = container.firstChild
+  let display = cm.display,
+    lineNumbers = cm.options.lineNumbers
+  let container = display.lineDiv,
+    cur = container.firstChild
 
   function rm(node) {
     let next = node.nextSibling
@@ -222,13 +277,13 @@ function patchDisplay(cm, updateNumbersFrom, dims) {
     return next
   }
 
-  let view = display.view, lineN = display.viewFrom
+  let view = display.view,
+    lineN = display.viewFrom
   // Loop over the elements in the view, syncing cur (the DOM nodes
   // in display.lineDiv) with the view as we go.
   for (let i = 0; i < view.length; i++) {
     let lineView = view[i]
-    if (lineView.hidden) {
-    } else if (!lineView.node || lineView.node.parentNode != container) { // Not drawn yet
+    if (lineView.hidden) {} else if (!lineView.node || lineView.node.parentNode != container) { // Not drawn yet
       let node = buildLineElement(cm, lineView, lineN, dims)
       container.insertBefore(node, cur)
     } else { // Already drawn

@@ -1,12 +1,36 @@
-import { Pos } from "../line/pos.js"
-import { cursorCoords, displayHeight, displayWidth, estimateCoords, paddingTop, paddingVert, scrollGap, textHeight } from "../measurement/position_measurement.js"
-import { gecko, phantom } from "../util/browser.js"
-import { elt } from "../util/dom.js"
-import { signalDOMEvent } from "../util/event.js"
+import {
+  Pos
+} from "../line/pos.js"
+import {
+  cursorCoords,
+  displayHeight,
+  displayWidth,
+  estimateCoords,
+  paddingTop,
+  paddingVert,
+  scrollGap,
+  textHeight
+} from "../measurement/position_measurement.js"
+import {
+  gecko,
+  phantom
+} from "../util/browser.js"
+import {
+  elt
+} from "../util/dom.js"
+import {
+  signalDOMEvent
+} from "../util/event.js"
 
-import { startWorker } from "./highlight_worker.js"
-import { alignHorizontally } from "./line_numbers.js"
-import { updateDisplaySimple } from "./update_display.js"
+import {
+  startWorker
+} from "./highlight_worker.js"
+import {
+  alignHorizontally
+} from "./line_numbers.js"
+import {
+  updateDisplaySimple
+} from "./update_display.js"
 
 // SCROLLING THINGS INTO VIEW
 
@@ -15,7 +39,9 @@ import { updateDisplaySimple } from "./update_display.js"
 export function maybeScrollWindow(cm, rect) {
   if (signalDOMEvent(cm, "scrollCursorIntoView")) return
 
-  let display = cm.display, box = display.sizer.getBoundingClientRect(), doScroll = null
+  let display = cm.display,
+    box = display.sizer.getBoundingClientRect(),
+    doScroll = null
   if (rect.top + box.top < 0) doScroll = true
   else if (rect.bottom + box.top > (window.innerHeight || document.documentElement.clientHeight)) doScroll = false
   if (doScroll != null && !phantom) {
@@ -46,12 +72,15 @@ export function scrollPosIntoView(cm, pos, end, margin) {
     let changed = false
     let coords = cursorCoords(cm, pos)
     let endCoords = !end || end == pos ? coords : cursorCoords(cm, end)
-    rect = {left: Math.min(coords.left, endCoords.left),
-            top: Math.min(coords.top, endCoords.top) - margin,
-            right: Math.max(coords.left, endCoords.left),
-            bottom: Math.max(coords.bottom, endCoords.bottom) + margin}
+    rect = {
+      left: Math.min(coords.left, endCoords.left),
+      top: Math.min(coords.top, endCoords.top) - margin,
+      right: Math.max(coords.left, endCoords.left),
+      bottom: Math.max(coords.bottom, endCoords.bottom) + margin
+    }
     let scrollPos = calculateScrollPos(cm, rect)
-    let startTop = cm.doc.scrollTop, startLeft = cm.doc.scrollLeft
+    let startTop = cm.doc.scrollTop,
+      startLeft = cm.doc.scrollLeft
     if (scrollPos.scrollTop != null) {
       updateScrollTop(cm, scrollPos.scrollTop)
       if (Math.abs(cm.doc.scrollTop - startTop) > 1) changed = true
@@ -77,13 +106,16 @@ export function scrollIntoView(cm, rect) {
 // scrollLeft properties. When these are undefined, the
 // vertical/horizontal position does not need to be adjusted.
 function calculateScrollPos(cm, rect) {
-  let display = cm.display, snapMargin = textHeight(cm.display)
+  let display = cm.display,
+    snapMargin = textHeight(cm.display)
   if (rect.top < 0) rect.top = 0
   let screentop = cm.curOp && cm.curOp.scrollTop != null ? cm.curOp.scrollTop : display.scroller.scrollTop
-  let screen = displayHeight(cm), result = {}
+  let screen = displayHeight(cm),
+    result = {}
   if (rect.bottom - rect.top > screen) rect.bottom = rect.top + screen
   let docBottom = cm.doc.height + paddingVert(display)
-  let atTop = rect.top < snapMargin, atBottom = rect.bottom > docBottom - snapMargin
+  let atTop = rect.top < snapMargin,
+    atBottom = rect.bottom > docBottom - snapMargin
   if (rect.top < screentop) {
     result.scrollTop = atTop ? 0 : rect.top
   } else if (rect.bottom > screentop + screen) {
@@ -117,7 +149,11 @@ export function addToScrollTop(cm, top) {
 export function ensureCursorVisible(cm) {
   resolveScrollToPos(cm)
   let cur = cm.getCursor()
-  cm.curOp.scrollToPos = {from: cur, to: cur, margin: cm.options.cursorScrollMargin}
+  cm.curOp.scrollToPos = {
+    from: cur,
+    to: cur,
+    margin: cm.options.cursorScrollMargin
+  }
 }
 
 export function scrollToCoords(cm, x, y) {
@@ -139,7 +175,8 @@ function resolveScrollToPos(cm) {
   let range = cm.curOp.scrollToPos
   if (range) {
     cm.curOp.scrollToPos = null
-    let from = estimateCoords(cm, range.from), to = estimateCoords(cm, range.to)
+    let from = estimateCoords(cm, range.from),
+      to = estimateCoords(cm, range.to)
     scrollToCoordsRange(cm, from, to, range.margin)
   }
 }
@@ -158,7 +195,9 @@ export function scrollToCoordsRange(cm, from, to, margin) {
 // covers the visible area.
 export function updateScrollTop(cm, val) {
   if (Math.abs(cm.doc.scrollTop - val) < 2) return
-  if (!gecko) updateDisplaySimple(cm, {top: val})
+  if (!gecko) updateDisplaySimple(cm, {
+    top: val
+  })
   setScrollTop(cm, val, true)
   if (gecko) updateDisplaySimple(cm)
   startWorker(cm, 100)

@@ -13,10 +13,11 @@ require("../mode/meta.js");
 
 var sPos = process.argv.indexOf("-s");
 if (sPos == -1 || sPos == process.argv.length - 1) {
-   console.error("Usage: source-highlight -s language");
-   process.exit(1);
+  console.error("Usage: source-highlight -s language");
+  process.exit(1);
 }
-var lang = process.argv[sPos + 1].toLowerCase(), modeName = lang;
+var lang = process.argv[sPos + 1].toLowerCase(),
+  modeName = lang;
 var found = CodeMirror.findModeByMIME(lang) || CodeMirror.findModeByName(lang)
 if (found) {
   modeName = found.mode
@@ -27,20 +28,25 @@ if (!CodeMirror.modes[modeName])
   require("../mode/" + modeName + "/" + modeName + ".js");
 
 function esc(str) {
-  return str.replace(/[<&]/g, function(ch) { return ch == "&" ? "&amp;" : "&lt;"; });
+  return str.replace(/[<&]/g, function (ch) {
+    return ch == "&" ? "&amp;" : "&lt;";
+  });
 }
 
 var code = fs.readFileSync("/dev/stdin", "utf8");
-var curStyle = null, accum = "";
+var curStyle = null,
+  accum = "";
+
 function flush() {
   if (curStyle) process.stdout.write("<span class=\"" + curStyle.replace(/(^|\s+)/g, "$1cm-") + "\">" + esc(accum) + "</span>");
   else process.stdout.write(esc(accum));
 }
 
-CodeMirror.runMode(code, lang, function(text, style) {
+CodeMirror.runMode(code, lang, function (text, style) {
   if (style != curStyle) {
     flush();
-    curStyle = style; accum = text;
+    curStyle = style;
+    accum = text;
   } else {
     accum += text;
   }

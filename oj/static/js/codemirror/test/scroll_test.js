@@ -1,9 +1,9 @@
-(function() {
+(function () {
   "use strict";
 
   namespace = "scroll_";
 
-  testCM("bars_hidden", function(cm) {
+  testCM("bars_hidden", function (cm) {
     for (var i = 0;; i++) {
       var wrapBox = cm.getWrapperElement().getBoundingClientRect();
       var scrollBox = cm.getScrollerElement().getBoundingClientRect();
@@ -14,9 +14,14 @@
       cm.refresh();
     }
   });
-  
-  function barH(cm) { return byClassName(cm.getWrapperElement(), "CodeMirror-hscrollbar")[0]; }
-  function barV(cm) { return byClassName(cm.getWrapperElement(), "CodeMirror-vscrollbar")[0]; }
+
+  function barH(cm) {
+    return byClassName(cm.getWrapperElement(), "CodeMirror-hscrollbar")[0];
+  }
+
+  function barV(cm) {
+    return byClassName(cm.getWrapperElement(), "CodeMirror-vscrollbar")[0];
+  }
 
   function displayBottom(cm, scrollbar) {
     if (scrollbar && cm.display.scroller.offsetHeight > cm.display.scroller.clientHeight)
@@ -44,8 +49,12 @@
     is(cursorBottom >= bottom - 5);
   }
 
-  testCM("movedown_fixed", function(cm) {testMovedownFixed(cm, false);});
-  testCM("movedown_hscroll_fixed", function(cm) {testMovedownFixed(cm, true);});
+  testCM("movedown_fixed", function (cm) {
+    testMovedownFixed(cm, false);
+  });
+  testCM("movedown_hscroll_fixed", function (cm) {
+    testMovedownFixed(cm, true);
+  });
 
   function testMovedownResize(cm, hScroll) {
     cm.getWrapperElement().style.height = "auto";
@@ -60,8 +69,12 @@
     }
   }
 
-  testCM("movedown_resize", function(cm) {testMovedownResize(cm, false);});
-  testCM("movedown_hscroll_resize", function(cm) {testMovedownResize(cm, true);});
+  testCM("movedown_resize", function (cm) {
+    testMovedownResize(cm, false);
+  });
+  testCM("movedown_hscroll_resize", function (cm) {
+    testMovedownResize(cm, true);
+  });
 
   function testMoveright(cm, wrap, scroll) {
     cm.setSize("100px", "100px");
@@ -79,12 +92,20 @@
     if (!wrap) is(cursorRight > right - 20);
   }
 
-  testCM("moveright", function(cm) {testMoveright(cm, false, false);});
-  testCM("moveright_wrap", function(cm) {testMoveright(cm, true, false);});
-  testCM("moveright_scroll", function(cm) {testMoveright(cm, false, true);});
-  testCM("moveright_scroll_wrap", function(cm) {testMoveright(cm, true, true);});
+  testCM("moveright", function (cm) {
+    testMoveright(cm, false, false);
+  });
+  testCM("moveright_wrap", function (cm) {
+    testMoveright(cm, true, false);
+  });
+  testCM("moveright_scroll", function (cm) {
+    testMoveright(cm, false, true);
+  });
+  testCM("moveright_scroll_wrap", function (cm) {
+    testMoveright(cm, true, true);
+  });
 
-  testCM("suddenly_wide", function(cm) {
+  testCM("suddenly_wide", function (cm) {
     addDoc(cm, 100, 100);
     cm.replaceSelection(new Array(600).join("l ") + "\n");
     cm.execCommand("goLineUp");
@@ -92,18 +113,20 @@
     is(barH(cm).scrollLeft > cm.getScrollerElement().scrollLeft - 1);
   });
 
-  testCM("wrap_changes_height", function(cm) {
+  testCM("wrap_changes_height", function (cm) {
     var line = new Array(20).join("a ") + "\n";
     cm.setValue(new Array(20).join(line));
     var box = cm.getWrapperElement().getBoundingClientRect();
     cm.setSize(cm.cursorCoords(Pos(0), "window").right - box.left + 2,
-               cm.cursorCoords(Pos(19, 0), "window").bottom - box.top + 2);
+      cm.cursorCoords(Pos(19, 0), "window").bottom - box.top + 2);
     cm.setCursor(Pos(19, 0));
     cm.replaceSelection("\n");
     is(cm.cursorCoords(null, "window").bottom < displayBottom(cm, false));
-  }, {lineWrapping: true});
+  }, {
+    lineWrapping: true
+  });
 
-  testCM("height_auto_with_gutter_expect_no_scroll_after_line_delete", function(cm) {
+  testCM("height_auto_with_gutter_expect_no_scroll_after_line_delete", function (cm) {
     cm.setSize(null, "auto");
     cm.setValue("x\n");
     cm.execCommand("goDocEnd");
@@ -111,9 +134,11 @@
     eq(cm.getScrollInfo().top, 0);
     cm.scrollTo(null, 10);
     is(cm.getScrollInfo().top < 5);
-  }, {lineNumbers: true});
+  }, {
+    lineNumbers: true
+  });
 
-  testCM("bidi_ensureCursorVisible", function(cm) {
+  testCM("bidi_ensureCursorVisible", function (cm) {
     cm.setValue("<dd>وضع الاستخدام. عندما لا تعطى، وهذا الافتراضي إلى الطريقة الاولى\n");
     cm.execCommand("goLineStart");
     eq(cm.getScrollInfo().left, 0);
@@ -122,5 +147,7 @@
     cm.execCommand("goCharRight");
     eqCursorPos(cm.getCursor(), Pos(0, 3, "before"));
     eq(cm.getScrollInfo().left, 0);
-  }, {lineWrapping: false});
+  }, {
+    lineWrapping: false
+  });
 })();

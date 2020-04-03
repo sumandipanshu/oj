@@ -1,15 +1,39 @@
-import { runInOp } from "../display/operations.js"
-import { ensureCursorVisible } from "../display/scrolling.js"
-import { Pos } from "../line/pos.js"
-import { getLine } from "../line/utils_line.js"
-import { makeChange } from "../model/changes.js"
-import { ios, webkit } from "../util/browser.js"
-import { elt } from "../util/dom.js"
-import { lst, map } from "../util/misc.js"
-import { signalLater } from "../util/operation_group.js"
-import { splitLinesAuto } from "../util/feature_detection.js"
+import {
+  runInOp
+} from "../display/operations.js"
+import {
+  ensureCursorVisible
+} from "../display/scrolling.js"
+import {
+  Pos
+} from "../line/pos.js"
+import {
+  getLine
+} from "../line/utils_line.js"
+import {
+  makeChange
+} from "../model/changes.js"
+import {
+  ios,
+  webkit
+} from "../util/browser.js"
+import {
+  elt
+} from "../util/dom.js"
+import {
+  lst,
+  map
+} from "../util/misc.js"
+import {
+  signalLater
+} from "../util/operation_group.js"
+import {
+  splitLinesAuto
+} from "../util/feature_detection.js"
 
-import { indentLine } from "./indent.js"
+import {
+  indentLine
+} from "./indent.js"
 
 // This will be set to a {lineWise: bool, text: [string]} object, so
 // that, when pasting, we know what kind of selections the copied
@@ -27,7 +51,8 @@ export function applyTextInput(cm, inserted, deleted, sel, origin) {
 
   let recent = +new Date - 200
   let paste = origin == "paste" || cm.state.pasteIncoming > recent
-  let textLines = splitLinesAuto(inserted), multiPaste = null
+  let textLines = splitLinesAuto(inserted),
+    multiPaste = null
   // When pasting N lines into N selections, insert one line per selection
   if (paste && sel.ranges.length > 1) {
     if (lastCopied && lastCopied.text.join("\n") == inserted) {
@@ -45,7 +70,8 @@ export function applyTextInput(cm, inserted, deleted, sel, origin) {
   // Normal behavior is to insert the new text into every selection
   for (let i = sel.ranges.length - 1; i >= 0; i--) {
     let range = sel.ranges[i]
-    let from = range.from(), to = range.to()
+    let from = range.from(),
+      to = range.to()
     if (range.empty()) {
       if (deleted && deleted > 0) // Handle deletion
         from = Pos(from.line, from.ch - deleted)
@@ -54,8 +80,12 @@ export function applyTextInput(cm, inserted, deleted, sel, origin) {
       else if (paste && lastCopied && lastCopied.lineWise && lastCopied.text.join("\n") == inserted)
         from = to = Pos(from.line, 0)
     }
-    let changeEvent = {from: from, to: to, text: multiPaste ? multiPaste[i % multiPaste.length] : textLines,
-                       origin: origin || (paste ? "paste" : cm.state.cutIncoming > recent ? "cut" : "+input")}
+    let changeEvent = {
+      from: from,
+      to: to,
+      text: multiPaste ? multiPaste[i % multiPaste.length] : textLines,
+      origin: origin || (paste ? "paste" : cm.state.cutIncoming > recent ? "cut" : "+input")
+    }
     makeChange(cm.doc, changeEvent)
     signalLater(cm, "inputRead", cm, changeEvent)
   }
@@ -103,14 +133,21 @@ export function triggerElectric(cm, inserted) {
 }
 
 export function copyableRanges(cm) {
-  let text = [], ranges = []
+  let text = [],
+    ranges = []
   for (let i = 0; i < cm.doc.sel.ranges.length; i++) {
     let line = cm.doc.sel.ranges[i].head.line
-    let lineRange = {anchor: Pos(line, 0), head: Pos(line + 1, 0)}
+    let lineRange = {
+      anchor: Pos(line, 0),
+      head: Pos(line + 1, 0)
+    }
     ranges.push(lineRange)
     text.push(cm.getRange(lineRange.anchor, lineRange.head))
   }
-  return {text: text, ranges: ranges}
+  return {
+    text: text,
+    ranges: ranges
+  }
 }
 
 export function disableBrowserMagic(field, spellcheck, autocorrect, autocapitalize) {

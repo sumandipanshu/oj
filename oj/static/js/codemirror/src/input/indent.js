@@ -1,10 +1,26 @@
-import { getContextBefore } from "../line/highlight.js"
-import { Pos } from "../line/pos.js"
-import { getLine } from "../line/utils_line.js"
-import { replaceRange } from "../model/changes.js"
-import { Range } from "../model/selection.js"
-import { replaceOneSelection } from "../model/selection_updates.js"
-import { countColumn, Pass, spaceStr } from "../util/misc.js"
+import {
+  getContextBefore
+} from "../line/highlight.js"
+import {
+  Pos
+} from "../line/pos.js"
+import {
+  getLine
+} from "../line/utils_line.js"
+import {
+  replaceRange
+} from "../model/changes.js"
+import {
+  Range
+} from "../model/selection.js"
+import {
+  replaceOneSelection
+} from "../model/selection_updates.js"
+import {
+  countColumn,
+  Pass,
+  spaceStr
+} from "../util/misc.js"
 
 // Indent the given line. The how parameter can be "smart",
 // "add"/null, "subtract", or "prev". When aggressive is false
@@ -12,7 +28,8 @@ import { countColumn, Pass, spaceStr } from "../util/misc.js"
 // lines are not indented, and places where the mode returns Pass
 // are left alone.
 export function indentLine(cm, n, how, aggressive) {
-  let doc = cm.doc, state
+  let doc = cm.doc,
+    state
   if (how == null) how = "add"
   if (how == "smart") {
     // Fall back to "prev" when the mode doesn't have an indentation
@@ -22,9 +39,11 @@ export function indentLine(cm, n, how, aggressive) {
   }
 
   let tabSize = cm.options.tabSize
-  let line = getLine(doc, n), curSpace = countColumn(line.text, null, tabSize)
+  let line = getLine(doc, n),
+    curSpace = countColumn(line.text, null, tabSize)
   if (line.stateAfter) line.stateAfter = null
-  let curSpaceString = line.text.match(/^\s*/)[0], indentation
+  let curSpaceString = line.text.match(/^\s*/)[0],
+    indentation
   if (!aggressive && !/\S/.test(line.text)) {
     indentation = 0
     how = "not"
@@ -36,7 +55,7 @@ export function indentLine(cm, n, how, aggressive) {
     }
   }
   if (how == "prev") {
-    if (n > doc.first) indentation = countColumn(getLine(doc, n-1).text, null, tabSize)
+    if (n > doc.first) indentation = countColumn(getLine(doc, n - 1).text, null, tabSize)
     else indentation = 0
   } else if (how == "add") {
     indentation = curSpace + cm.options.indentUnit
@@ -47,9 +66,13 @@ export function indentLine(cm, n, how, aggressive) {
   }
   indentation = Math.max(0, indentation)
 
-  let indentString = "", pos = 0
+  let indentString = "",
+    pos = 0
   if (cm.options.indentWithTabs)
-    for (let i = Math.floor(indentation / tabSize); i; --i) {pos += tabSize; indentString += "\t"}
+    for (let i = Math.floor(indentation / tabSize); i; --i) {
+      pos += tabSize;
+      indentString += "\t"
+    }
   if (pos < indentation) indentString += spaceStr(indentation - pos)
 
   if (indentString != curSpaceString) {

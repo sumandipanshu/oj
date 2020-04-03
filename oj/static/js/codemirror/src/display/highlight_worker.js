@@ -1,9 +1,21 @@
-import { getContextBefore, highlightLine, processLine } from "../line/highlight.js"
-import { copyState } from "../modes.js"
-import { bind } from "../util/misc.js"
+import {
+  getContextBefore,
+  highlightLine,
+  processLine
+} from "../line/highlight.js"
+import {
+  copyState
+} from "../modes.js"
+import {
+  bind
+} from "../util/misc.js"
 
-import { runInOp } from "./operations.js"
-import { regLineChange } from "./view_tracking.js"
+import {
+  runInOp
+} from "./operations.js"
+import {
+  regLineChange
+} from "./view_tracking.js"
 
 // HIGHLIGHT WORKER
 
@@ -26,7 +38,8 @@ function highlightWorker(cm) {
       let highlighted = highlightLine(cm, line, context, true)
       if (resetState) context.state = resetState
       line.styles = highlighted.styles
-      let oldCls = line.styleClasses, newCls = highlighted.classes
+      let oldCls = line.styleClasses,
+        newCls = highlighted.classes
       if (newCls) line.styleClasses = newCls
       else if (oldCls) line.styleClasses = null
       let ischange = !oldStyles || oldStyles.length != line.styles.length ||

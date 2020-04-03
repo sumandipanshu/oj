@@ -1,13 +1,44 @@
-import { getOrder } from "../util/bidi.js"
-import { ie, ie_version, webkit } from "../util/browser.js"
-import { elt, eltP, joinClasses } from "../util/dom.js"
-import { eventMixin, signal } from "../util/event.js"
-import { hasBadBidiRects, zeroWidthElement } from "../util/feature_detection.js"
-import { lst, spaceStr } from "../util/misc.js"
+import {
+  getOrder
+} from "../util/bidi.js"
+import {
+  ie,
+  ie_version,
+  webkit
+} from "../util/browser.js"
+import {
+  elt,
+  eltP,
+  joinClasses
+} from "../util/dom.js"
+import {
+  eventMixin,
+  signal
+} from "../util/event.js"
+import {
+  hasBadBidiRects,
+  zeroWidthElement
+} from "../util/feature_detection.js"
+import {
+  lst,
+  spaceStr
+} from "../util/misc.js"
 
-import { getLineStyles } from "./highlight.js"
-import { attachMarkedSpans, compareCollapsedMarkers, detachMarkedSpans, lineIsHidden, visualLineContinued } from "./spans.js"
-import { getLine, lineNo, updateLineHeight } from "./utils_line.js"
+import {
+  getLineStyles
+} from "./highlight.js"
+import {
+  attachMarkedSpans,
+  compareCollapsedMarkers,
+  detachMarkedSpans,
+  lineIsHidden,
+  visualLineContinued
+} from "./spans.js"
+import {
+  getLine,
+  lineNo,
+  updateLineHeight
+} from "./utils_line.js"
 
 // LINE DATA STRUCTURE
 
@@ -20,7 +51,9 @@ export class Line {
     this.height = estimateHeight ? estimateHeight(this) : 1
   }
 
-  lineNo() { return lineNo(this) }
+  lineNo() {
+    return lineNo(this)
+  }
 }
 eventMixin(Line)
 
@@ -47,7 +80,9 @@ export function cleanUpLine(line) {
 // Convert a style as returned by a mode (either null, or a string
 // containing one or more styles) to a CSS style. This is cached,
 // and also looks for line-wide styles.
-let styleToClassCache = {}, styleToClassCacheWithMode = {}
+let styleToClassCache = {},
+  styleToClassCacheWithMode = {}
+
 function interpretTokenStyle(style, options) {
   if (!style || /^\s*$/.test(style)) return null
   let cache = options.addModeClass ? styleToClassCacheWithMode : styleToClassCache
@@ -65,15 +100,21 @@ export function buildLineContent(cm, lineView) {
   // is needed on Webkit to be able to get line-level bounding
   // rectangles for it (in measureChar).
   let content = eltP("span", null, null, webkit ? "padding-right: .1px" : null)
-  let builder = {pre: eltP("pre", [content], "CodeMirror-line"), content: content,
-                 col: 0, pos: 0, cm: cm,
-                 trailingSpace: false,
-                 splitSpaces: cm.getOption("lineWrapping")}
+  let builder = {
+    pre: eltP("pre", [content], "CodeMirror-line"),
+    content: content,
+    col: 0,
+    pos: 0,
+    cm: cm,
+    trailingSpace: false,
+    splitSpaces: cm.getOption("lineWrapping")
+  }
   lineView.measure = {}
 
   // Iterate over the logical lines that make up this visual line.
   for (let i = 0; i <= (lineView.rest ? lineView.rest.length : 0); i++) {
-    let line = i ? lineView.rest[i - 1] : lineView.line, order
+    let line = i ? lineView.rest[i - 1] : lineView.line,
+      order
     builder.pos = 0
     builder.addToken = buildToken
     // Optionally wire in some hacks into the token-rendering
@@ -99,8 +140,9 @@ export function buildLineContent(cm, lineView) {
       lineView.measure.map = builder.map
       lineView.measure.cache = {}
     } else {
-      ;(lineView.measure.maps || (lineView.measure.maps = [])).push(builder.map)
-      ;(lineView.measure.caches || (lineView.measure.caches = [])).push({})
+      ;
+      (lineView.measure.maps || (lineView.measure.maps = [])).push(builder.map);
+      (lineView.measure.caches || (lineView.measure.caches = [])).push({})
     }
   }
 
@@ -130,7 +172,8 @@ export function defaultSpecialCharPlaceholder(ch) {
 function buildToken(builder, text, style, startStyle, endStyle, css, attributes) {
   if (!text) return
   let displayText = builder.splitSpaces ? splitSpaces(text, builder.trailingSpace) : text
-  let special = builder.cm.state.specialChars, mustWrap = false
+  let special = builder.cm.state.specialChars,
+    mustWrap = false
   let content
   if (!special.test(text)) {
     builder.col += text.length
@@ -157,7 +200,8 @@ function buildToken(builder, text, style, startStyle, endStyle, css, attributes)
       pos += skipped + 1
       let txt
       if (m[0] == "\t") {
-        let tabSize = builder.cm.options.tabSize, tabWidth = tabSize - builder.col % tabSize
+        let tabSize = builder.cm.options.tabSize,
+          tabWidth = tabSize - builder.col % tabSize
         txt = content.appendChild(elt("span", spaceStr(tabWidth), "cm-tab"))
         txt.setAttribute("role", "presentation")
         txt.setAttribute("cm-text", "\t")
@@ -184,8 +228,9 @@ function buildToken(builder, text, style, startStyle, endStyle, css, attributes)
     if (endStyle) fullStyle += endStyle
     let token = elt("span", [content], fullStyle, css)
     if (attributes) {
-      for (let attr in attributes) if (attributes.hasOwnProperty(attr) && attr != "style" && attr != "class")
-        token.setAttribute(attr, attributes[attr])
+      for (let attr in attributes)
+        if (attributes.hasOwnProperty(attr) && attr != "style" && attr != "class")
+          token.setAttribute(attr, attributes[attr])
     }
     return builder.content.appendChild(token)
   }
@@ -196,7 +241,8 @@ function buildToken(builder, text, style, startStyle, endStyle, css, attributes)
 // trailing spaces at the end of a line when rendering text (issue #1362).
 function splitSpaces(text, trailingBefore) {
   if (text.length > 1 && !/  /.test(text)) return text
-  let spaceBefore = trailingBefore, result = ""
+  let spaceBefore = trailingBefore,
+    result = ""
   for (let i = 0; i < text.length; i++) {
     let ch = text.charAt(i)
     if (ch == " " && spaceBefore && (i == text.length - 1 || text.charCodeAt(i + 1) == 32))
@@ -212,7 +258,8 @@ function splitSpaces(text, trailingBefore) {
 function buildTokenBadBidi(inner, order) {
   return (builder, text, style, startStyle, endStyle, css, attributes) => {
     style = style ? style + " cm-force-border" : "cm-force-border"
-    let start = builder.pos, end = start + text.length
+    let start = builder.pos,
+      end = start + text.length
     for (;;) {
       // Find the part that overlaps with the start of this text
       let part
@@ -248,23 +295,33 @@ function buildCollapsedSpan(builder, size, marker, ignoreWidget) {
 // Outputs a number of spans to make up a line, taking highlighting
 // and marked text into account.
 function insertLineContent(line, builder, styles) {
-  let spans = line.markedSpans, allText = line.text, at = 0
+  let spans = line.markedSpans,
+    allText = line.text,
+    at = 0
   if (!spans) {
-    for (let i = 1; i < styles.length; i+=2)
-      builder.addToken(builder, allText.slice(at, at = styles[i]), interpretTokenStyle(styles[i+1], builder.cm.options))
+    for (let i = 1; i < styles.length; i += 2)
+      builder.addToken(builder, allText.slice(at, at = styles[i]), interpretTokenStyle(styles[i + 1], builder.cm.options))
     return
   }
 
-  let len = allText.length, pos = 0, i = 1, text = "", style, css
-  let nextChange = 0, spanStyle, spanEndStyle, spanStartStyle, collapsed, attributes
+  let len = allText.length,
+    pos = 0,
+    i = 1,
+    text = "",
+    style, css
+  let nextChange = 0,
+    spanStyle, spanEndStyle, spanStartStyle, collapsed, attributes
   for (;;) {
     if (nextChange == pos) { // Update current marker set
       spanStyle = spanEndStyle = spanStartStyle = css = ""
       attributes = null
-      collapsed = null; nextChange = Infinity
-      let foundBookmarks = [], endStyles
+      collapsed = null;
+      nextChange = Infinity
+      let foundBookmarks = [],
+        endStyles
       for (let j = 0; j < spans.length; ++j) {
-        let sp = spans[j], m = sp.marker
+        let sp = spans[j],
+          m = sp.marker
         if (m.type == "bookmark" && sp.from == pos && m.widgetNode) {
           foundBookmarks.push(m)
         } else if (sp.from <= pos && (sp.to == null || sp.to > pos || m.collapsed && sp.to == pos && sp.from == pos)) {
@@ -275,10 +332,10 @@ function insertLineContent(line, builder, styles) {
           if (m.className) spanStyle += " " + m.className
           if (m.css) css = (css ? css + ";" : "") + m.css
           if (m.startStyle && sp.from == pos) spanStartStyle += " " + m.startStyle
-          if (m.endStyle && sp.to == nextChange) (endStyles || (endStyles = [])).push(m.endStyle, sp.to)
+          if (m.endStyle && sp.to == nextChange)(endStyles || (endStyles = [])).push(m.endStyle, sp.to)
           // support for the old title property
           // https://github.com/codemirror/CodeMirror/pull/5673
-          if (m.title) (attributes || (attributes = {})).title = m.title
+          if (m.title)(attributes || (attributes = {})).title = m.title
           if (m.attributes) {
             for (let attr in m.attributes)
               (attributes || (attributes = {}))[attr] = m.attributes[attr]
@@ -289,14 +346,16 @@ function insertLineContent(line, builder, styles) {
           nextChange = sp.from
         }
       }
-      if (endStyles) for (let j = 0; j < endStyles.length; j += 2)
-        if (endStyles[j + 1] == nextChange) spanEndStyle += " " + endStyles[j]
+      if (endStyles)
+        for (let j = 0; j < endStyles.length; j += 2)
+          if (endStyles[j + 1] == nextChange) spanEndStyle += " " + endStyles[j]
 
-      if (!collapsed || collapsed.from == pos) for (let j = 0; j < foundBookmarks.length; ++j)
-        buildCollapsedSpan(builder, 0, foundBookmarks[j])
+      if (!collapsed || collapsed.from == pos)
+        for (let j = 0; j < foundBookmarks.length; ++j)
+          buildCollapsedSpan(builder, 0, foundBookmarks[j])
       if (collapsed && (collapsed.from || 0) == pos) {
         buildCollapsedSpan(builder, (collapsed.to == null ? len + 1 : collapsed.to) - pos,
-                           collapsed.marker, collapsed.from == null)
+          collapsed.marker, collapsed.from == null)
         if (collapsed.to == null) return
         if (collapsed.to == pos) collapsed = false
       }
@@ -310,9 +369,13 @@ function insertLineContent(line, builder, styles) {
         if (!collapsed) {
           let tokenText = end > upto ? text.slice(0, upto - pos) : text
           builder.addToken(builder, tokenText, style ? style + spanStyle : spanStyle,
-                           spanStartStyle, pos + tokenText.length == nextChange ? spanEndStyle : "", css, attributes)
+            spanStartStyle, pos + tokenText.length == nextChange ? spanEndStyle : "", css, attributes)
         }
-        if (end >= upto) {text = text.slice(upto - pos); pos = upto; break}
+        if (end >= upto) {
+          text = text.slice(upto - pos);
+          pos = upto;
+          break
+        }
         pos = end
         spanStartStyle = ""
       }
@@ -339,7 +402,8 @@ export function LineView(doc, line, lineN) {
 
 // Create a range of LineView objects for the given lines.
 export function buildViewArray(cm, from, to) {
-  let array = [], nextPos
+  let array = [],
+    nextPos
   for (let pos = from; pos < to; pos = nextPos) {
     let view = new LineView(cm.doc, getLine(cm.doc, pos), pos)
     nextPos = pos + view.size

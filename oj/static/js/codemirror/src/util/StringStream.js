@@ -1,4 +1,6 @@
-import { countColumn } from "./misc.js"
+import {
+  countColumn
+} from "./misc.js"
 
 // STRING STREAM
 
@@ -15,9 +17,15 @@ class StringStream {
     this.lineOracle = lineOracle
   }
 
-  eol() {return this.pos >= this.string.length}
-  sol() {return this.pos == this.lineStart}
-  peek() {return this.string.charAt(this.pos) || undefined}
+  eol() {
+    return this.pos >= this.string.length
+  }
+  sol() {
+    return this.pos == this.lineStart
+  }
+  peek() {
+    return this.string.charAt(this.pos) || undefined
+  }
   next() {
     if (this.pos < this.string.length)
       return this.string.charAt(this.pos++)
@@ -27,11 +35,14 @@ class StringStream {
     let ok
     if (typeof match == "string") ok = ch == match
     else ok = ch && (match.test ? match.test(ch) : match(ch))
-    if (ok) {++this.pos; return ch}
+    if (ok) {
+      ++this.pos;
+      return ch
+    }
   }
   eatWhile(match) {
     let start = this.pos
-    while (this.eat(match)){}
+    while (this.eat(match)) {}
     return this.pos > start
   }
   eatSpace() {
@@ -39,12 +50,19 @@ class StringStream {
     while (/[\s\u00a0]/.test(this.string.charAt(this.pos))) ++this.pos
     return this.pos > start
   }
-  skipToEnd() {this.pos = this.string.length}
+  skipToEnd() {
+    this.pos = this.string.length
+  }
   skipTo(ch) {
     let found = this.string.indexOf(ch, this.pos)
-    if (found > -1) {this.pos = found; return true}
+    if (found > -1) {
+      this.pos = found;
+      return true
+    }
   }
-  backUp(n) {this.pos -= n}
+  backUp(n) {
+    this.pos -= n
+  }
   column() {
     if (this.lastColumnPos < this.start) {
       this.lastColumnValue = countColumn(this.string, this.start, this.tabSize, this.lastColumnPos, this.lastColumnValue)
@@ -71,11 +89,16 @@ class StringStream {
       return match
     }
   }
-  current(){return this.string.slice(this.start, this.pos)}
+  current() {
+    return this.string.slice(this.start, this.pos)
+  }
   hideFirstChars(n, inner) {
     this.lineStart += n
-    try { return inner() }
-    finally { this.lineStart -= n }
+    try {
+      return inner()
+    } finally {
+      this.lineStart -= n
+    }
   }
   lookAhead(n) {
     let oracle = this.lineOracle

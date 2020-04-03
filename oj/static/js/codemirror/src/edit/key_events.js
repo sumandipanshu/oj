@@ -1,14 +1,46 @@
-import { signalLater } from "../util/operation_group.js"
-import { restartBlink } from "../display/selection.js"
-import { isModifierKey, keyName, lookupKey } from "../input/keymap.js"
-import { eventInWidget } from "../measurement/widgets.js"
-import { ie, ie_version, mac, presto, gecko } from "../util/browser.js"
-import { activeElt, addClass, rmClass } from "../util/dom.js"
-import { e_preventDefault, off, on, signalDOMEvent } from "../util/event.js"
-import { hasCopyEvent } from "../util/feature_detection.js"
-import { Delayed, Pass } from "../util/misc.js"
+import {
+  signalLater
+} from "../util/operation_group.js"
+import {
+  restartBlink
+} from "../display/selection.js"
+import {
+  isModifierKey,
+  keyName,
+  lookupKey
+} from "../input/keymap.js"
+import {
+  eventInWidget
+} from "../measurement/widgets.js"
+import {
+  ie,
+  ie_version,
+  mac,
+  presto,
+  gecko
+} from "../util/browser.js"
+import {
+  activeElt,
+  addClass,
+  rmClass
+} from "../util/dom.js"
+import {
+  e_preventDefault,
+  off,
+  on,
+  signalDOMEvent
+} from "../util/event.js"
+import {
+  hasCopyEvent
+} from "../util/feature_detection.js"
+import {
+  Delayed,
+  Pass
+} from "../util/misc.js"
 
-import { commands } from "./commands.js"
+import {
+  commands
+} from "./commands.js"
 
 // Run a handler that was bound to a key.
 function doHandleBinding(cm, bound, dropShift) {
@@ -19,7 +51,8 @@ function doHandleBinding(cm, bound, dropShift) {
   // Ensure previous input has been read, so that the handler sees a
   // consistent view of the document
   cm.display.input.ensurePolled()
-  let prevShift = cm.display.shift, done = false
+  let prevShift = cm.display.shift,
+    done = false
   try {
     if (cm.isReadOnly()) cm.state.suppressEdits = true
     if (dropShift) cm.display.shift = false
@@ -36,8 +69,8 @@ function lookupKeyForEditor(cm, name, handle) {
     let result = lookupKey(name, cm.state.keyMaps[i], handle, cm)
     if (result) return result
   }
-  return (cm.options.extraKeys && lookupKey(name, cm.options.extraKeys, handle, cm))
-    || lookupKey(name, cm.options.keyMap, handle, cm)
+  return (cm.options.extraKeys && lookupKey(name, cm.options.extraKeys, handle, cm)) ||
+    lookupKey(name, cm.options.keyMap, handle, cm)
 }
 
 // Note that, despite the name, this function is also used to check
@@ -88,11 +121,11 @@ function handleKeyBinding(cm, e) {
     // First try to resolve full name (including 'Shift-'). Failing
     // that, see if there is a cursor-motion command (starting with
     // 'go') bound to the keyname without 'Shift-'.
-    return dispatchKey(cm, "Shift-" + name, e, b => doHandleBinding(cm, b, true))
-        || dispatchKey(cm, name, e, b => {
-             if (typeof b == "string" ? /^go[A-Z]/.test(b) : b.motion)
-               return doHandleBinding(cm, b)
-           })
+    return dispatchKey(cm, "Shift-" + name, e, b => doHandleBinding(cm, b, true)) ||
+      dispatchKey(cm, name, e, b => {
+        if (typeof b == "string" ? /^go[A-Z]/.test(b) : b.motion)
+          return doHandleBinding(cm, b)
+      })
   } else {
     return dispatchKey(cm, name, e, b => doHandleBinding(cm, b))
   }
@@ -150,8 +183,13 @@ export function onKeyUp(e) {
 export function onKeyPress(e) {
   let cm = this
   if (eventInWidget(cm.display, e) || signalDOMEvent(cm, e) || e.ctrlKey && !e.altKey || mac && e.metaKey) return
-  let keyCode = e.keyCode, charCode = e.charCode
-  if (presto && keyCode == lastStoppedKey) {lastStoppedKey = null; e_preventDefault(e); return}
+  let keyCode = e.keyCode,
+    charCode = e.charCode
+  if (presto && keyCode == lastStoppedKey) {
+    lastStoppedKey = null;
+    e_preventDefault(e);
+    return
+  }
   if ((presto && (!e.which || e.which < 10)) && handleKeyBinding(cm, e)) return
   let ch = String.fromCharCode(charCode == null ? keyCode : charCode)
   // Some browsers fire keypress events for backspace

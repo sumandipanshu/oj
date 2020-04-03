@@ -1,18 +1,73 @@
-import { operation, runInOp } from "../display/operations.js"
-import { prepareSelection } from "../display/selection.js"
-import { regChange } from "../display/view_tracking.js"
-import { applyTextInput, copyableRanges, disableBrowserMagic, handlePaste, hiddenTextarea, lastCopied, setLastCopied } from "./input.js"
-import { cmp, maxPos, minPos, Pos } from "../line/pos.js"
-import { getBetween, getLine, lineNo } from "../line/utils_line.js"
-import { findViewForLine, findViewIndex, mapFromLineView, nodeAndOffsetInLineMap } from "../measurement/position_measurement.js"
-import { replaceRange } from "../model/changes.js"
-import { simpleSelection } from "../model/selection.js"
-import { setSelection } from "../model/selection_updates.js"
-import { getBidiPartAt, getOrder } from "../util/bidi.js"
-import { android, chrome, gecko, ie_version } from "../util/browser.js"
-import { contains, range, removeChildrenAndAdd, selectInput } from "../util/dom.js"
-import { on, signalDOMEvent } from "../util/event.js"
-import { Delayed, lst, sel_dontScroll } from "../util/misc.js"
+import {
+  operation,
+  runInOp
+} from "../display/operations.js"
+import {
+  prepareSelection
+} from "../display/selection.js"
+import {
+  regChange
+} from "../display/view_tracking.js"
+import {
+  applyTextInput,
+  copyableRanges,
+  disableBrowserMagic,
+  handlePaste,
+  hiddenTextarea,
+  lastCopied,
+  setLastCopied
+} from "./input.js"
+import {
+  cmp,
+  maxPos,
+  minPos,
+  Pos
+} from "../line/pos.js"
+import {
+  getBetween,
+  getLine,
+  lineNo
+} from "../line/utils_line.js"
+import {
+  findViewForLine,
+  findViewIndex,
+  mapFromLineView,
+  nodeAndOffsetInLineMap
+} from "../measurement/position_measurement.js"
+import {
+  replaceRange
+} from "../model/changes.js"
+import {
+  simpleSelection
+} from "../model/selection.js"
+import {
+  setSelection
+} from "../model/selection_updates.js"
+import {
+  getBidiPartAt,
+  getOrder
+} from "../util/bidi.js"
+import {
+  android,
+  chrome,
+  gecko,
+  ie_version
+} from "../util/browser.js"
+import {
+  contains,
+  range,
+  removeChildrenAndAdd,
+  selectInput
+} from "../util/dom.js"
+import {
+  on,
+  signalDOMEvent
+} from "../util/event.js"
+import {
+  Delayed,
+  lst,
+  sel_dontScroll
+} from "../util/misc.js"
 
 // CONTENTEDITABLE INPUT STYLE
 
@@ -27,7 +82,8 @@ export default class ContentEditableInput {
   }
 
   init(display) {
-    let input = this, cm = input.cm
+    let input = this,
+      cm = input.cm
     let div = input.div = display.lineDiv
     disableBrowserMagic(div, cm.options.spellcheck, cm.options.autocorrect, cm.options.autocapitalize)
 
@@ -38,10 +94,16 @@ export default class ContentEditableInput {
     })
 
     on(div, "compositionstart", e => {
-      this.composing = {data: e.data, done: false}
+      this.composing = {
+        data: e.data,
+        done: false
+      }
     })
     on(div, "compositionupdate", e => {
-      if (!this.composing) this.composing = {data: e.data, done: false}
+      if (!this.composing) this.composing = {
+        data: e.data,
+        done: false
+      }
     })
     on(div, "compositionend", e => {
       if (this.composing) {
@@ -59,13 +121,19 @@ export default class ContentEditableInput {
     function onCopyCut(e) {
       if (signalDOMEvent(cm, e)) return
       if (cm.somethingSelected()) {
-        setLastCopied({lineWise: false, text: cm.getSelections()})
+        setLastCopied({
+          lineWise: false,
+          text: cm.getSelections()
+        })
         if (e.type == "cut") cm.replaceSelection("", null, "cut")
       } else if (!cm.options.lineWiseCopyCut) {
         return
       } else {
         let ranges = copyableRanges(cm)
-        setLastCopied({lineWise: true, text: ranges.text})
+        setLastCopied({
+          lineWise: true,
+          text: ranges.text
+        })
         if (e.type == "cut") {
           cm.operation(() => {
             cm.setSelections(ranges.ranges, 0, sel_dontScroll)
@@ -84,7 +152,8 @@ export default class ContentEditableInput {
         }
       }
       // Old-fashioned briefly-focus-a-textarea hack
-      let kludge = hiddenTextarea(), te = kludge.firstChild
+      let kludge = hiddenTextarea(),
+        te = kludge.firstChild
       cm.display.lineSpace.insertBefore(kludge, cm.display.lineSpace.firstChild)
       te.value = lastCopied.text.join("\n")
       let hadFocus = document.activeElement
@@ -116,8 +185,11 @@ export default class ContentEditableInput {
   }
 
   showPrimarySelection() {
-    let sel = this.getSelection(), cm = this.cm, prim = cm.doc.sel.primary()
-    let from = prim.from(), to = prim.to()
+    let sel = this.getSelection(),
+      cm = this.cm,
+      prim = cm.doc.sel.primary()
+    let from = prim.from(),
+      to = prim.to()
 
     if (cm.display.viewTo == cm.display.viewFrom || from.line >= cm.display.viewTo || to.line < cm.display.viewFrom) {
       sel.removeAllRanges()
@@ -127,18 +199,23 @@ export default class ContentEditableInput {
     let curAnchor = domToPos(cm, sel.anchorNode, sel.anchorOffset)
     let curFocus = domToPos(cm, sel.focusNode, sel.focusOffset)
     if (curAnchor && !curAnchor.bad && curFocus && !curFocus.bad &&
-        cmp(minPos(curAnchor, curFocus), from) == 0 &&
-        cmp(maxPos(curAnchor, curFocus), to) == 0)
+      cmp(minPos(curAnchor, curFocus), from) == 0 &&
+      cmp(maxPos(curAnchor, curFocus), to) == 0)
       return
 
     let view = cm.display.view
-    let start = (from.line >= cm.display.viewFrom && posToDOM(cm, from)) ||
-        {node: view[0].measure.map[2], offset: 0}
+    let start = (from.line >= cm.display.viewFrom && posToDOM(cm, from)) || {
+      node: view[0].measure.map[2],
+      offset: 0
+    }
     let end = to.line < cm.display.viewTo && posToDOM(cm, to)
     if (!end) {
       let measure = view[view.length - 1].measure
       let map = measure.maps ? measure.maps[measure.maps.length - 1] : measure.map
-      end = {node: map[map.length - 1], offset: map[map.length - 2] - map[map.length - 3]}
+      end = {
+        node: map[map.length - 1],
+        offset: map[map.length - 2] - map[map.length - 3]
+      }
     }
 
     if (!start || !end) {
@@ -146,9 +223,11 @@ export default class ContentEditableInput {
       return
     }
 
-    let old = sel.rangeCount && sel.getRangeAt(0), rng
-    try { rng = range(start.node, start.offset, end.offset, end.node) }
-    catch(e) {} // Our model of the DOM might be outdated, in which case the range we try to set can be impossible
+    let old = sel.rangeCount && sel.getRangeAt(0),
+      rng
+    try {
+      rng = range(start.node, start.offset, end.offset, end.node)
+    } catch (e) {} // Our model of the DOM might be outdated, in which case the range we try to set can be impossible
     if (rng) {
       if (!gecko && cm.state.focused) {
         sel.collapse(start.node, start.offset)
@@ -182,8 +261,10 @@ export default class ContentEditableInput {
 
   rememberSelection() {
     let sel = this.getSelection()
-    this.lastAnchorNode = sel.anchorNode; this.lastAnchorOffset = sel.anchorOffset
-    this.lastFocusNode = sel.focusNode; this.lastFocusOffset = sel.focusOffset
+    this.lastAnchorNode = sel.anchorNode;
+    this.lastAnchorOffset = sel.anchorOffset
+    this.lastFocusNode = sel.focusNode;
+    this.lastFocusOffset = sel.focusOffset
   }
 
   selectionInEditor() {
@@ -200,10 +281,16 @@ export default class ContentEditableInput {
       this.div.focus()
     }
   }
-  blur() { this.div.blur() }
-  getField() { return this.div }
+  blur() {
+    this.div.blur()
+  }
+  getField() {
+    return this.div
+  }
 
-  supportsTouch() { return true }
+  supportsTouch() {
+    return true
+  }
 
   receivedFocus() {
     let input = this
@@ -229,7 +316,8 @@ export default class ContentEditableInput {
 
   pollSelection() {
     if (this.readDOMTimeout != null || this.gracePeriod || !this.selectionChanged()) return
-    let sel = this.getSelection(), cm = this.cm
+    let sel = this.getSelection(),
+      cm = this.cm
     // On Android Chrome (version 56, at least), backspacing into an
     // uneditable block element will put the cursor in that element,
     // and then, because it's not editable, hide the virtual keyboard.
@@ -237,7 +325,11 @@ export default class ContentEditableInput {
     // presses in a sane way, this code checks for when that happens
     // and simulates a backspace press in this case.
     if (android && chrome && this.cm.display.gutterSpecs.length && isInGutter(sel.anchorNode)) {
-      this.cm.triggerOnKeyDown({type: "keydown", keyCode: 8, preventDefault: Math.abs})
+      this.cm.triggerOnKeyDown({
+        type: "keydown",
+        keyCode: 8,
+        preventDefault: Math.abs
+      })
       this.blur()
       this.focus()
       return
@@ -258,8 +350,11 @@ export default class ContentEditableInput {
       this.readDOMTimeout = null
     }
 
-    let cm = this.cm, display = cm.display, sel = cm.doc.sel.primary()
-    let from = sel.from(), to = sel.to()
+    let cm = this.cm,
+      display = cm.display,
+      sel = cm.doc.sel.primary()
+    let from = sel.from(),
+      to = sel.to()
     if (from.ch == 0 && from.line > cm.firstLine())
       from = Pos(from.line - 1, getLine(cm.doc, from.line - 1).length)
     if (to.ch == getLine(cm.doc, to.line).text.length && to.line < cm.lastLine())
@@ -288,25 +383,35 @@ export default class ContentEditableInput {
     let newText = cm.doc.splitLines(domTextBetween(cm, fromNode, toNode, fromLine, toLine))
     let oldText = getBetween(cm.doc, Pos(fromLine, 0), Pos(toLine, getLine(cm.doc, toLine).text.length))
     while (newText.length > 1 && oldText.length > 1) {
-      if (lst(newText) == lst(oldText)) { newText.pop(); oldText.pop(); toLine-- }
-      else if (newText[0] == oldText[0]) { newText.shift(); oldText.shift(); fromLine++ }
-      else break
+      if (lst(newText) == lst(oldText)) {
+        newText.pop();
+        oldText.pop();
+        toLine--
+      } else if (newText[0] == oldText[0]) {
+        newText.shift();
+        oldText.shift();
+        fromLine++
+      } else break
     }
 
-    let cutFront = 0, cutEnd = 0
-    let newTop = newText[0], oldTop = oldText[0], maxCutFront = Math.min(newTop.length, oldTop.length)
+    let cutFront = 0,
+      cutEnd = 0
+    let newTop = newText[0],
+      oldTop = oldText[0],
+      maxCutFront = Math.min(newTop.length, oldTop.length)
     while (cutFront < maxCutFront && newTop.charCodeAt(cutFront) == oldTop.charCodeAt(cutFront))
       ++cutFront
-    let newBot = lst(newText), oldBot = lst(oldText)
+    let newBot = lst(newText),
+      oldBot = lst(oldText)
     let maxCutEnd = Math.min(newBot.length - (newText.length == 1 ? cutFront : 0),
-                             oldBot.length - (oldText.length == 1 ? cutFront : 0))
+      oldBot.length - (oldText.length == 1 ? cutFront : 0))
     while (cutEnd < maxCutEnd &&
-           newBot.charCodeAt(newBot.length - cutEnd - 1) == oldBot.charCodeAt(oldBot.length - cutEnd - 1))
+      newBot.charCodeAt(newBot.length - cutEnd - 1) == oldBot.charCodeAt(oldBot.length - cutEnd - 1))
       ++cutEnd
     // Try to move start of change to start of selection if ambiguous
     if (newText.length == 1 && oldText.length == 1 && fromLine == from.line) {
       while (cutFront && cutFront > from.ch &&
-             newBot.charCodeAt(newBot.length - cutEnd - 1) == oldBot.charCodeAt(oldBot.length - cutEnd - 1)) {
+        newBot.charCodeAt(newBot.length - cutEnd - 1) == oldBot.charCodeAt(oldBot.length - cutEnd - 1)) {
         cutFront--
         cutEnd++
       }
@@ -381,7 +486,8 @@ function posToDOM(cm, pos) {
   let line = getLine(cm.doc, pos.line)
   let info = mapFromLineView(view, line, pos.line)
 
-  let order = getOrder(line, cm.doc.direction), side = "left"
+  let order = getOrder(line, cm.doc.direction),
+    side = "left"
   if (order) {
     let partPos = getBidiPartAt(order, pos.ch)
     side = partPos % 2 ? "right" : "left"
@@ -397,11 +503,21 @@ function isInGutter(node) {
   return false
 }
 
-function badPos(pos, bad) { if (bad) pos.bad = true; return pos }
+function badPos(pos, bad) {
+  if (bad) pos.bad = true;
+  return pos
+}
 
 function domTextBetween(cm, from, to, fromLine, toLine) {
-  let text = "", closing = false, lineSep = cm.doc.lineSeparator(), extraLinebreak = false
-  function recognizeMarker(id) { return marker => marker.id == id }
+  let text = "",
+    closing = false,
+    lineSep = cm.doc.lineSeparator(),
+    extraLinebreak = false
+
+  function recognizeMarker(id) {
+    return marker => marker.id == id
+  }
+
   function close() {
     if (closing) {
       text += lineSep
@@ -409,12 +525,14 @@ function domTextBetween(cm, from, to, fromLine, toLine) {
       closing = extraLinebreak = false
     }
   }
+
   function addText(str) {
     if (str) {
       close()
       text += str
     }
   }
+
   function walk(node) {
     if (node.nodeType == 1) {
       let cmText = node.getAttribute("cm-text")
@@ -422,7 +540,8 @@ function domTextBetween(cm, from, to, fromLine, toLine) {
         addText(cmText)
         return
       }
-      let markerID = node.getAttribute("cm-marker"), range
+      let markerID = node.getAttribute("cm-marker"),
+        range
       if (markerID) {
         let found = cm.findMarks(Pos(fromLine, 0), Pos(toLine + 1, 0), recognizeMarker(+markerID))
         if (found.length && (range = found[0].find(0)))
@@ -457,7 +576,8 @@ function domToPos(cm, node, offset) {
   if (node == cm.display.lineDiv) {
     lineNode = cm.display.lineDiv.childNodes[offset]
     if (!lineNode) return badPos(cm.clipPos(Pos(cm.display.viewTo - 1)), true)
-    node = null; offset = 0
+    node = null;
+    offset = 0
   } else {
     for (lineNode = node;; lineNode = lineNode.parentNode) {
       if (!lineNode || lineNode == cm.display.lineDiv) return null
@@ -472,7 +592,8 @@ function domToPos(cm, node, offset) {
 }
 
 function locateNodeInLineView(lineView, node, offset) {
-  let wrapper = lineView.text.firstChild, bad = false
+  let wrapper = lineView.text.firstChild,
+    bad = false
   if (!node || !contains(wrapper, node)) return badPos(Pos(lineNo(lineView.line), 0), true)
   if (node == wrapper) {
     bad = true
@@ -484,13 +605,15 @@ function locateNodeInLineView(lineView, node, offset) {
     }
   }
 
-  let textNode = node.nodeType == 3 ? node : null, topNode = node
+  let textNode = node.nodeType == 3 ? node : null,
+    topNode = node
   if (!textNode && node.childNodes.length == 1 && node.firstChild.nodeType == 3) {
     textNode = node.firstChild
     if (offset) offset = textNode.nodeValue.length
   }
   while (topNode.parentNode != wrapper) topNode = topNode.parentNode
-  let measure = lineView.measure, maps = measure.maps
+  let measure = lineView.measure,
+    maps = measure.maps
 
   function find(textNode, topNode, offset) {
     for (let i = -1; i < (maps ? maps.length : 0); i++) {

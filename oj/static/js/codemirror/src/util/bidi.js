@@ -1,4 +1,6 @@
-import { lst } from "./misc.js"
+import {
+  lst
+} from "./misc.js"
 
 // BIDI HELPERS
 
@@ -57,11 +59,12 @@ export function getBidiPartAt(order, ch, sticky) {
 // Returns null if characters are ordered as they appear
 // (left-to-right), or an array of sections ({from, to, level}
 // objects) in the order in which they occur visually.
-let bidiOrdering = (function() {
+let bidiOrdering = (function () {
   // Character types for codepoints 0 to 0xff
   let lowTypes = "bbbbbbbbbtstwsbbbbbbbbbbbbbbssstwNN%%%NNNNNN,N,N1111111111NNNNNNNLLLLLLLLLLLLLLLLLLLLLLLLLLNNNNNNLLLLLLLLLLLLLLLLLLLLLLLLLLNNNNbbbbbbsbbbbbbbbbbbbbbbbbbbbbbbbbb,N%%%%NNNNLNNNNN%%11NLNNN1LNNNNNLLLLLLLLLLLLLLLLLLLLLLLNLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLN"
   // Character types for codepoints 0x600 to 0x6f9
   let arabicTypes = "nnnnnnNNr%%r,rNNmmmmmmmmmmmrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrmmmmmmmmmmmmmmmmmmmmmnnnnnnnnnn%nnrrrmrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrmmmmmmmnNmmmmmmrrmmNmmmmrr1111111111"
+
   function charType(code) {
     if (code <= 0xf7) return lowTypes.charAt(code)
     else if (0x590 <= code && code <= 0x5f4) return "R"
@@ -73,18 +76,23 @@ let bidiOrdering = (function() {
   }
 
   let bidiRE = /[\u0590-\u05f4\u0600-\u06ff\u0700-\u08ac]/
-  let isNeutral = /[stwN]/, isStrong = /[LRr]/, countsAsLeft = /[Lb1n]/, countsAsNum = /[1n]/
+  let isNeutral = /[stwN]/,
+    isStrong = /[LRr]/,
+    countsAsLeft = /[Lb1n]/,
+    countsAsNum = /[1n]/
 
   function BidiSpan(level, from, to) {
     this.level = level
-    this.from = from; this.to = to
+    this.from = from;
+    this.to = to
   }
 
-  return function(str, direction) {
+  return function (str, direction) {
     let outerType = direction == "ltr" ? "L" : "R"
 
     if (str.length == 0 || direction == "ltr" && !bidiRE.test(str)) return false
-    let len = str.length, types = []
+    let len = str.length,
+      types = []
     for (let i = 0; i < len; ++i)
       types.push(charType(str.charCodeAt(i)))
 
@@ -106,7 +114,10 @@ let bidiOrdering = (function() {
     for (let i = 0, cur = outerType; i < len; ++i) {
       let type = types[i]
       if (type == "1" && cur == "r") types[i] = "n"
-      else if (isStrong.test(type)) { cur = type; if (type == "r") types[i] = "R" }
+      else if (isStrong.test(type)) {
+        cur = type;
+        if (type == "r") types[i] = "R"
+      }
     }
 
     // W4. A single European separator between two European numbers
@@ -114,9 +125,9 @@ let bidiOrdering = (function() {
     // two numbers of the same type changes to that type.
     for (let i = 1, prev = types[0]; i < len - 1; ++i) {
       let type = types[i]
-      if (type == "+" && prev == "1" && types[i+1] == "1") types[i] = "1"
-      else if (type == "," && prev == types[i+1] &&
-               (prev == "1" || prev == "n")) types[i] = prev
+      if (type == "+" && prev == "1" && types[i + 1] == "1") types[i] = "1"
+      else if (type == "," && prev == types[i + 1] &&
+        (prev == "1" || prev == "n")) types[i] = prev
       prev = type
     }
 
@@ -130,7 +141,7 @@ let bidiOrdering = (function() {
       else if (type == "%") {
         let end
         for (end = i + 1; end < len && types[end] == "%"; ++end) {}
-        let replace = (i && types[i-1] == "!") || (end < len && types[end] == "1") ? "1" : "N"
+        let replace = (i && types[i - 1] == "!") || (end < len && types[end] == "1") ? "1" : "N"
         for (let j = i; j < end; ++j) types[j] = replace
         i = end - 1
       }
@@ -155,7 +166,7 @@ let bidiOrdering = (function() {
       if (isNeutral.test(types[i])) {
         let end
         for (end = i + 1; end < len && isNeutral.test(types[end]); ++end) {}
-        let before = (i ? types[i-1] : outerType) == "L"
+        let before = (i ? types[i - 1] : outerType) == "L"
         let after = (end < len ? types[end] : outerType) == "L"
         let replace = before == after ? (before ? "L" : "R") : outerType
         for (let j = i; j < end; ++j) types[j] = replace
@@ -168,18 +179,24 @@ let bidiOrdering = (function() {
     // levels (0, 1, 2) in an implementation that doesn't take
     // explicit embedding into account, we can build up the order on
     // the fly, without following the level-based algorithm.
-    let order = [], m
+    let order = [],
+      m
     for (let i = 0; i < len;) {
       if (countsAsLeft.test(types[i])) {
         let start = i
         for (++i; i < len && countsAsLeft.test(types[i]); ++i) {}
         order.push(new BidiSpan(0, start, i))
       } else {
-        let pos = i, at = order.length, isRTL = direction == "rtl" ? 1 : 0
+        let pos = i,
+          at = order.length,
+          isRTL = direction == "rtl" ? 1 : 0
         for (++i; i < len && types[i] != "L"; ++i) {}
         for (let j = pos; j < i;) {
           if (countsAsNum.test(types[j])) {
-            if (pos < j) { order.splice(at, 0, new BidiSpan(1, pos, j)); at += isRTL }
+            if (pos < j) {
+              order.splice(at, 0, new BidiSpan(1, pos, j));
+              at += isRTL
+            }
             let nstart = j
             for (++j; j < i && countsAsNum.test(types[j]); ++j) {}
             order.splice(at, 0, new BidiSpan(2, nstart, j))

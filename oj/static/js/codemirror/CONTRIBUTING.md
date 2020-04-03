@@ -1,8 +1,11 @@
 # How to contribute
 
-- [Getting help](#getting-help)
-- [Submitting bug reports](#submitting-bug-reports)
-- [Contributing code](#contributing-code)
+- [How to contribute](#how-to-contribute)
+  - [Getting help](#getting-help)
+  - [Submitting bug reports](#submitting-bug-reports)
+    - [Reporting bugs effectively](#reporting-bugs-effectively)
+  - [Contributing code](#contributing-code)
+    - [Coding standards](#coding-standards)
 
 ## Getting help
 

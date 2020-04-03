@@ -11,7 +11,7 @@
 <div id="credentials-box">
     <div id="cred-header">Enter Your Details</div>
     <div id="cred-body">
-        <form name="signup" method="post" >
+        <form name="signup" method="post">
             {% csrf_token %}
             <div class="field">
                 <div class="name">
@@ -24,23 +24,25 @@
                     <label for="email">Email</label>
                 </div>
                 <div class="value">
-                    <input id="email" name="email" value="" required>
+                    <input id="email" name="email" type="email" value="" required>
                 </div>
                 <div class="name">
                     <label for="password">Password</label>
                 </div>
                 <div class="value">
                     <input id="password" type="password" name="password1"
-                        title="Password must be 8 characters including 1 uppercase letter, 1 lowercase letter and numeric characters"
-                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" value="" required>
+                        title="Password must be 8 characters including 1 uppercase letter, 1 lowercase letter, 1 numeric and 1 special characters"
+                        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}" value=""
+                        required>
                 </div>
                 <div class="name">
                     <label for="cnfpassword">Confirm Password</label>
                 </div>
                 <div class="value">
                     <input id="cnfpassword" type="password" name="password2"
-                        title="Password must be 8 characters including 1 uppercase letter, 1 lowercase letter and numeric characters"
-                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" value="" required>
+                        title="Password must be 8 characters including 1 uppercase letter, 1 lowercase letter, 1 numeric and 1 special characters"
+                        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}" value=""
+                        required>
                 </div>
             </div>
             <div class="button-field">

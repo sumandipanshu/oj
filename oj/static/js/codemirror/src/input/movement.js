@@ -1,7 +1,20 @@
-import { Pos } from "../line/pos.js"
-import { prepareMeasureForLine, measureCharPrepared, wrappedLineExtentChar } from "../measurement/position_measurement.js"
-import { getBidiPartAt, getOrder } from "../util/bidi.js"
-import { findFirst, lst, skipExtendingChars } from "../util/misc.js"
+import {
+  Pos
+} from "../line/pos.js"
+import {
+  prepareMeasureForLine,
+  measureCharPrepared,
+  wrappedLineExtentChar
+} from "../measurement/position_measurement.js"
+import {
+  getBidiPartAt,
+  getOrder
+} from "../util/bidi.js"
+import {
+  findFirst,
+  lst,
+  skipExtendingChars
+} from "../util/misc.js"
 
 function moveCharLogically(line, ch, dir) {
   let target = skipExtendingChars(line.text, ch + dir, dir)
@@ -51,7 +64,8 @@ export function moveVisually(cm, line, start, dir) {
     start.ch = 0
     start.sticky = "after"
   }
-  let partPos = getBidiPartAt(bidi, start.ch, start.sticky), part = bidi[partPos]
+  let partPos = getBidiPartAt(bidi, start.ch, start.sticky),
+    part = bidi[partPos]
   if (cm.doc.direction == "ltr" && part.level % 2 == 0 && (dir > 0 ? part.to > start.ch : part.from < start.ch)) {
     // Case 1: We move within an ltr part in an ltr editor. Even with wrapped lines,
     // nothing interesting happens.
@@ -61,7 +75,10 @@ export function moveVisually(cm, line, start, dir) {
   let mv = (pos, dir) => moveCharLogically(line, pos instanceof Pos ? pos.ch : pos, dir)
   let prep
   let getWrappedLineExtent = ch => {
-    if (!cm.options.lineWrapping) return {begin: 0, end: line.text.length}
+    if (!cm.options.lineWrapping) return {
+      begin: 0,
+      end: line.text.length
+    }
     prep = prep || prepareMeasureForLine(cm, line)
     return wrappedLineExtentChar(cm, line, prep, ch)
   }
@@ -81,9 +98,9 @@ export function moveVisually(cm, line, start, dir) {
   // the current bidi part
 
   let searchInVisualLine = (partPos, dir, wrappedLineExtent) => {
-    let getRes = (ch, moveInStorageOrder) => moveInStorageOrder
-      ? new Pos(start.line, mv(ch, 1), "before")
-      : new Pos(start.line, ch, "after")
+    let getRes = (ch, moveInStorageOrder) => moveInStorageOrder ?
+      new Pos(start.line, mv(ch, 1), "before") :
+      new Pos(start.line, ch, "after")
 
     for (; partPos >= 0 && partPos < bidi.length; partPos += dir) {
       let part = bidi[partPos]

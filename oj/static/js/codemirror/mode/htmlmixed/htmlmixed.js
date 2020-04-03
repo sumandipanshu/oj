@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
-(function(mod) {
+(function (mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../xml/xml"), require("../javascript/javascript"), require("../css/css"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../xml/xml", "../javascript/javascript", "../css/css"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+})(function (CodeMirror) {
   "use strict";
 
   var defaultTags = {
@@ -18,7 +18,7 @@
       ["type", /./, "text/plain"],
       [null, null, "javascript"]
     ],
-    style:  [
+    style: [
       ["lang", /^css$/i, "css"],
       ["type", /^(text\/)?(x-)?(stylesheet|css)$/i, "css"],
       ["type", /./, "text/plain"],
@@ -27,7 +27,8 @@
   };
 
   function maybeBackup(stream, pat, style) {
-    var cur = stream.current(), close = cur.search(pat);
+    var cur = stream.current(),
+      close = cur.search(pat);
     if (close > -1) {
       stream.backUp(cur.length - close);
     } else if (cur.match(/<\/?$/)) {
@@ -38,6 +39,7 @@
   }
 
   var attrRegexpCache = {};
+
   function getAttrRegexp(attr) {
     var regexp = attrRegexpCache[attr];
     if (regexp) return regexp;
@@ -78,24 +80,29 @@
     });
 
     var tags = {};
-    var configTags = parserConfig && parserConfig.tags, configScript = parserConfig && parserConfig.scriptTypes;
+    var configTags = parserConfig && parserConfig.tags,
+      configScript = parserConfig && parserConfig.scriptTypes;
     addTags(defaultTags, tags);
     if (configTags) addTags(configTags, tags);
-    if (configScript) for (var i = configScript.length - 1; i >= 0; i--)
-      tags.script.unshift(["type", configScript[i].matches, configScript[i].mode])
+    if (configScript)
+      for (var i = configScript.length - 1; i >= 0; i--)
+        tags.script.unshift(["type", configScript[i].matches, configScript[i].mode])
 
     function html(stream, state) {
-      var style = htmlMode.token(stream, state.htmlState), tag = /\btag\b/.test(style), tagName
+      var style = htmlMode.token(stream, state.htmlState),
+        tag = /\btag\b/.test(style),
+        tagName
       if (tag && !/[<>\s\/]/.test(stream.current()) &&
-          (tagName = state.htmlState.tagName && state.htmlState.tagName.toLowerCase()) &&
-          tags.hasOwnProperty(tagName)) {
+        (tagName = state.htmlState.tagName && state.htmlState.tagName.toLowerCase()) &&
+        tags.hasOwnProperty(tagName)) {
         state.inTag = tagName + " "
       } else if (state.inTag && tag && />$/.test(stream.current())) {
         var inTag = /^([\S]+) (.*)/.exec(state.inTag)
         state.inTag = null
         var modeSpec = stream.current() == ">" && findMatchingMode(tags[inTag[1]], inTag[2])
         var mode = CodeMirror.getMode(config, modeSpec)
-        var endTagA = getTagRegexp(inTag[1], true), endTag = getTagRegexp(inTag[1], false);
+        var endTagA = getTagRegexp(inTag[1], true),
+          endTag = getTagRegexp(inTag[1], false);
         state.token = function (stream, state) {
           if (stream.match(endTagA, false)) {
             state.token = html;
@@ -116,7 +123,13 @@
     return {
       startState: function () {
         var state = CodeMirror.startState(htmlMode);
-        return {token: html, inTag: null, localMode: null, localState: null, htmlState: state};
+        return {
+          token: html,
+          inTag: null,
+          localMode: null,
+          localState: null,
+          htmlState: state
+        };
       },
 
       copyState: function (state) {
@@ -124,9 +137,13 @@
         if (state.localState) {
           local = CodeMirror.copyState(state.localMode, state.localState);
         }
-        return {token: state.token, inTag: state.inTag,
-                localMode: state.localMode, localState: local,
-                htmlState: CodeMirror.copyState(htmlMode, state.htmlState)};
+        return {
+          token: state.token,
+          inTag: state.inTag,
+          localMode: state.localMode,
+          localState: local,
+          htmlState: CodeMirror.copyState(htmlMode, state.htmlState)
+        };
       },
 
       token: function (stream, state) {
@@ -143,7 +160,10 @@
       },
 
       innerMode: function (state) {
-        return {state: state.localState || state.htmlState, mode: state.localMode || htmlMode};
+        return {
+          state: state.localState || state.htmlState,
+          mode: state.localMode || htmlMode
+        };
       }
     };
   }, "xml", "javascript", "css");

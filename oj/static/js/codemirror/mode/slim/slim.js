@@ -3,20 +3,25 @@
 
 // Slim Highlighting for CodeMirror copyright (c) HicknHack Software Gmbh
 
-(function(mod) {
+(function (mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../htmlmixed/htmlmixed"), require("../ruby/ruby"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../htmlmixed/htmlmixed", "../ruby/ruby"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
-"use strict";
+})(function (CodeMirror) {
+  "use strict";
 
-  CodeMirror.defineMode("slim", function(config) {
-    var htmlMode = CodeMirror.getMode(config, {name: "htmlmixed"});
+  CodeMirror.defineMode("slim", function (config) {
+    var htmlMode = CodeMirror.getMode(config, {
+      name: "htmlmixed"
+    });
     var rubyMode = CodeMirror.getMode(config, "ruby");
-    var modes = { html: htmlMode, ruby: rubyMode };
+    var modes = {
+      html: htmlMode,
+      ruby: rubyMode
+    };
     var embedded = {
       ruby: "ruby",
       javascript: "javascript",
@@ -37,10 +42,10 @@
       nokogiri: "text/x-nokogiri", // no highlighting so far
       erb: "application/x-erb"
     };
-    var embeddedRegexp = function(map){
+    var embeddedRegexp = function (map) {
       var arr = [];
-      for(var key in map) arr.push(key);
-      return new RegExp("^("+arr.join('|')+"):");
+      for (var key in map) arr.push(key);
+      return new RegExp("^(" + arr.join('|') + "):");
     }(embedded);
 
     var styleMap = {
@@ -63,14 +68,14 @@
 
     var nameStartChar = "_a-zA-Z\xC0-\xD6\xD8-\xF6\xF8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD";
     var nameChar = nameStartChar + "\\-0-9\xB7\u0300-\u036F\u203F-\u2040";
-    var nameRegexp = new RegExp("^[:"+nameStartChar+"](?::["+nameChar+"]|["+nameChar+"]*)");
-    var attributeNameRegexp = new RegExp("^[:"+nameStartChar+"][:\\."+nameChar+"]*(?=\\s*=)");
-    var wrappedAttributeNameRegexp = new RegExp("^[:"+nameStartChar+"][:\\."+nameChar+"]*");
+    var nameRegexp = new RegExp("^[:" + nameStartChar + "](?::[" + nameChar + "]|[" + nameChar + "]*)");
+    var attributeNameRegexp = new RegExp("^[:" + nameStartChar + "][:\\." + nameChar + "]*(?=\\s*=)");
+    var wrappedAttributeNameRegexp = new RegExp("^[:" + nameStartChar + "][:\\." + nameChar + "]*");
     var classNameRegexp = /^\.-?[_a-zA-Z]+[\w\-]*/;
     var classIdRegexp = /^#[_a-zA-Z]+[\w\-]*/;
 
     function backup(pos, tokenize, style) {
-      var restore = function(stream, state) {
+      var restore = function (stream, state) {
         state.tokenize = tokenize;
         if (stream.pos < pos) {
           stream.pos = pos;
@@ -78,7 +83,7 @@
         }
         return state.tokenize(stream, state);
       };
-      return function(stream, state) {
+      return function (stream, state) {
         state.tokenize = restore;
         return tokenize(stream, state);
       };
@@ -103,6 +108,7 @@
       };
       state.line = state.tokenize;
     }
+
     function finishContinue(state) {
       if (state.line == state.tokenize) {
         state.line = state.stack.tokenize;
@@ -111,7 +117,7 @@
     }
 
     function lineContinuable(column, tokenize) {
-      return function(stream, state) {
+      return function (stream, state) {
         finishContinue(state);
         if (stream.match(/^\\$/)) {
           continueLine(state, column);
@@ -124,8 +130,9 @@
         return style;
       };
     }
+
     function commaContinuable(column, tokenize) {
-      return function(stream, state) {
+      return function (stream, state) {
         finishContinue(state);
         var style = tokenize(stream, state);
         if (stream.eol() && stream.current().match(/,$/)) {
@@ -137,7 +144,7 @@
 
     function rubyInQuote(endQuote, tokenize) {
       // TODO: add multi line support
-      return function(stream, state) {
+      return function (stream, state) {
         var ch = stream.peek();
         if (ch == endQuote && state.rubyState.tokenize.length == 1) {
           // step out of ruby context as it seems to complete processing all the braces
@@ -149,9 +156,10 @@
         }
       };
     }
+
     function startRubySplat(tokenize) {
       var rubyState;
-      var runSplat = function(stream, state) {
+      var runSplat = function (stream, state) {
         if (state.rubyState.tokenize.length == 1 && !state.rubyState.context.prev) {
           stream.backUp(1);
           if (stream.eatSpace()) {
@@ -163,7 +171,7 @@
         }
         return ruby(stream, state);
       };
-      return function(stream, state) {
+      return function (stream, state) {
         rubyState = state.rubyState;
         state.rubyState = CodeMirror.startState(rubyMode);
         state.tokenize = runSplat;
@@ -181,6 +189,7 @@
       }
       return html(stream, state);
     }
+
     function html(stream, state) {
       if (stream.match(/^#\{/)) {
         state.tokenize = rubyInQuote("}", state.tokenize);
@@ -190,7 +199,7 @@
     }
 
     function startHtmlLine(lastTokenize) {
-      return function(stream, state) {
+      return function (stream, state) {
         var style = htmlLine(stream, state);
         if (stream.eol()) state.tokenize = lastTokenize;
         return style;
@@ -238,6 +247,7 @@
       stream.next();
       return null;
     }
+
     function attributeWrapperAssign(stream, state) {
       if (stream.match(/^==?/)) {
         state.tokenize = attributeWrapperValue;
@@ -245,6 +255,7 @@
       }
       return attributeWrapper(stream, state);
     }
+
     function attributeWrapperValue(stream, state) {
       var ch = stream.peek();
       if (ch == '"' || ch == "\'") {
@@ -289,6 +300,7 @@
       stream.pos = subStream.pos + state.stack.indented;
       return style;
     }
+
     function firstSub(stream, state) {
       state.stack.indented = stream.column();
       state.line = state.tokenize = sub;
@@ -303,7 +315,9 @@
       }
       var factory = CodeMirror.modes[query];
       if (factory) {
-        return factory(config, {name: query});
+        return factory(config, {
+          name: query
+        });
       }
       return CodeMirror.getMode(config, "null");
     }
@@ -383,6 +397,7 @@
       }
       return slimClass(stream, state);
     }
+
     function slimTagExtras(stream, state) {
       if (stream.match(/^(<>?|><?)/)) {
         state.tokenize = slimClass;
@@ -390,6 +405,7 @@
       }
       return slimClass(stream, state);
     }
+
     function slimClass(stream, state) {
       if (stream.match(classIdRegexp)) {
         state.tokenize = slimClass;
@@ -401,6 +417,7 @@
       }
       return slimAttribute(stream, state);
     }
+
     function slimAttribute(stream, state) {
       if (stream.match(/^([\[\{\(])/)) {
         return startAttributeWrapperMode(state, closing[RegExp.$1], slimAttribute);
@@ -416,6 +433,7 @@
       }
       return slimContent(stream, state);
     }
+
     function slimAttributeAssign(stream, state) {
       if (stream.match(/^==?/)) {
         state.tokenize = slimAttributeValue;
@@ -444,6 +462,7 @@
       }
       return startRubySplat(slimAttribute)(stream, state);
     }
+
     function slimAttributeSymbols(stream, state) {
       stream.backUp(1);
       if (stream.match(/^[^\s],(?=:)/)) {
@@ -453,8 +472,9 @@
       stream.next();
       return slimAttribute(stream, state);
     }
+
     function readQuoted(quote, style, embed, unescaped, nextTokenize) {
-      return function(stream, state) {
+      return function (stream, state) {
         finishContinue(state);
         var fresh = stream.current().length == 0;
         if (stream.match(/^\\$/, fresh)) {
@@ -467,7 +487,8 @@
           state.tokenize = rubyInQuote("}", state.tokenize);
           return null;
         }
-        var escaped = false, ch;
+        var escaped = false,
+          ch;
         while ((ch = stream.next()) != null) {
           if (ch == quote && (unescaped || !escaped)) {
             state.tokenize = nextTokenize;
@@ -487,6 +508,7 @@
         return style;
       };
     }
+
     function slimContent(stream, state) {
       if (stream.match(/^==?/)) {
         state.tokenize = ruby;
@@ -506,7 +528,7 @@
 
     var mode = {
       // default to html mode
-      startState: function() {
+      startState: function () {
         var htmlState = CodeMirror.startState(htmlMode);
         var rubyState = CodeMirror.startState(rubyMode);
         return {
@@ -520,9 +542,9 @@
         };
       },
 
-      copyState: function(state) {
+      copyState: function (state) {
         return {
-          htmlState : CodeMirror.copyState(htmlMode, state.htmlState),
+          htmlState: CodeMirror.copyState(htmlMode, state.htmlState),
           rubyState: CodeMirror.copyState(rubyMode, state.rubyState),
           subMode: state.subMode,
           subState: state.subMode && CodeMirror.copyState(state.subMode, state.subState),
@@ -533,7 +555,7 @@
         };
       },
 
-      token: function(stream, state) {
+      token: function (stream, state) {
         if (stream.sol()) {
           state.indented = stream.indentation();
           state.startOfLine = true;
@@ -552,15 +574,21 @@
         return styleMap.hasOwnProperty(style) ? styleMap[style] : style;
       },
 
-      blankLine: function(state) {
+      blankLine: function (state) {
         if (state.subMode && state.subMode.blankLine) {
           return state.subMode.blankLine(state.subState);
         }
       },
 
-      innerMode: function(state) {
-        if (state.subMode) return {state: state.subState, mode: state.subMode};
-        return {state: state, mode: mode};
+      innerMode: function (state) {
+        if (state.subMode) return {
+          state: state.subState,
+          mode: state.subMode
+        };
+        return {
+          state: state,
+          mode: mode
+        };
       }
 
       //indent: function(state) {

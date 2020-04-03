@@ -1,8 +1,16 @@
-import { elt, range, removeChildren, removeChildrenAndAdd } from "./dom.js"
-import { ie, ie_version } from "./browser.js"
+import {
+  elt,
+  range,
+  removeChildren,
+  removeChildrenAndAdd
+} from "./dom.js"
+import {
+  ie,
+  ie_version
+} from "./browser.js"
 
 // Detect drag-and-drop
-export let dragAndDrop = function() {
+export let dragAndDrop = function () {
   // There is *some* kind of drag-and-drop support in IE6-8, but I
   // couldn't get it to work yet.
   if (ie && ie_version < 9) return false
@@ -39,7 +47,9 @@ export function hasBadBidiRects(measure) {
 // See if "".split is the broken IE version, if so, provide an
 // alternative way to split lines.
 export let splitLinesAuto = "\n\nb".split(/\n/).length != 3 ? string => {
-  let pos = 0, result = [], l = string.length
+  let pos = 0,
+    result = [],
+    l = string.length
   while (pos <= l) {
     let nl = string.indexOf("\n", pos)
     if (nl == -1) nl = string.length
@@ -57,12 +67,16 @@ export let splitLinesAuto = "\n\nb".split(/\n/).length != 3 ? string => {
 } : string => string.split(/\r\n?|\n/)
 
 export let hasSelection = window.getSelection ? te => {
-  try { return te.selectionStart != te.selectionEnd }
-  catch(e) { return false }
+  try {
+    return te.selectionStart != te.selectionEnd
+  } catch (e) {
+    return false
+  }
 } : te => {
   let range
-  try {range = te.ownerDocument.selection.createRange()}
-  catch(e) {}
+  try {
+    range = te.ownerDocument.selection.createRange()
+  } catch (e) {}
   if (!range || range.parentElement() != te) return false
   return range.compareEndPoints("StartToEnd", range) != 0
 }

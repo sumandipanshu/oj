@@ -1,16 +1,23 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
-(function() {
-  var mode = CodeMirror.getMode({indentUnit: 2}, "powershell");
-  function MT(name) { test.mode(name, mode, Array.prototype.slice.call(arguments, 1)); }
+(function () {
+  var mode = CodeMirror.getMode({
+    indentUnit: 2
+  }, "powershell");
 
-  function forEach(arr, f) { for (var i = 0; i < arr.length; i++) f(arr[i], i) }
+  function MT(name) {
+    test.mode(name, mode, Array.prototype.slice.call(arguments, 1));
+  }
+
+  function forEach(arr, f) {
+    for (var i = 0; i < arr.length; i++) f(arr[i], i)
+  }
 
   MT('comment', '[number 1][comment # A]');
   MT('comment_multiline', '[number 1][comment <#]',
     '[comment ABC]',
-  '[comment #>][number 2]');
+    '[comment #>][number 2]');
 
   forEach([
     '0', '1234',
@@ -18,7 +25,7 @@
     '1.234', '1.234e56', '1.', '1.e2', '.2', '.2e34',
     '1.2MB', '1.kb', '.1dTB', '1.e1gb', '.2', '.2e34',
     '0x1', '0xabcdef', '0x3tb', '0xelmb'
-  ], function(number) {
+  ], function (number) {
     MT("number_" + number, "[number " + number + "]");
   });
 
@@ -34,27 +41,27 @@
 
   MT('string_heredoc', '[string @"]',
     '[string abc]',
-  '[string "@]');
+    '[string "@]');
   MT('string_heredoc_quotes', '[string @"]',
     '[string abc "\']',
-  '[string "@]');
+    '[string "@]');
   MT('string_heredoc_variable', '[string @"]',
     '[string a ][variable-2 $x][string  b]',
-  '[string "@]');
+    '[string "@]');
   MT('string_heredoc_nested_string', '[string @"]',
     '[string a][punctuation $(][string "w"][punctuation )][string b]',
-  '[string "@]');
+    '[string "@]');
   MT('string_heredoc_literal_quotes', "[string @']",
     '[string abc "\']',
-  "[string '@]");
+    "[string '@]");
 
   MT('array', "[punctuation @(][string 'a'][punctuation ,][string 'b'][punctuation )]");
   MT('hash', "[punctuation @{][string 'key'][operator :][string 'value'][punctuation }]");
 
   MT('variable', "[variable-2 $test]");
-  MT('variable_global',  "[variable-2 $global:test]");
-  MT('variable_spaces',  "[variable-2 ${test test}]");
-  MT('operator_splat',   "[variable-2 @x]");
+  MT('variable_global', "[variable-2 $global:test]");
+  MT('variable_spaces', "[variable-2 ${test test}]");
+  MT('operator_splat', "[variable-2 @x]");
   MT('variable_builtin', "[builtin $ErrorActionPreference]");
   MT('variable_builtin_symbols', "[builtin $$]");
 
@@ -64,8 +71,8 @@
 
   forEach([
     '(', ')', '[[', ']]', '{', '}', ',', '`', ';', '.'
-  ], function(punctuation) {
-    MT("punctuation_" + punctuation.replace(/^[\[\]]/,''), "[punctuation " + punctuation + "]");
+  ], function (punctuation) {
+    MT("punctuation_" + punctuation.replace(/^[\[\]]/, ''), "[punctuation " + punctuation + "]");
   });
 
   MT('keyword', "[keyword if]");

@@ -1,47 +1,119 @@
-import { flipCtrlCmd, mac, presto } from "../util/browser.js"
-import { map } from "../util/misc.js"
+import {
+  flipCtrlCmd,
+  mac,
+  presto
+} from "../util/browser.js"
+import {
+  map
+} from "../util/misc.js"
 
-import { keyNames } from "./keynames.js"
+import {
+  keyNames
+} from "./keynames.js"
 
 export let keyMap = {}
 
 keyMap.basic = {
-  "Left": "goCharLeft", "Right": "goCharRight", "Up": "goLineUp", "Down": "goLineDown",
-  "End": "goLineEnd", "Home": "goLineStartSmart", "PageUp": "goPageUp", "PageDown": "goPageDown",
-  "Delete": "delCharAfter", "Backspace": "delCharBefore", "Shift-Backspace": "delCharBefore",
-  "Tab": "defaultTab", "Shift-Tab": "indentAuto",
-  "Enter": "newlineAndIndent", "Insert": "toggleOverwrite",
+  "Left": "goCharLeft",
+  "Right": "goCharRight",
+  "Up": "goLineUp",
+  "Down": "goLineDown",
+  "End": "goLineEnd",
+  "Home": "goLineStartSmart",
+  "PageUp": "goPageUp",
+  "PageDown": "goPageDown",
+  "Delete": "delCharAfter",
+  "Backspace": "delCharBefore",
+  "Shift-Backspace": "delCharBefore",
+  "Tab": "defaultTab",
+  "Shift-Tab": "indentAuto",
+  "Enter": "newlineAndIndent",
+  "Insert": "toggleOverwrite",
   "Esc": "singleSelection"
 }
 // Note that the save and find-related commands aren't defined by
 // default. User code or addons can define them. Unknown commands
 // are simply ignored.
 keyMap.pcDefault = {
-  "Ctrl-A": "selectAll", "Ctrl-D": "deleteLine", "Ctrl-Z": "undo", "Shift-Ctrl-Z": "redo", "Ctrl-Y": "redo",
-  "Ctrl-Home": "goDocStart", "Ctrl-End": "goDocEnd", "Ctrl-Up": "goLineUp", "Ctrl-Down": "goLineDown",
-  "Ctrl-Left": "goGroupLeft", "Ctrl-Right": "goGroupRight", "Alt-Left": "goLineStart", "Alt-Right": "goLineEnd",
-  "Ctrl-Backspace": "delGroupBefore", "Ctrl-Delete": "delGroupAfter", "Ctrl-S": "save", "Ctrl-F": "find",
-  "Ctrl-G": "findNext", "Shift-Ctrl-G": "findPrev", "Shift-Ctrl-F": "replace", "Shift-Ctrl-R": "replaceAll",
-  "Ctrl-[": "indentLess", "Ctrl-]": "indentMore",
-  "Ctrl-U": "undoSelection", "Shift-Ctrl-U": "redoSelection", "Alt-U": "redoSelection",
+  "Ctrl-A": "selectAll",
+  "Ctrl-D": "deleteLine",
+  "Ctrl-Z": "undo",
+  "Shift-Ctrl-Z": "redo",
+  "Ctrl-Y": "redo",
+  "Ctrl-Home": "goDocStart",
+  "Ctrl-End": "goDocEnd",
+  "Ctrl-Up": "goLineUp",
+  "Ctrl-Down": "goLineDown",
+  "Ctrl-Left": "goGroupLeft",
+  "Ctrl-Right": "goGroupRight",
+  "Alt-Left": "goLineStart",
+  "Alt-Right": "goLineEnd",
+  "Ctrl-Backspace": "delGroupBefore",
+  "Ctrl-Delete": "delGroupAfter",
+  "Ctrl-S": "save",
+  "Ctrl-F": "find",
+  "Ctrl-G": "findNext",
+  "Shift-Ctrl-G": "findPrev",
+  "Shift-Ctrl-F": "replace",
+  "Shift-Ctrl-R": "replaceAll",
+  "Ctrl-[": "indentLess",
+  "Ctrl-]": "indentMore",
+  "Ctrl-U": "undoSelection",
+  "Shift-Ctrl-U": "redoSelection",
+  "Alt-U": "redoSelection",
   "fallthrough": "basic"
 }
 // Very basic readline/emacs-style bindings, which are standard on Mac.
 keyMap.emacsy = {
-  "Ctrl-F": "goCharRight", "Ctrl-B": "goCharLeft", "Ctrl-P": "goLineUp", "Ctrl-N": "goLineDown",
-  "Alt-F": "goWordRight", "Alt-B": "goWordLeft", "Ctrl-A": "goLineStart", "Ctrl-E": "goLineEnd",
-  "Ctrl-V": "goPageDown", "Shift-Ctrl-V": "goPageUp", "Ctrl-D": "delCharAfter", "Ctrl-H": "delCharBefore",
-  "Alt-D": "delWordAfter", "Alt-Backspace": "delWordBefore", "Ctrl-K": "killLine", "Ctrl-T": "transposeChars",
+  "Ctrl-F": "goCharRight",
+  "Ctrl-B": "goCharLeft",
+  "Ctrl-P": "goLineUp",
+  "Ctrl-N": "goLineDown",
+  "Alt-F": "goWordRight",
+  "Alt-B": "goWordLeft",
+  "Ctrl-A": "goLineStart",
+  "Ctrl-E": "goLineEnd",
+  "Ctrl-V": "goPageDown",
+  "Shift-Ctrl-V": "goPageUp",
+  "Ctrl-D": "delCharAfter",
+  "Ctrl-H": "delCharBefore",
+  "Alt-D": "delWordAfter",
+  "Alt-Backspace": "delWordBefore",
+  "Ctrl-K": "killLine",
+  "Ctrl-T": "transposeChars",
   "Ctrl-O": "openLine"
 }
 keyMap.macDefault = {
-  "Cmd-A": "selectAll", "Cmd-D": "deleteLine", "Cmd-Z": "undo", "Shift-Cmd-Z": "redo", "Cmd-Y": "redo",
-  "Cmd-Home": "goDocStart", "Cmd-Up": "goDocStart", "Cmd-End": "goDocEnd", "Cmd-Down": "goDocEnd", "Alt-Left": "goGroupLeft",
-  "Alt-Right": "goGroupRight", "Cmd-Left": "goLineLeft", "Cmd-Right": "goLineRight", "Alt-Backspace": "delGroupBefore",
-  "Ctrl-Alt-Backspace": "delGroupAfter", "Alt-Delete": "delGroupAfter", "Cmd-S": "save", "Cmd-F": "find",
-  "Cmd-G": "findNext", "Shift-Cmd-G": "findPrev", "Cmd-Alt-F": "replace", "Shift-Cmd-Alt-F": "replaceAll",
-  "Cmd-[": "indentLess", "Cmd-]": "indentMore", "Cmd-Backspace": "delWrappedLineLeft", "Cmd-Delete": "delWrappedLineRight",
-  "Cmd-U": "undoSelection", "Shift-Cmd-U": "redoSelection", "Ctrl-Up": "goDocStart", "Ctrl-Down": "goDocEnd",
+  "Cmd-A": "selectAll",
+  "Cmd-D": "deleteLine",
+  "Cmd-Z": "undo",
+  "Shift-Cmd-Z": "redo",
+  "Cmd-Y": "redo",
+  "Cmd-Home": "goDocStart",
+  "Cmd-Up": "goDocStart",
+  "Cmd-End": "goDocEnd",
+  "Cmd-Down": "goDocEnd",
+  "Alt-Left": "goGroupLeft",
+  "Alt-Right": "goGroupRight",
+  "Cmd-Left": "goLineLeft",
+  "Cmd-Right": "goLineRight",
+  "Alt-Backspace": "delGroupBefore",
+  "Ctrl-Alt-Backspace": "delGroupAfter",
+  "Alt-Delete": "delGroupAfter",
+  "Cmd-S": "save",
+  "Cmd-F": "find",
+  "Cmd-G": "findNext",
+  "Shift-Cmd-G": "findPrev",
+  "Cmd-Alt-F": "replace",
+  "Shift-Cmd-Alt-F": "replaceAll",
+  "Cmd-[": "indentLess",
+  "Cmd-]": "indentMore",
+  "Cmd-Backspace": "delWrappedLineLeft",
+  "Cmd-Delete": "delWrappedLineRight",
+  "Cmd-U": "undoSelection",
+  "Shift-Cmd-U": "redoSelection",
+  "Ctrl-Up": "goDocStart",
+  "Ctrl-Down": "goDocEnd",
   "fallthrough": ["basic", "emacsy"]
 }
 keyMap["default"] = mac ? keyMap.macDefault : keyMap.pcDefault
@@ -74,27 +146,31 @@ function normalizeKeyName(name) {
 // this.
 export function normalizeKeyMap(keymap) {
   let copy = {}
-  for (let keyname in keymap) if (keymap.hasOwnProperty(keyname)) {
-    let value = keymap[keyname]
-    if (/^(name|fallthrough|(de|at)tach)$/.test(keyname)) continue
-    if (value == "...") { delete keymap[keyname]; continue }
-
-    let keys = map(keyname.split(" "), normalizeKeyName)
-    for (let i = 0; i < keys.length; i++) {
-      let val, name
-      if (i == keys.length - 1) {
-        name = keys.join(" ")
-        val = value
-      } else {
-        name = keys.slice(0, i + 1).join(" ")
-        val = "..."
+  for (let keyname in keymap)
+    if (keymap.hasOwnProperty(keyname)) {
+      let value = keymap[keyname]
+      if (/^(name|fallthrough|(de|at)tach)$/.test(keyname)) continue
+      if (value == "...") {
+        delete keymap[keyname];
+        continue
       }
-      let prev = copy[name]
-      if (!prev) copy[name] = val
-      else if (prev != val) throw new Error("Inconsistent bindings for " + name)
+
+      let keys = map(keyname.split(" "), normalizeKeyName)
+      for (let i = 0; i < keys.length; i++) {
+        let val, name
+        if (i == keys.length - 1) {
+          name = keys.join(" ")
+          val = value
+        } else {
+          name = keys.slice(0, i + 1).join(" ")
+          val = "..."
+        }
+        let prev = copy[name]
+        if (!prev) copy[name] = val
+        else if (prev != val) throw new Error("Inconsistent bindings for " + name)
+      }
+      delete keymap[keyname]
     }
-    delete keymap[keyname]
-  }
   for (let prop in copy) keymap[prop] = copy[prop]
   return keymap
 }

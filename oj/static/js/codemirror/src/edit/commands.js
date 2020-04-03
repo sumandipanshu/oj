@@ -1,14 +1,42 @@
-import { deleteNearSelection } from "./deleteNearSelection.js"
-import { runInOp } from "../display/operations.js"
-import { ensureCursorVisible } from "../display/scrolling.js"
-import { endOfLine } from "../input/movement.js"
-import { clipPos, Pos } from "../line/pos.js"
-import { visualLine, visualLineEnd } from "../line/spans.js"
-import { getLine, lineNo } from "../line/utils_line.js"
-import { Range } from "../model/selection.js"
-import { selectAll } from "../model/selection_updates.js"
-import { countColumn, sel_dontScroll, sel_move, spaceStr } from "../util/misc.js"
-import { getOrder } from "../util/bidi.js"
+import {
+  deleteNearSelection
+} from "./deleteNearSelection.js"
+import {
+  runInOp
+} from "../display/operations.js"
+import {
+  ensureCursorVisible
+} from "../display/scrolling.js"
+import {
+  endOfLine
+} from "../input/movement.js"
+import {
+  clipPos,
+  Pos
+} from "../line/pos.js"
+import {
+  visualLine,
+  visualLineEnd
+} from "../line/spans.js"
+import {
+  getLine,
+  lineNo
+} from "../line/utils_line.js"
+import {
+  Range
+} from "../model/selection.js"
+import {
+  selectAll
+} from "../model/selection_updates.js"
+import {
+  countColumn,
+  sel_dontScroll,
+  sel_move,
+  spaceStr
+} from "../util/misc.js"
+import {
+  getOrder
+} from "../util/bidi.js"
 
 // Commands are parameter-less actions that can be performed on an
 // editor, mostly used for keybindings.
@@ -19,11 +47,20 @@ export let commands = {
     if (range.empty()) {
       let len = getLine(cm.doc, range.head.line).text.length
       if (range.head.ch == len && range.head.line < cm.lastLine())
-        return {from: range.head, to: Pos(range.head.line + 1, 0)}
+        return {
+          from: range.head,
+          to: Pos(range.head.line + 1, 0)
+        }
       else
-        return {from: range.head, to: Pos(range.head.line, len)}
+        return {
+          from: range.head,
+          to: Pos(range.head.line, len)
+        }
     } else {
-      return {from: range.from(), to: range.to()}
+      return {
+        from: range.from(),
+        to: range.to()
+      }
     }
   }),
   deleteLine: cm => deleteNearSelection(cm, range => ({
@@ -31,17 +68,30 @@ export let commands = {
     to: clipPos(cm.doc, Pos(range.to().line + 1, 0))
   })),
   delLineLeft: cm => deleteNearSelection(cm, range => ({
-    from: Pos(range.from().line, 0), to: range.from()
+    from: Pos(range.from().line, 0),
+    to: range.from()
   })),
   delWrappedLineLeft: cm => deleteNearSelection(cm, range => {
     let top = cm.charCoords(range.head, "div").top + 5
-    let leftPos = cm.coordsChar({left: 0, top: top}, "div")
-    return {from: leftPos, to: range.from()}
+    let leftPos = cm.coordsChar({
+      left: 0,
+      top: top
+    }, "div")
+    return {
+      from: leftPos,
+      to: range.from()
+    }
   }),
   delWrappedLineRight: cm => deleteNearSelection(cm, range => {
     let top = cm.charCoords(range.head, "div").top + 5
-    let rightPos = cm.coordsChar({left: cm.display.lineDiv.offsetWidth + 100, top: top}, "div")
-    return {from: range.from(), to: rightPos }
+    let rightPos = cm.coordsChar({
+      left: cm.display.lineDiv.offsetWidth + 100,
+      top: top
+    }, "div")
+    return {
+      from: range.from(),
+      to: rightPos
+    }
   }),
   undo: cm => cm.undo(),
   redo: cm => cm.redo(),
@@ -49,26 +99,38 @@ export let commands = {
   redoSelection: cm => cm.redoSelection(),
   goDocStart: cm => cm.extendSelection(Pos(cm.firstLine(), 0)),
   goDocEnd: cm => cm.extendSelection(Pos(cm.lastLine())),
-  goLineStart: cm => cm.extendSelectionsBy(range => lineStart(cm, range.head.line),
-    {origin: "+move", bias: 1}
-  ),
-  goLineStartSmart: cm => cm.extendSelectionsBy(range => lineStartSmart(cm, range.head),
-    {origin: "+move", bias: 1}
-  ),
-  goLineEnd: cm => cm.extendSelectionsBy(range => lineEnd(cm, range.head.line),
-    {origin: "+move", bias: -1}
-  ),
+  goLineStart: cm => cm.extendSelectionsBy(range => lineStart(cm, range.head.line), {
+    origin: "+move",
+    bias: 1
+  }),
+  goLineStartSmart: cm => cm.extendSelectionsBy(range => lineStartSmart(cm, range.head), {
+    origin: "+move",
+    bias: 1
+  }),
+  goLineEnd: cm => cm.extendSelectionsBy(range => lineEnd(cm, range.head.line), {
+    origin: "+move",
+    bias: -1
+  }),
   goLineRight: cm => cm.extendSelectionsBy(range => {
     let top = cm.cursorCoords(range.head, "div").top + 5
-    return cm.coordsChar({left: cm.display.lineDiv.offsetWidth + 100, top: top}, "div")
+    return cm.coordsChar({
+      left: cm.display.lineDiv.offsetWidth + 100,
+      top: top
+    }, "div")
   }, sel_move),
   goLineLeft: cm => cm.extendSelectionsBy(range => {
     let top = cm.cursorCoords(range.head, "div").top + 5
-    return cm.coordsChar({left: 0, top: top}, "div")
+    return cm.coordsChar({
+      left: 0,
+      top: top
+    }, "div")
   }, sel_move),
   goLineLeftSmart: cm => cm.extendSelectionsBy(range => {
     let top = cm.cursorCoords(range.head, "div").top + 5
-    let pos = cm.coordsChar({left: 0, top: top}, "div")
+    let pos = cm.coordsChar({
+      left: 0,
+      top: top
+    }, "div")
     if (pos.ch < cm.getLine(pos.line).search(/\S/)) return lineStartSmart(cm, range.head)
     return pos
   }, sel_move),
@@ -95,7 +157,9 @@ export let commands = {
   indentLess: cm => cm.indentSelection("subtract"),
   insertTab: cm => cm.replaceSelection("\t"),
   insertSoftTab: cm => {
-    let spaces = [], ranges = cm.listSelections(), tabSize = cm.options.tabSize
+    let spaces = [],
+      ranges = cm.listSelections(),
+      tabSize = cm.options.tabSize
     for (let i = 0; i < ranges.length; i++) {
       let pos = ranges[i].from()
       let col = countColumn(cm.getLine(pos.line), pos.ch, tabSize)
@@ -115,23 +179,25 @@ export let commands = {
   // Doesn't do anything on an empty line.
   // Doesn't do anything with non-empty selections.
   transposeChars: cm => runInOp(cm, () => {
-    let ranges = cm.listSelections(), newSel = []
+    let ranges = cm.listSelections(),
+      newSel = []
     for (let i = 0; i < ranges.length; i++) {
       if (!ranges[i].empty()) continue
-      let cur = ranges[i].head, line = getLine(cm.doc, cur.line).text
+      let cur = ranges[i].head,
+        line = getLine(cm.doc, cur.line).text
       if (line) {
         if (cur.ch == line.length) cur = new Pos(cur.line, cur.ch - 1)
         if (cur.ch > 0) {
           cur = new Pos(cur.line, cur.ch + 1)
           cm.replaceRange(line.charAt(cur.ch - 1) + line.charAt(cur.ch - 2),
-                          Pos(cur.line, cur.ch - 2), cur, "+transpose")
+            Pos(cur.line, cur.ch - 2), cur, "+transpose")
         } else if (cur.line > cm.doc.first) {
           let prev = getLine(cm.doc, cur.line - 1).text
           if (prev) {
             cur = new Pos(cur.line, 1)
             cm.replaceRange(line.charAt(0) + cm.doc.lineSeparator() +
-                            prev.charAt(prev.length - 1),
-                            Pos(cur.line - 1, prev.length - 1), cur, "+transpose")
+              prev.charAt(prev.length - 1),
+              Pos(cur.line - 1, prev.length - 1), cur, "+transpose")
           }
         }
       }
@@ -159,12 +225,14 @@ function lineStart(cm, lineN) {
   if (visual != line) lineN = lineNo(visual)
   return endOfLine(true, cm, visual, lineN, 1)
 }
+
 function lineEnd(cm, lineN) {
   let line = getLine(cm.doc, lineN)
   let visual = visualLineEnd(line)
   if (visual != line) lineN = lineNo(visual)
   return endOfLine(true, cm, line, lineN, -1)
 }
+
 function lineStartSmart(cm, pos) {
   let start = lineStart(cm, pos.line)
   let line = getLine(cm.doc, start.line)

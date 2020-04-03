@@ -1,5 +1,11 @@
-import { contains, elt, removeChildrenAndAdd } from "../util/dom.js"
-import { e_target } from "../util/event.js"
+import {
+  contains,
+  elt,
+  removeChildrenAndAdd
+} from "../util/dom.js"
+import {
+  e_target
+} from "../util/event.js"
 
 export function widgetHeight(widget) {
   if (widget.height != null) return widget.height
@@ -20,7 +26,7 @@ export function widgetHeight(widget) {
 export function eventInWidget(display, e) {
   for (let n = e_target(e); n != display.wrapper; n = n.parentNode) {
     if (!n || (n.nodeType == 1 && n.getAttribute("cm-ignore-events") == "true") ||
-        (n.parentNode == display.sizer && n != display.mover))
+      (n.parentNode == display.sizer && n != display.mover))
       return true
   }
 }

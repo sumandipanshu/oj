@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
-(function(mod) {
+(function (mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+})(function (CodeMirror) {
   "use strict";
 
-  CodeMirror.defineOption("selectionPointer", false, function(cm, val) {
+  CodeMirror.defineOption("selectionPointer", false, function (cm, val) {
     var data = cm.state.selectionPointer;
     if (data) {
       CodeMirror.off(cm.getWrapperElement(), "mousemove", data.mousemove);
@@ -25,11 +25,18 @@
     if (val) {
       data = cm.state.selectionPointer = {
         value: typeof val == "string" ? val : "default",
-        mousemove: function(event) { mousemove(cm, event); },
-        mouseout: function(event) { mouseout(cm, event); },
-        windowScroll: function() { reset(cm); },
+        mousemove: function (event) {
+          mousemove(cm, event);
+        },
+        mouseout: function (event) {
+          mouseout(cm, event);
+        },
+        windowScroll: function () {
+          reset(cm);
+        },
         rects: null,
-        mouseX: null, mouseY: null,
+        mouseX: null,
+        mouseY: null,
         willUpdate: false
       };
       CodeMirror.on(cm.getWrapperElement(), "mousemove", data.mousemove);
@@ -67,7 +74,7 @@
   function scheduleUpdate(cm) {
     if (!cm.state.selectionPointer.willUpdate) {
       cm.state.selectionPointer.willUpdate = true;
-      setTimeout(function() {
+      setTimeout(function () {
         update(cm);
         cm.state.selectionPointer.willUpdate = false;
       }, 50);
@@ -85,12 +92,13 @@
       }
     }
     var inside = false;
-    if (data.mouseX != null) for (var i = 0; i < data.rects.length; i++) {
-      var rect = data.rects[i];
-      if (rect.left <= data.mouseX && rect.right >= data.mouseX &&
+    if (data.mouseX != null)
+      for (var i = 0; i < data.rects.length; i++) {
+        var rect = data.rects[i];
+        if (rect.left <= data.mouseX && rect.right >= data.mouseX &&
           rect.top <= data.mouseY && rect.bottom >= data.mouseY)
-        inside = true;
-    }
+          inside = true;
+      }
     var cursor = inside ? data.value : "";
     if (cm.display.lineDiv.style.cursor != cursor)
       cm.display.lineDiv.style.cursor = cursor;

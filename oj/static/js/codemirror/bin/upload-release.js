@@ -16,7 +16,9 @@ require('child_process').exec("git --no-pager show -s --format='%s' " + version,
   let req = require("https").request({
     host: "api.github.com",
     auth: auth,
-    headers: {"user-agent": "Release uploader"},
+    headers: {
+      "user-agent": "Release uploader"
+    },
     path: "/repos/codemirror/codemirror/releases",
     method: "POST"
   }, res => {

@@ -1,7 +1,11 @@
-import { copyObj, createObj } from "./util/misc.js"
+import {
+  copyObj,
+  createObj
+} from "./util/misc.js"
 
 // Known modes, by name and by MIME
-export let modes = {}, mimeModes = {}
+export let modes = {},
+  mimeModes = {}
 
 // Extra arguments are stored as the mode's dependencies, which is
 // used by (legacy) mechanisms like loadmode.js to automatically
@@ -23,7 +27,9 @@ export function resolveMode(spec) {
     spec = mimeModes[spec]
   } else if (spec && typeof spec.name == "string" && mimeModes.hasOwnProperty(spec.name)) {
     let found = mimeModes[spec.name]
-    if (typeof found == "string") found = {name: found}
+    if (typeof found == "string") found = {
+      name: found
+    }
     spec = createObj(found, spec)
     spec.name = found.name
   } else if (typeof spec == "string" && /^[\w\-]+\/[\w\-]+\+xml$/.test(spec)) {
@@ -31,8 +37,12 @@ export function resolveMode(spec) {
   } else if (typeof spec == "string" && /^[\w\-]+\/[\w\-]+\+json$/.test(spec)) {
     return resolveMode("application/json")
   }
-  if (typeof spec == "string") return {name: spec}
-  else return spec || {name: "null"}
+  if (typeof spec == "string") return {
+    name: spec
+  }
+  else return spec || {
+    name: "null"
+  }
 }
 
 // Given a mode spec (anything that resolveMode accepts), find and
@@ -52,8 +62,9 @@ export function getMode(options, spec) {
   }
   modeObj.name = spec.name
   if (spec.helperType) modeObj.helperType = spec.helperType
-  if (spec.modeProps) for (let prop in spec.modeProps)
-    modeObj[prop] = spec.modeProps[prop]
+  if (spec.modeProps)
+    for (let prop in spec.modeProps)
+      modeObj[prop] = spec.modeProps[prop]
 
   return modeObj
 }
@@ -88,7 +99,10 @@ export function innerMode(mode, state) {
     state = info.state
     mode = info.mode
   }
-  return info || {mode: mode, state: state}
+  return info || {
+    mode: mode,
+    state: state
+  }
 }
 
 export function startState(mode, a1, a2) {

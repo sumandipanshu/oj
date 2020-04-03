@@ -1,23 +1,89 @@
-import { delayBlurEvent, ensureFocus } from "../display/focus.js"
-import { operation } from "../display/operations.js"
-import { visibleLines } from "../display/update_lines.js"
-import { clipPos, cmp, maxPos, minPos, Pos } from "../line/pos.js"
-import { getLine, lineAtHeight } from "../line/utils_line.js"
-import { posFromMouse } from "../measurement/position_measurement.js"
-import { eventInWidget } from "../measurement/widgets.js"
-import { normalizeSelection, Range, Selection } from "../model/selection.js"
-import { extendRange, extendSelection, replaceOneSelection, setSelection } from "../model/selection_updates.js"
-import { captureRightClick, chromeOS, ie, ie_version, mac, webkit } from "../util/browser.js"
-import { getOrder, getBidiPartAt } from "../util/bidi.js"
-import { activeElt } from "../util/dom.js"
-import { e_button, e_defaultPrevented, e_preventDefault, e_target, hasHandler, off, on, signal, signalDOMEvent } from "../util/event.js"
-import { dragAndDrop } from "../util/feature_detection.js"
-import { bind, countColumn, findColumn, sel_mouse } from "../util/misc.js"
-import { addModifierNames } from "../input/keymap.js"
-import { Pass } from "../util/misc.js"
+import {
+  delayBlurEvent,
+  ensureFocus
+} from "../display/focus.js"
+import {
+  operation
+} from "../display/operations.js"
+import {
+  visibleLines
+} from "../display/update_lines.js"
+import {
+  clipPos,
+  cmp,
+  maxPos,
+  minPos,
+  Pos
+} from "../line/pos.js"
+import {
+  getLine,
+  lineAtHeight
+} from "../line/utils_line.js"
+import {
+  posFromMouse
+} from "../measurement/position_measurement.js"
+import {
+  eventInWidget
+} from "../measurement/widgets.js"
+import {
+  normalizeSelection,
+  Range,
+  Selection
+} from "../model/selection.js"
+import {
+  extendRange,
+  extendSelection,
+  replaceOneSelection,
+  setSelection
+} from "../model/selection_updates.js"
+import {
+  captureRightClick,
+  chromeOS,
+  ie,
+  ie_version,
+  mac,
+  webkit
+} from "../util/browser.js"
+import {
+  getOrder,
+  getBidiPartAt
+} from "../util/bidi.js"
+import {
+  activeElt
+} from "../util/dom.js"
+import {
+  e_button,
+  e_defaultPrevented,
+  e_preventDefault,
+  e_target,
+  hasHandler,
+  off,
+  on,
+  signal,
+  signalDOMEvent
+} from "../util/event.js"
+import {
+  dragAndDrop
+} from "../util/feature_detection.js"
+import {
+  bind,
+  countColumn,
+  findColumn,
+  sel_mouse
+} from "../util/misc.js"
+import {
+  addModifierNames
+} from "../input/keymap.js"
+import {
+  Pass
+} from "../util/misc.js"
 
-import { dispatchKey } from "./key_events.js"
-import { commands } from "./commands.js"
+import {
+  dispatchKey
+} from "./key_events.js"
+import {
+  commands
+} from "./commands.js"
 
 const DOUBLECLICK_DELAY = 400
 
@@ -35,6 +101,7 @@ class PastClick {
 }
 
 let lastClick, lastDoubleClick
+
 function clickRepeat(pos, button) {
   let now = +new Date
   if (lastDoubleClick && lastDoubleClick.compare(now, pos, button)) {
@@ -57,7 +124,8 @@ function clickRepeat(pos, button) {
 // middle-click-paste. Or it might be a click on something we should
 // not interfere with, such as a scrollbar or widget.
 export function onMouseDown(e) {
-  let cm = this, display = cm.display
+  let cm = this,
+    display = cm.display
   if (signalDOMEvent(cm, e) || display.activeTouch && display.input.supportsTouch()) return
   display.input.ensurePolled()
   display.shift = e.shiftKey
@@ -72,7 +140,9 @@ export function onMouseDown(e) {
     return
   }
   if (clickInGutter(cm, e)) return
-  let pos = posFromMouse(cm, e), button = e_button(e), repeat = pos ? clickRepeat(pos, button) : "single"
+  let pos = posFromMouse(cm, e),
+    button = e_button(e),
+    repeat = pos ? clickRepeat(pos, button) : "single"
   window.focus()
 
   // #3261: make sure, that we're not starting a second selection
@@ -99,7 +169,7 @@ function handleMappedButton(cm, button, pos, repeat, event) {
   else if (repeat == "triple") name = "Triple" + name
   name = (button == 1 ? "Left" : button == 2 ? "Middle" : "Right") + name
 
-  return dispatchKey(cm,  addModifierNames(name, event), event, bound => {
+  return dispatchKey(cm, addModifierNames(name, event), event, bound => {
     if (typeof bound == "string") bound = commands[bound]
     if (!bound) return false
     let done = false
@@ -132,11 +202,12 @@ function leftButtonDown(cm, pos, repeat, event) {
 
   let behavior = configureMouse(cm, repeat, event)
 
-  let sel = cm.doc.sel, contained
+  let sel = cm.doc.sel,
+    contained
   if (cm.options.dragDrop && dragAndDrop && !cm.isReadOnly() &&
-      repeat == "single" && (contained = sel.contains(pos)) > -1 &&
-      (cmp((contained = sel.ranges[contained]).from(), pos) < 0 || pos.xRel > 0) &&
-      (cmp(contained.to(), pos) > 0 || pos.xRel < 0))
+    repeat == "single" && (contained = sel.contains(pos)) > -1 &&
+    (cmp((contained = sel.ranges[contained]).from(), pos) < 0 || pos.xRel > 0) &&
+    (cmp(contained.to(), pos) > 0 || pos.xRel < 0))
     leftButtonStartDrag(cm, event, pos, behavior)
   else
     leftButtonSelect(cm, event, pos, behavior)
@@ -145,7 +216,8 @@ function leftButtonDown(cm, pos, repeat, event) {
 // Start a text drag. When it ends, see if any dragging actually
 // happen, and treat as a click if it didn't.
 function leftButtonStartDrag(cm, event, pos, behavior) {
-  let display = cm.display, moved = false
+  let display = cm.display,
+    moved = false
   let dragEnd = operation(cm, e => {
     if (webkit) display.scroller.draggable = false
     cm.state.draggingText = false
@@ -159,12 +231,15 @@ function leftButtonStartDrag(cm, event, pos, behavior) {
         extendSelection(cm.doc, pos, null, null, behavior.extend)
       // Work around unexplainable focus problem in IE9 (#2127) and Chrome (#3081)
       if (webkit || ie && ie_version == 9)
-        setTimeout(() => {display.wrapper.ownerDocument.body.focus(); display.input.focus()}, 20)
+        setTimeout(() => {
+          display.wrapper.ownerDocument.body.focus();
+          display.input.focus()
+        }, 20)
       else
         display.input.focus()
     }
   })
-  let mouseMove = function(e2) {
+  let mouseMove = function (e2) {
     moved = moved || Math.abs(event.clientX - e2.clientX) + Math.abs(event.clientY - e2.clientY) >= 10
   }
   let dragStart = () => moved = true
@@ -193,10 +268,12 @@ function rangeForUnit(cm, pos, unit) {
 
 // Normal selection, as opposed to text dragging.
 function leftButtonSelect(cm, event, start, behavior) {
-  let display = cm.display, doc = cm.doc
+  let display = cm.display,
+    doc = cm.doc
   e_preventDefault(event)
 
-  let ourRange, ourIndex, startSel = doc.sel, ranges = startSel.ranges
+  let ourRange, ourIndex, startSel = doc.sel,
+    ranges = startSel.ranges
   if (behavior.addNew && !behavior.extend) {
     ourIndex = doc.sel.contains(start)
     if (ourIndex > -1)
@@ -226,42 +303,52 @@ function leftButtonSelect(cm, event, start, behavior) {
     startSel = doc.sel
   } else if (ourIndex == -1) {
     ourIndex = ranges.length
-    setSelection(doc, normalizeSelection(cm, ranges.concat([ourRange]), ourIndex),
-                 {scroll: false, origin: "*mouse"})
+    setSelection(doc, normalizeSelection(cm, ranges.concat([ourRange]), ourIndex), {
+      scroll: false,
+      origin: "*mouse"
+    })
   } else if (ranges.length > 1 && ranges[ourIndex].empty() && behavior.unit == "char" && !behavior.extend) {
-    setSelection(doc, normalizeSelection(cm, ranges.slice(0, ourIndex).concat(ranges.slice(ourIndex + 1)), 0),
-                 {scroll: false, origin: "*mouse"})
+    setSelection(doc, normalizeSelection(cm, ranges.slice(0, ourIndex).concat(ranges.slice(ourIndex + 1)), 0), {
+      scroll: false,
+      origin: "*mouse"
+    })
     startSel = doc.sel
   } else {
     replaceOneSelection(doc, ourIndex, ourRange, sel_mouse)
   }
 
   let lastPos = start
+
   function extendTo(pos) {
     if (cmp(lastPos, pos) == 0) return
     lastPos = pos
 
     if (behavior.unit == "rectangle") {
-      let ranges = [], tabSize = cm.options.tabSize
+      let ranges = [],
+        tabSize = cm.options.tabSize
       let startCol = countColumn(getLine(doc, start.line).text, start.ch, tabSize)
       let posCol = countColumn(getLine(doc, pos.line).text, pos.ch, tabSize)
-      let left = Math.min(startCol, posCol), right = Math.max(startCol, posCol)
-      for (let line = Math.min(start.line, pos.line), end = Math.min(cm.lastLine(), Math.max(start.line, pos.line));
-           line <= end; line++) {
-        let text = getLine(doc, line).text, leftPos = findColumn(text, left, tabSize)
+      let left = Math.min(startCol, posCol),
+        right = Math.max(startCol, posCol)
+      for (let line = Math.min(start.line, pos.line), end = Math.min(cm.lastLine(), Math.max(start.line, pos.line)); line <= end; line++) {
+        let text = getLine(doc, line).text,
+          leftPos = findColumn(text, left, tabSize)
         if (left == right)
           ranges.push(new Range(Pos(line, leftPos), Pos(line, leftPos)))
         else if (text.length > leftPos)
           ranges.push(new Range(Pos(line, leftPos), Pos(line, findColumn(text, right, tabSize))))
       }
       if (!ranges.length) ranges.push(new Range(start, start))
-      setSelection(doc, normalizeSelection(cm, startSel.ranges.slice(0, ourIndex).concat(ranges), ourIndex),
-                   {origin: "*mouse", scroll: false})
+      setSelection(doc, normalizeSelection(cm, startSel.ranges.slice(0, ourIndex).concat(ranges), ourIndex), {
+        origin: "*mouse",
+        scroll: false
+      })
       cm.scrollIntoView(pos)
     } else {
       let oldRange = ourRange
       let range = rangeForUnit(cm, pos, behavior.unit)
-      let anchor = oldRange.anchor, head
+      let anchor = oldRange.anchor,
+        head
       if (cmp(range.anchor, anchor) > 0) {
         head = range.head
         anchor = minPos(oldRange.from(), range.anchor)
@@ -291,7 +378,9 @@ function leftButtonSelect(cm, event, start, behavior) {
       extendTo(cur)
       let visible = visibleLines(display, doc)
       if (cur.line >= visible.to || cur.line < visible.from)
-        setTimeout(operation(cm, () => {if (counter == curCount) extend(e)}), 150)
+        setTimeout(operation(cm, () => {
+          if (counter == curCount) extend(e)
+        }), 150)
     } else {
       let outside = e.clientY < editorSize.top ? -20 : e.clientY > editorSize.bottom ? 20 : 0
       if (outside) setTimeout(operation(cm, () => {
@@ -330,11 +419,15 @@ function leftButtonSelect(cm, event, start, behavior) {
 // Used when mouse-selecting to adjust the anchor to the proper side
 // of a bidi jump depending on the visual position of the head.
 function bidiSimplify(cm, range) {
-  let {anchor, head} = range, anchorLine = getLine(cm.doc, anchor.line)
+  let {
+    anchor,
+    head
+  } = range, anchorLine = getLine(cm.doc, anchor.line)
   if (cmp(anchor, head) == 0 && anchor.sticky == head.sticky) return range
   let order = getOrder(anchorLine)
   if (!order) return range
-  let index = getBidiPartAt(order, anchor.ch, anchor.sticky), part = order[index]
+  let index = getBidiPartAt(order, anchor.ch, anchor.sticky),
+    part = order[index]
   if (part.from != anchor.ch && part.to != anchor.ch) return range
   let boundary = index + ((part.from == anchor.ch) == (part.level != 1) ? 0 : 1)
   if (boundary == 0 || boundary == order.length) return range
@@ -355,7 +448,8 @@ function bidiSimplify(cm, range) {
 
   let usePart = order[boundary + (leftSide ? -1 : 0)]
   let from = leftSide == (usePart.level == 1)
-  let ch = from ? usePart.from : usePart.to, sticky = from ? "after" : "before"
+  let ch = from ? usePart.from : usePart.to,
+    sticky = from ? "after" : "before"
   return anchor.ch == ch && anchor.sticky == sticky ? range : new Range(new Pos(anchor.line, ch, sticky), head)
 }
 
@@ -368,8 +462,12 @@ function gutterEvent(cm, e, type, prevent) {
     mX = e.touches[0].clientX
     mY = e.touches[0].clientY
   } else {
-    try { mX = e.clientX; mY = e.clientY }
-    catch(e) { return false }
+    try {
+      mX = e.clientX;
+      mY = e.clientY
+    } catch (e) {
+      return false
+    }
   }
   if (mX >= Math.floor(cm.display.gutters.getBoundingClientRect().right)) return false
   if (prevent) e_preventDefault(e)

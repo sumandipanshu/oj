@@ -34,7 +34,10 @@
         }
       },
       innerMode: function (state) {
-        return state.inCode ? {state: state.baseState, mode: baseMode} : null
+        return state.inCode ? {
+          state: state.baseState,
+          mode: baseMode
+        } : null
       }
     }
   }, "haskell")

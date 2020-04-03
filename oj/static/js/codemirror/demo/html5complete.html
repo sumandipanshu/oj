@@ -2,7 +2,7 @@
 
 <head>
   <title>CodeMirror: HTML completion demo</title>
-  <meta charset="utf-8"/>
+  <meta charset="utf-8" />
   <link rel=stylesheet href="../doc/docs.css">
 
   <link rel="stylesheet" href="../lib/codemirror.css">
@@ -16,13 +16,18 @@
   <script src="../mode/css/css.js"></script>
   <script src="../mode/htmlmixed/htmlmixed.js"></script>
   <style>
-    .CodeMirror {border-top: 1px solid #888; border-bottom: 1px solid #888;}
+    .CodeMirror {
+      border-top: 1px solid #888;
+      border-bottom: 1px solid #888;
+    }
   </style>
 </head>
 
 <body>
   <div id=nav>
-    <a href="https://codemirror.net"><h1>CodeMirror</h1><img id=logo src="../doc/logo.png"></a>
+    <a href="https://codemirror.net">
+      <h1>CodeMirror</h1><img id=logo src="../doc/logo.png">
+    </a>
 
     <ul>
       <li><a href="../index.html">Home</a>
@@ -38,16 +43,18 @@
     <h2>HTML completion demo</h2>
 
     <p>Shows the <a href="xmlcomplete.html">XML completer</a>
-    parameterized with information about the tags in HTML.
-    Press <strong>ctrl-space</strong> to activate completion.</p>
+      parameterized with information about the tags in HTML.
+      Press <strong>ctrl-space</strong> to activate completion.</p>
 
     <div id="code"></div>
 
     <script>
-      window.onload = function() {
+      window.onload = function () {
         editor = CodeMirror(document.getElementById("code"), {
           mode: "text/html",
-          extraKeys: {"Ctrl-Space": "autocomplete"},
+          extraKeys: {
+            "Ctrl-Space": "autocomplete"
+          },
           value: document.documentElement.innerHTML
         });
       };

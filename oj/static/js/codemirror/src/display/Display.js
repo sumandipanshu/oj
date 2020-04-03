@@ -1,7 +1,21 @@
-import { gecko, ie, ie_version, mobile, webkit } from "../util/browser.js"
-import { elt, eltP } from "../util/dom.js"
-import { scrollerGap } from "../util/misc.js"
-import { getGutters, renderGutters } from "./gutters.js"
+import {
+  gecko,
+  ie,
+  ie_version,
+  mobile,
+  webkit
+} from "../util/browser.js"
+import {
+  elt,
+  eltP
+} from "../util/dom.js"
+import {
+  scrollerGap
+} from "../util/misc.js"
+import {
+  getGutters,
+  renderGutters
+} from "./gutters.js"
 
 // The display handles the DOM integration, both for input reading
 // and content drawing. It holds references to DOM nodes and
@@ -29,7 +43,7 @@ export function Display(place, doc, input, options) {
   d.lineMeasure = elt("div", null, "CodeMirror-measure")
   // Wraps everything that needs to exist inside the vertically-padded coordinate system
   d.lineSpace = eltP("div", [d.measure, d.lineMeasure, d.selectionDiv, d.cursorDiv, d.lineDiv],
-                    null, "position: relative; outline: none")
+    null, "position: relative; outline: none")
   let lines = eltP("div", [d.lineSpace], "CodeMirror-lines")
   // Moved around its parent to cover visible view.
   d.mover = elt("div", [lines], null, "position: relative")
@@ -50,7 +64,10 @@ export function Display(place, doc, input, options) {
   d.wrapper = elt("div", [d.scrollbarFiller, d.gutterFiller, d.scroller], "CodeMirror")
 
   // Work around IE7 z-index bug (not perfect, hence IE7 not really being supported)
-  if (ie && ie_version < 8) { d.gutters.style.zIndex = -1; d.scroller.style.paddingRight = 0 }
+  if (ie && ie_version < 8) {
+    d.gutters.style.zIndex = -1;
+    d.scroller.style.paddingRight = 0
+  }
   if (!webkit && !(gecko && mobile)) d.scroller.draggable = true
 
   if (place) {

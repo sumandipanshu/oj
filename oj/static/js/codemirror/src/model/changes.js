@@ -1,21 +1,78 @@
-import { retreatFrontier } from "../line/highlight.js"
-import { startWorker } from "../display/highlight_worker.js"
-import { operation } from "../display/operations.js"
-import { regChange, regLineChange } from "../display/view_tracking.js"
-import { clipLine, clipPos, cmp, Pos } from "../line/pos.js"
-import { sawReadOnlySpans } from "../line/saw_special_spans.js"
-import { lineLength, removeReadOnlyRanges, stretchSpansOverChange, visualLine } from "../line/spans.js"
-import { getBetween, getLine, lineNo } from "../line/utils_line.js"
-import { estimateHeight } from "../measurement/position_measurement.js"
-import { hasHandler, signal, signalCursorActivity } from "../util/event.js"
-import { indexOf, lst, map, sel_dontScroll } from "../util/misc.js"
-import { signalLater } from "../util/operation_group.js"
+import {
+  retreatFrontier
+} from "../line/highlight.js"
+import {
+  startWorker
+} from "../display/highlight_worker.js"
+import {
+  operation
+} from "../display/operations.js"
+import {
+  regChange,
+  regLineChange
+} from "../display/view_tracking.js"
+import {
+  clipLine,
+  clipPos,
+  cmp,
+  Pos
+} from "../line/pos.js"
+import {
+  sawReadOnlySpans
+} from "../line/saw_special_spans.js"
+import {
+  lineLength,
+  removeReadOnlyRanges,
+  stretchSpansOverChange,
+  visualLine
+} from "../line/spans.js"
+import {
+  getBetween,
+  getLine,
+  lineNo
+} from "../line/utils_line.js"
+import {
+  estimateHeight
+} from "../measurement/position_measurement.js"
+import {
+  hasHandler,
+  signal,
+  signalCursorActivity
+} from "../util/event.js"
+import {
+  indexOf,
+  lst,
+  map,
+  sel_dontScroll
+} from "../util/misc.js"
+import {
+  signalLater
+} from "../util/operation_group.js"
 
-import { changeEnd, computeSelAfterChange } from "./change_measurement.js"
-import { isWholeLineUpdate, linkedDocs, updateDoc } from "./document_data.js"
-import { addChangeToHistory, historyChangeFromChange, mergeOldSpans, pushSelectionToHistory } from "./history.js"
-import { Range, Selection } from "./selection.js"
-import { setSelection, setSelectionNoUndo, skipAtomic } from "./selection_updates.js"
+import {
+  changeEnd,
+  computeSelAfterChange
+} from "./change_measurement.js"
+import {
+  isWholeLineUpdate,
+  linkedDocs,
+  updateDoc
+} from "./document_data.js"
+import {
+  addChangeToHistory,
+  historyChangeFromChange,
+  mergeOldSpans,
+  pushSelectionToHistory
+} from "./history.js"
+import {
+  Range,
+  Selection
+} from "./selection.js"
+import {
+  setSelection,
+  setSelectionNoUndo,
+  skipAtomic
+} from "./selection_updates.js"
 
 // UPDATING
 
@@ -42,7 +99,12 @@ function filterChange(doc, change, update) {
     if (doc.cm) doc.cm.curOp.updateInput = 2
     return null
   }
-  return {from: obj.from, to: obj.to, text: obj.text, origin: obj.origin}
+  return {
+    from: obj.from,
+    to: obj.to,
+    text: obj.text,
+    origin: obj.origin
+  }
 }
 
 // Apply a change to a document, and add it to the document's
@@ -63,7 +125,12 @@ export function makeChange(doc, change, ignoreReadOnly) {
   let split = sawReadOnlySpans && !ignoreReadOnly && removeReadOnlyRanges(doc, change.from, change.to)
   if (split) {
     for (let i = split.length - 1; i >= 0; --i)
-      makeChangeInner(doc, {from: split[i].from, to: split[i].to, text: i ? [""] : change.text, origin: change.origin})
+      makeChangeInner(doc, {
+        from: split[i].from,
+        to: split[i].to,
+        text: i ? [""] : change.text,
+        origin: change.origin
+      })
   } else {
     makeChangeInner(doc, change)
   }
@@ -91,8 +158,10 @@ export function makeChangeFromHistory(doc, type, allowSelectionOnly) {
   let suppress = doc.cm && doc.cm.state.suppressEdits
   if (suppress && !allowSelectionOnly) return
 
-  let hist = doc.history, event, selAfter = doc.sel
-  let source = type == "undo" ? hist.done : hist.undone, dest = type == "undo" ? hist.undone : hist.done
+  let hist = doc.history,
+    event, selAfter = doc.sel
+  let source = type == "undo" ? hist.done : hist.undone,
+    dest = type == "undo" ? hist.undone : hist.done
 
   // Verify that there is a useable event (so that ctrl-z won't
   // needlessly clear selection events)
@@ -110,7 +179,9 @@ export function makeChangeFromHistory(doc, type, allowSelectionOnly) {
     if (event.ranges) {
       pushSelectionToHistory(event, dest)
       if (allowSelectionOnly && !event.equals(doc.sel)) {
-        setSelection(doc, event, {clearRedo: false})
+        setSelection(doc, event, {
+          clearRedo: false
+        })
         return
       }
       selAfter = event
@@ -124,7 +195,10 @@ export function makeChangeFromHistory(doc, type, allowSelectionOnly) {
   // stack (redo when undoing, and vice versa).
   let antiChanges = []
   pushSelectionToHistory(selAfter, dest)
-  dest.push({changes: antiChanges, generation: hist.generation})
+  dest.push({
+    changes: antiChanges,
+    generation: hist.generation
+  })
   hist.generation = event.generation || ++hist.maxGeneration
 
   let filter = hasHandler(doc, "beforeChange") || doc.cm && hasHandler(doc.cm, "beforeChange")
@@ -141,7 +215,10 @@ export function makeChangeFromHistory(doc, type, allowSelectionOnly) {
 
     let after = i ? computeSelAfterChange(doc, change) : lst(source)
     makeChangeSingleDoc(doc, change, after, mergeOldSpans(doc, change))
-    if (!i && doc.cm) doc.cm.scrollIntoView({from: change.from, to: changeEnd(change)})
+    if (!i && doc.cm) doc.cm.scrollIntoView({
+      from: change.from,
+      to: changeEnd(change)
+    })
     let rebased = []
 
     // Propagate to the linked documents
@@ -187,13 +264,21 @@ function makeChangeSingleDoc(doc, change, selAfter, spans) {
   if (change.from.line < doc.first) {
     let shift = change.text.length - 1 - (doc.first - change.from.line)
     shiftDoc(doc, shift)
-    change = {from: Pos(doc.first, 0), to: Pos(change.to.line + shift, change.to.ch),
-              text: [lst(change.text)], origin: change.origin}
+    change = {
+      from: Pos(doc.first, 0),
+      to: Pos(change.to.line + shift, change.to.ch),
+      text: [lst(change.text)],
+      origin: change.origin
+    }
   }
   let last = doc.lastLine()
   if (change.to.line > last) {
-    change = {from: change.from, to: Pos(last, getLine(doc, last).text.length),
-              text: [change.text[0]], origin: change.origin}
+    change = {
+      from: change.from,
+      to: Pos(last, getLine(doc, last).text.length),
+      text: [change.text[0]],
+      origin: change.origin
+    }
   }
 
   change.removed = getBetween(doc, change.from, change.to)
@@ -210,9 +295,13 @@ function makeChangeSingleDoc(doc, change, selAfter, spans) {
 // Handle the interaction of a change to a document with the editor
 // that this document is part of.
 function makeChangeSingleDocInEditor(cm, change, spans) {
-  let doc = cm.doc, display = cm.display, from = change.from, to = change.to
+  let doc = cm.doc,
+    display = cm.display,
+    from = change.from,
+    to = change.to
 
-  let recomputeMaxLength = false, checkWidthStart = from.line
+  let recomputeMaxLength = false,
+    checkWidthStart = from.line
   if (!cm.options.lineWrapping) {
     checkWidthStart = lineNo(visualLine(getLine(doc, from.line)))
     doc.iter(checkWidthStart, to.line + 1, line => {
@@ -253,25 +342,32 @@ function makeChangeSingleDocInEditor(cm, change, spans) {
   else
     regChange(cm, from.line, to.line + 1, lendiff)
 
-  let changesHandler = hasHandler(cm, "changes"), changeHandler = hasHandler(cm, "change")
+  let changesHandler = hasHandler(cm, "changes"),
+    changeHandler = hasHandler(cm, "change")
   if (changeHandler || changesHandler) {
     let obj = {
-      from: from, to: to,
+      from: from,
+      to: to,
       text: change.text,
       removed: change.removed,
       origin: change.origin
     }
     if (changeHandler) signalLater(cm, "change", cm, obj)
-    if (changesHandler) (cm.curOp.changeObjs || (cm.curOp.changeObjs = [])).push(obj)
+    if (changesHandler)(cm.curOp.changeObjs || (cm.curOp.changeObjs = [])).push(obj)
   }
   cm.display.selForContextMenu = null
 }
 
 export function replaceRange(doc, code, from, to, origin) {
   if (!to) to = from
-  if (cmp(to, from) < 0) [from, to] = [to, from]
+  if (cmp(to, from) < 0)[from, to] = [to, from]
   if (typeof code == "string") code = doc.splitLines(code)
-  makeChange(doc, {from, to, text: code, origin})
+  makeChange(doc, {
+    from,
+    to,
+    text: code,
+    origin
+  })
 }
 
 // Rebasing/resetting history to deal with externally-sourced changes
@@ -294,9 +390,13 @@ function rebaseHistSelSingle(pos, from, to, diff) {
 // shared position objects being unsafely updated.
 function rebaseHistArray(array, from, to, diff) {
   for (let i = 0; i < array.length; ++i) {
-    let sub = array[i], ok = true
+    let sub = array[i],
+      ok = true
     if (sub.ranges) {
-      if (!sub.copied) { sub = array[i] = sub.deepCopy(); sub.copied = true }
+      if (!sub.copied) {
+        sub = array[i] = sub.deepCopy();
+        sub.copied = true
+      }
       for (let j = 0; j < sub.ranges.length; j++) {
         rebaseHistSelSingle(sub.ranges[j].anchor, from, to, diff)
         rebaseHistSelSingle(sub.ranges[j].head, from, to, diff)
@@ -321,7 +421,9 @@ function rebaseHistArray(array, from, to, diff) {
 }
 
 function rebaseHist(hist, change) {
-  let from = change.from.line, to = change.to.line, diff = change.text.length - (to - from) - 1
+  let from = change.from.line,
+    to = change.to.line,
+    diff = change.text.length - (to - from) - 1
   rebaseHistArray(hist.done, from, to, diff)
   rebaseHistArray(hist.undone, from, to, diff)
 }
@@ -330,7 +432,8 @@ function rebaseHist(hist, change) {
 // returning the number and optionally registering the line as
 // changed.
 export function changeLine(doc, handle, changeType, op) {
-  let no = handle, line = handle
+  let no = handle,
+    line = handle
   if (typeof handle == "number") line = getLine(doc, clipLine(doc, handle))
   else no = lineNo(handle)
   if (no == null) return null

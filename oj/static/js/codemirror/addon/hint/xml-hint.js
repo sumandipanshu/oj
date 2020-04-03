@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
-(function(mod) {
+(function (mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+})(function (CodeMirror) {
   "use strict";
 
   var Pos = CodeMirror.Pos;
@@ -23,16 +23,20 @@
     var quote = (options && options.quoteChar) || '"';
     var matchInMiddle = options && options.matchInMiddle;
     if (!tags) return;
-    var cur = cm.getCursor(), token = cm.getTokenAt(cur);
+    var cur = cm.getCursor(),
+      token = cm.getTokenAt(cur);
     if (token.end > cur.ch) {
       token.end = cur.ch;
       token.string = token.string.slice(0, cur.ch - token.start);
     }
     var inner = CodeMirror.innerMode(cm.getMode(), token.state);
     if (!inner.mode.xmlCurrentTag) return
-    var result = [], replaceToken = false, prefix;
+    var result = [],
+      replaceToken = false,
+      prefix;
     var tag = /\btag\b/.test(token.type) && !/>$/.test(token.string);
-    var tagName = tag && /^\w/.test(token.string), tagStart;
+    var tagName = tag && /^\w/.test(token.string),
+      tagStart;
 
     if (tagName) {
       var before = cm.getLine(cur.line).slice(Math.max(0, token.start - 2), token.start);
@@ -54,8 +58,9 @@
       var curTag = inner && tags[inner]
       var childList = inner ? curTag && curTag.children : tags["!top"];
       if (childList && tagType != "close") {
-        for (var i = 0; i < childList.length; ++i) if (!prefix || matches(childList[i], prefix, matchInMiddle))
-          result.push("<" + childList[i]);
+        for (var i = 0; i < childList.length; ++i)
+          if (!prefix || matches(childList[i], prefix, matchInMiddle))
+            result.push("<" + childList[i]);
       } else if (tagType != "close") {
         for (var name in tags)
           if (tags.hasOwnProperty(name) && name != "!top" && name != "!attrs" && (!prefix || matches(name, prefix, matchInMiddle)))
@@ -65,21 +70,25 @@
         result.push("</" + inner + ">");
     } else {
       // Attribute completion
-      var curTag = tagInfo && tags[tagInfo.name], attrs = curTag && curTag.attrs;
+      var curTag = tagInfo && tags[tagInfo.name],
+        attrs = curTag && curTag.attrs;
       var globalAttrs = tags["!attrs"];
       if (!attrs && !globalAttrs) return;
       if (!attrs) {
         attrs = globalAttrs;
       } else if (globalAttrs) { // Combine tag-local and global attributes
         var set = {};
-        for (var nm in globalAttrs) if (globalAttrs.hasOwnProperty(nm)) set[nm] = globalAttrs[nm];
-        for (var nm in attrs) if (attrs.hasOwnProperty(nm)) set[nm] = attrs[nm];
+        for (var nm in globalAttrs)
+          if (globalAttrs.hasOwnProperty(nm)) set[nm] = globalAttrs[nm];
+        for (var nm in attrs)
+          if (attrs.hasOwnProperty(nm)) set[nm] = attrs[nm];
         attrs = set;
       }
       if (token.type == "string" || token.string == "=") { // A value
         var before = cm.getRange(Pos(cur.line, Math.max(0, cur.ch - 60)),
-                                 Pos(cur.line, token.type == "string" ? token.start : token.end));
-        var atName = before.match(/([^\s\u00a0=<>\"\']+)=$/), atValues;
+          Pos(cur.line, token.type == "string" ? token.start : token.end));
+        var atName = before.match(/([^\s\u00a0=<>\"\']+)=$/),
+          atValues;
         if (!atName || !attrs.hasOwnProperty(atName[1]) || !(atValues = attrs[atName[1]])) return;
         if (typeof atValues == 'function') atValues = atValues.call(this, cm); // Functions can be used to supply values for autocomplete widget
         if (token.type == "string") {
@@ -101,15 +110,17 @@
           }
           replaceToken = true;
         }
-        for (var i = 0; i < atValues.length; ++i) if (!prefix || matches(atValues[i], prefix, matchInMiddle))
-          result.push(quote + atValues[i] + quote);
+        for (var i = 0; i < atValues.length; ++i)
+          if (!prefix || matches(atValues[i], prefix, matchInMiddle))
+            result.push(quote + atValues[i] + quote);
       } else { // An attribute name
         if (token.type == "attribute") {
           prefix = token.string;
           replaceToken = true;
         }
-        for (var attr in attrs) if (attrs.hasOwnProperty(attr) && (!prefix || matches(attr, prefix, matchInMiddle)))
-          result.push(attr);
+        for (var attr in attrs)
+          if (attrs.hasOwnProperty(attr) && (!prefix || matches(attr, prefix, matchInMiddle)))
+            result.push(attr);
       }
     }
     return {

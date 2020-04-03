@@ -6,17 +6,17 @@
  * Licence: MIT
  */
 
-(function(mod) {
+(function (mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+})(function (CodeMirror) {
   "use strict";
 
-  CodeMirror.defineMode("stex", function(_config, parserConfig) {
+  CodeMirror.defineMode("stex", function (_config, parserConfig) {
     "use strict";
 
     function pushCommand(state, command) {
@@ -48,7 +48,11 @@
         }
         return plug;
       }
-      return { styleIdentifier: function() { return null; } };
+      return {
+        styleIdentifier: function () {
+          return null;
+        }
+      };
     }
 
     function addPluginPattern(pluginName, cmdStyle, styles) {
@@ -57,16 +61,16 @@
         this.bracketNo = 0;
         this.style = cmdStyle;
         this.styles = styles;
-        this.argument = null;   // \begin and \end have arguments that follow. These are stored in the plugin
+        this.argument = null; // \begin and \end have arguments that follow. These are stored in the plugin
 
-        this.styleIdentifier = function() {
+        this.styleIdentifier = function () {
           return this.styles[this.bracketNo - 1] || null;
         };
-        this.openBracket = function() {
+        this.openBracket = function () {
           this.bracketNo++;
           return "bracket";
         };
-        this.closeBracket = function() {};
+        this.closeBracket = function () {};
       };
     }
 
@@ -78,19 +82,19 @@
     plugins["begin"] = addPluginPattern("begin", "tag", ["atom"]);
     plugins["end"] = addPluginPattern("end", "tag", ["atom"]);
 
-    plugins["label"    ] = addPluginPattern("label"    , "tag", ["atom"]);
-    plugins["ref"      ] = addPluginPattern("ref"      , "tag", ["atom"]);
-    plugins["eqref"    ] = addPluginPattern("eqref"    , "tag", ["atom"]);
-    plugins["cite"     ] = addPluginPattern("cite"     , "tag", ["atom"]);
-    plugins["bibitem"  ] = addPluginPattern("bibitem"  , "tag", ["atom"]);
-    plugins["Bibitem"  ] = addPluginPattern("Bibitem"  , "tag", ["atom"]);
-    plugins["RBibitem" ] = addPluginPattern("RBibitem" , "tag", ["atom"]);
+    plugins["label"] = addPluginPattern("label", "tag", ["atom"]);
+    plugins["ref"] = addPluginPattern("ref", "tag", ["atom"]);
+    plugins["eqref"] = addPluginPattern("eqref", "tag", ["atom"]);
+    plugins["cite"] = addPluginPattern("cite", "tag", ["atom"]);
+    plugins["bibitem"] = addPluginPattern("bibitem", "tag", ["atom"]);
+    plugins["Bibitem"] = addPluginPattern("Bibitem", "tag", ["atom"]);
+    plugins["RBibitem"] = addPluginPattern("RBibitem", "tag", ["atom"]);
 
     plugins["DEFAULT"] = function () {
       this.name = "DEFAULT";
       this.style = "tag";
 
-      this.styleIdentifier = this.openBracket = this.closeBracket = function() {};
+      this.styleIdentifier = this.openBracket = this.closeBracket = function () {};
     };
 
     function setState(state, f) {
@@ -122,19 +126,27 @@
 
       // find if we're starting various math modes
       if (source.match("\\[")) {
-        setState(state, function(source, state){ return inMathMode(source, state, "\\]"); });
+        setState(state, function (source, state) {
+          return inMathMode(source, state, "\\]");
+        });
         return "keyword";
       }
       if (source.match("\\(")) {
-        setState(state, function(source, state){ return inMathMode(source, state, "\\)"); });
+        setState(state, function (source, state) {
+          return inMathMode(source, state, "\\)");
+        });
         return "keyword";
       }
       if (source.match("$$")) {
-        setState(state, function(source, state){ return inMathMode(source, state, "$$"); });
+        setState(state, function (source, state) {
+          return inMathMode(source, state, "$$");
+        });
         return "keyword";
       }
       if (source.match("$")) {
-        setState(state, function(source, state){ return inMathMode(source, state, "$"); });
+        setState(state, function (source, state) {
+          return inMathMode(source, state, "$");
+        });
         return "keyword";
       }
 
@@ -215,7 +227,8 @@
     }
 
     function beginParams(source, state) {
-      var ch = source.peek(), lastPlug;
+      var ch = source.peek(),
+        lastPlug;
       if (ch == '{' || ch == '[') {
         lastPlug = peekCommand(state);
         lastPlug.openBracket(ch);
@@ -234,23 +247,25 @@
     }
 
     return {
-      startState: function() {
-        var f = parserConfig.inMathMode ? function(source, state){ return inMathMode(source, state); } : normal;
+      startState: function () {
+        var f = parserConfig.inMathMode ? function (source, state) {
+          return inMathMode(source, state);
+        } : normal;
         return {
           cmdState: [],
           f: f
         };
       },
-      copyState: function(s) {
+      copyState: function (s) {
         return {
           cmdState: s.cmdState.slice(),
           f: s.f
         };
       },
-      token: function(stream, state) {
+      token: function (stream, state) {
         return state.f(stream, state);
       },
-      blankLine: function(state) {
+      blankLine: function (state) {
         state.f = normal;
         state.cmdState.length = 0;
       },

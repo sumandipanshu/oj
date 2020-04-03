@@ -1,7 +1,7 @@
 <!doctype html>
 
 <title>CodeMirror: CMake mode</title>
-<meta charset="utf-8"/>
+<meta charset="utf-8" />
 <link rel=stylesheet href="../../doc/docs.css">
 
 <link rel="stylesheet" href="../../lib/codemirror.css">
@@ -9,11 +9,19 @@
 <script src="../../addon/edit/matchbrackets.js"></script>
 <script src="cmake.js"></script>
 <style>
-      .CodeMirror {border-top: 1px solid black; border-bottom: 1px solid black;}
-      .cm-s-default span.cm-arrow { color: red; }
-    </style>
+  .CodeMirror {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+  }
+
+  .cm-s-default span.cm-arrow {
+    color: red;
+  }
+</style>
 <div id=nav>
-  <a href="https://codemirror.net"><h1>CodeMirror</h1><img id=logo src="../../doc/logo.png" alt=""></a>
+  <a href="https://codemirror.net">
+    <h1>CodeMirror</h1><img id=logo src="../../doc/logo.png" alt="">
+  </a>
 
   <ul>
     <li><a href="../../index.html">Home</a>
@@ -27,8 +35,8 @@
 </div>
 
 <article>
-<h2>CMake mode</h2>
-<form><textarea id="code" name="code">
+  <h2>CMake mode</h2>
+  <form><textarea id="code" name="code">
 # vim: syntax=cmake
 if(NOT CMAKE_BUILD_TYPE)
     # default to Release build for GCC builds
@@ -116,14 +124,14 @@ if (APPLE)
   add_definitions(-DMACOS)
 endif()
 </textarea></form>
-    <script>
-      var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
-        mode: "text/x-cmake",
-        matchBrackets: true,
-        indentUnit: 4
-      });
-    </script>
+  <script>
+    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+      mode: "text/x-cmake",
+      matchBrackets: true,
+      indentUnit: 4
+    });
+  </script>
 
-    <p><strong>MIME types defined:</strong> <code>text/x-cmake</code>.</p>
+  <p><strong>MIME types defined:</strong> <code>text/x-cmake</code>.</p>
 
-  </article>
+</article>

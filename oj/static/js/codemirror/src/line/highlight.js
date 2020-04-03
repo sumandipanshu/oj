@@ -1,9 +1,20 @@
-import { countColumn } from "../util/misc.js"
-import { copyState, innerMode, startState } from "../modes.js"
+import {
+  countColumn
+} from "../util/misc.js"
+import {
+  copyState,
+  innerMode,
+  startState
+} from "../modes.js"
 import StringStream from "../util/StringStream.js"
 
-import { getLine, lineNo } from "./utils_line.js"
-import { clipPos } from "./pos.js"
+import {
+  getLine,
+  lineNo
+} from "./utils_line.js"
+import {
+  clipPos
+} from "./pos.js"
 
 class SavedContext {
   constructor(state, lookAhead) {
@@ -33,8 +44,10 @@ class Context {
     while (this.baseTokens[this.baseTokenPos] <= n)
       this.baseTokenPos += 2
     let type = this.baseTokens[this.baseTokenPos + 1]
-    return {type: type && type.replace(/( |^)overlay .*/, ""),
-            size: this.baseTokens[this.baseTokenPos] - n}
+    return {
+      type: type && type.replace(/( |^)overlay .*/, ""),
+      size: this.baseTokens[this.baseTokenPos] - n
+    }
   }
 
   nextLine() {
@@ -63,16 +76,19 @@ class Context {
 export function highlightLine(cm, line, context, forceToEnd) {
   // A styles array always starts with a number identifying the
   // mode/overlays that it is based on (for easy invalidation).
-  let st = [cm.state.modeGen], lineClasses = {}
+  let st = [cm.state.modeGen],
+    lineClasses = {}
   // Compute the base array of styles
   runMode(cm, line.text, cm.doc.mode, context, (end, style) => st.push(end, style),
-          lineClasses, forceToEnd)
+    lineClasses, forceToEnd)
   let state = context.state
 
   // Run overlays, adjust style array.
   for (let o = 0; o < cm.state.overlays.length; ++o) {
     context.baseTokens = st
-    let overlay = cm.state.overlays[o], i = 1, at = 0
+    let overlay = cm.state.overlays[o],
+      i = 1,
+      at = 0
     context.state = true
     runMode(cm, line.text, overlay.mode, context, (end, style) => {
       let start = i
@@ -80,7 +96,7 @@ export function highlightLine(cm, line, context, forceToEnd) {
       while (at < end) {
         let i_end = st[i]
         if (i_end > end)
-          st.splice(i, 1, end, st[i+1], i_end)
+          st.splice(i, 1, end, st[i + 1], i_end)
         i += 2
         at = Math.min(end, i_end)
       }
@@ -90,8 +106,8 @@ export function highlightLine(cm, line, context, forceToEnd) {
         i = start + 2
       } else {
         for (; start < i; start += 2) {
-          let cur = st[start+1]
-          st[start+1] = (cur ? cur + " " : "") + "overlay " + style
+          let cur = st[start + 1]
+          st[start + 1] = (cur ? cur + " " : "") + "overlay " + style
         }
       }
     }, lineClasses)
@@ -100,7 +116,10 @@ export function highlightLine(cm, line, context, forceToEnd) {
     context.baseTokenPos = 1
   }
 
-  return {styles: st, classes: lineClasses.bgClass || lineClasses.textClass ? lineClasses : null}
+  return {
+    styles: st,
+    classes: lineClasses.bgClass || lineClasses.textClass ? lineClasses : null
+  }
 }
 
 export function getLineStyles(cm, line, updateFrontier) {
@@ -120,7 +139,8 @@ export function getLineStyles(cm, line, updateFrontier) {
 }
 
 export function getContextBefore(cm, n, precise) {
-  let doc = cm.doc, display = cm.display
+  let doc = cm.doc,
+    display = cm.display
   if (!doc.mode.startState) return new Context(doc, true, n)
   let start = findStartLine(cm, n, precise)
   let saved = start > doc.first && getLine(doc, start - 1).stateAfter
@@ -168,7 +188,8 @@ function readToken(mode, stream, state, inner) {
 
 class Token {
   constructor(stream, type, state) {
-    this.start = stream.start; this.end = stream.pos
+    this.start = stream.start;
+    this.end = stream.pos
     this.string = stream.current()
     this.type = type || null
     this.state = state
@@ -177,10 +198,14 @@ class Token {
 
 // Utility for getTokenAt and getLineTokens
 export function takeToken(cm, pos, precise, asArray) {
-  let doc = cm.doc, mode = doc.mode, style
+  let doc = cm.doc,
+    mode = doc.mode,
+    style
   pos = clipPos(doc, pos)
-  let line = getLine(doc, pos.line), context = getContextBefore(cm, pos.line, precise)
-  let stream = new StringStream(line.text, cm.options.tabSize, context), tokens
+  let line = getLine(doc, pos.line),
+    context = getContextBefore(cm, pos.line, precise)
+  let stream = new StringStream(line.text, cm.options.tabSize, context),
+    tokens
   if (asArray) tokens = []
   while ((asArray || stream.pos < pos.ch) && !stream.eol()) {
     stream.start = stream.pos
@@ -191,16 +216,17 @@ export function takeToken(cm, pos, precise, asArray) {
 }
 
 function extractLineClasses(type, output) {
-  if (type) for (;;) {
-    let lineClass = type.match(/(?:^|\s+)line-(background-)?(\S+)/)
-    if (!lineClass) break
-    type = type.slice(0, lineClass.index) + type.slice(lineClass.index + lineClass[0].length)
-    let prop = lineClass[1] ? "bgClass" : "textClass"
-    if (output[prop] == null)
-      output[prop] = lineClass[2]
-    else if (!(new RegExp("(?:^|\s)" + lineClass[2] + "(?:$|\s)")).test(output[prop]))
-      output[prop] += " " + lineClass[2]
-  }
+  if (type)
+    for (;;) {
+      let lineClass = type.match(/(?:^|\s+)line-(background-)?(\S+)/)
+      if (!lineClass) break
+      type = type.slice(0, lineClass.index) + type.slice(lineClass.index + lineClass[0].length)
+      let prop = lineClass[1] ? "bgClass" : "textClass"
+      if (output[prop] == null)
+        output[prop] = lineClass[2]
+      else if (!(new RegExp("(?:^|\s)" + lineClass[2] + "(?:$|\s)")).test(output[prop]))
+        output[prop] += " " + lineClass[2]
+    }
   return type
 }
 
@@ -208,8 +234,10 @@ function extractLineClasses(type, output) {
 function runMode(cm, text, mode, context, f, lineClasses, forceToEnd) {
   let flattenSpans = mode.flattenSpans
   if (flattenSpans == null) flattenSpans = cm.options.flattenSpans
-  let curStart = 0, curStyle = null
-  let stream = new StringStream(text, cm.options.tabSize, context), style
+  let curStart = 0,
+    curStyle = null
+  let stream = new StringStream(text, cm.options.tabSize, context),
+    style
   let inner = cm.options.addModeClass && [null]
   if (text == "") extractLineClasses(callBlankLine(mode, context.state), lineClasses)
   while (!stream.eol()) {
@@ -254,7 +282,8 @@ function findStartLine(cm, n, precise) {
   let lim = precise ? -1 : n - (cm.doc.mode.innerMode ? 1000 : 100)
   for (let search = n; search > lim; --search) {
     if (search <= doc.first) return doc.first
-    let line = getLine(doc, search - 1), after = line.stateAfter
+    let line = getLine(doc, search - 1),
+      after = line.stateAfter
     if (after && (!precise || search + (after instanceof SavedContext ? after.lookAhead : 0) <= doc.modeFrontier))
       return search
     let indented = countColumn(line.text, null, cm.options.tabSize)
