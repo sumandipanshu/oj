@@ -8,7 +8,8 @@
       <table>
         <thead>
           <tr>
-            <th>#</th>
+            <th>Process ID</th>
+			<th>Code</th>
             <th>Problem</th>
             <th>Language</th>
             <th>Verdict</th>
@@ -16,7 +17,8 @@
         </thead>
         <tbody>
           {% for submission in submissions %}
-          <tr>
+			<tr>
+				<td> {{submission.solution.id}} </td>
             <td><a href="#openModal{{ forloop.counter}}">code</a></td>
             <div id="openModal{{forloop.counter}}" class="modalDialog">
               <div>
@@ -26,21 +28,21 @@
                   style="border:0; margin-bottom:-12px;border-bottom: 5px double maroon;border-radius: 0;">
                   <ul>
                     <li>Title: {{ submission.question.title }}</li>
-                    {% if submission.status_code == 201 %}
+                    {% if submission.solution.status == '201' %}
                     <li>Verdict: AC</li>
-                    {% elif submission.status_code == 400 %}
+                    {% elif submission.solution.status == '400' %}
                     <li>Verdict: WA</li>
-                    {% elif submission.status_code == 401 %}
+                    {% elif submission.solution.status == '401' %}
                     <li>Verdict: CE</li>
-                    {% elif submission.status_code == 402 %}
+                    {% elif submission.solution.status == '402' %}
                     <li>Verdict: RE</li>
-                    {% elif submission.status_code == 408 %}
+                    {% elif submission.solution.status == '408' %}
                     <li>Verdict: TLE</li>
-                    {% elif submission.status_code == '200' %}
+                    {% elif submission.solution.status == '200' %}
                     <td>Verdict: OK</td>
-                    {% elif submission.status_code == '403' %}
+                    {% elif submission.solution.status == '403' %}
                     <td>Verdict: INVALID FILE</td>
-                    {% elif submission.status_code == '404' %}
+                    {% elif submission.solution.status == '404' %}
                     <td>Verdict: FILE NOT FOUND</td>
                     {% else %}
                     <li>Verdict: processing</li>
@@ -57,21 +59,21 @@
             </div>
             <td>{{ submission.question.title }}</td>
             <td>{{ submission.solution.lang }}</td>
-            {% if submission.status_code == '201' %}
+            {% if submission.solution.status == '201' %}
             <td>AC</td>
-            {% elif submission.status_code == '400' %}
+            {% elif submission.solution.status == '400' %}
             <td>WA</td>
-            {% elif submission.status_code == '401' %}
+            {% elif submission.solution.status == '401' %}
             <td>CE</td>
-            {% elif submission.status_code == '402' %}
+            {% elif submission.solution.status == '402' %}
             <td>RE</td>
-            {% elif submission.status_code == '408' %}
+            {% elif submission.solution.status == '408' %}
             <td>TLE</td>
-            {% elif submission.status_code == '200' %}
+            {% elif submission.solution.status == '200' %}
             <td>OK</td>
-            {% elif submission.status_code == '403' %}
+            {% elif submission.solution.status == '403' %}
             <td>INVALID FILE</td>
-            {% elif submission.status_code == '404' %}
+            {% elif submission.solution.status == '404' %}
             <td>FILE NOT FOUND</td>
             {% else %}
             <td>processing</td>
@@ -98,7 +100,7 @@
   }
 </script>
 
-<!-- STATUS_CODES = {
+<!--.solution.statusS = {
     200: 'OK',
     201: 'ACCEPTED',
     400: 'WRONG ANSWER',
