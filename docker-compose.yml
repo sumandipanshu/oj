@@ -13,11 +13,19 @@ services:
         depends_on:
             -  checker
 
+    makemigrations:
+        build: ./oj
+        command: python3 manage.py makemigrations
+        volumes: 
+            - ./oj:/oj
+
     migrations:
         build: ./oj
         command: python3 manage.py migrate
         volumes: 
             - ./oj:/oj
+        depends_on:
+            -  makemigrations
 
     checker:
         build: ./checker
