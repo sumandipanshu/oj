@@ -37,11 +37,11 @@
                     {% elif submission.solution.status == '408' %}
                     <li>Verdict: TLE</li>
                     {% elif submission.solution.status == '200' %}
-                    <td>Verdict: OK</td>
+                    <li>Verdict: OK</li>
                     {% elif submission.solution.status == '403' %}
-                    <td>Verdict: INVALID FILE</td>
+                    <li>Verdict: INVALID FILE</li>
                     {% elif submission.solution.status == '404' %}
-                    <td>Verdict: FILE NOT FOUND</td>
+		    <li>Verdict: FILE NOT FOUND</li>
                     {% else %}
                     <li>Verdict: processing</li>
                     {% endif %}
