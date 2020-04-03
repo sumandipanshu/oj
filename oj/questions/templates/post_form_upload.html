@@ -1,33 +1,5 @@
 {% extends 'base.html' %}
 {% block content %}
-{% if form.errors %}
-<p style="text-align:center; color: red">Your username and password didn't match. Please try again.</p>
-{% endif %}
-{% if status %}
-<div align="center" style="border-top: 1px solid #888; border-bottom: 1px solid #888; margin:10px auto;">
-    <h2 style="margin:10px auto; font-weight:normal;"><strong>Status:</strong>
-        {% if status == '201' %}
-        Accepted(AC)
-        {% elif status == '400' %}
-        Wrong Answer(WA)
-        {% elif status == '401' %}
-        Compilation Error(CE)
-        {% elif status == '402' %}
-        Runtime Error(RE)
-        {% elif status == '408' %}
-        Time Limit Exceeded(TLE)
-        {% elif status == '200' %}
-        OK
-        {% elif status == '403' %}
-        INVALID FILE
-        {% elif status == '404' %}
-        FILE NOT FOUND
-        {% else %}
-        processing
-        {% endif %}
-    </h2>
-</div>
-{% endif %}
 <div id="middle">
     <main>
         <form name="submit" class="submit-form" method="POST">
