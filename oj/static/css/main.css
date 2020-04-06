@@ -1,6 +1,96 @@
 /* ==========================================================================
    Base styles: opinionated defaults
    ========================================================================== */
+html,
+html[data-theme="light"] {
+  --logo-heading-text-color: inherit;
+  --cred-header-text-color: #3B5998;
+  --headings-text-color: inherit;
+  --headings-bg-color: inherit;
+  --main-background-color: inherit;
+  --main-text-color: inherit;
+  --link-color: #0000EE;
+  --table-alternate-color: #f8f8f8;
+  --toggle-switch: #0B0F2C;
+  --toggle-switch-hover: #2f4b89;
+  --copy-text-color: rgb(34, 34, 34);
+}
+
+html[data-theme="dark"] {
+  --logo-heading-text-color: rgb(102, 162, 192);
+  --cred-header-text-color: #222;
+  --headings-text-color: #222;
+  --headings-bg-color: #6b778d;
+  --main-background-color: rgb(30, 34, 39);
+  --main-text-color: #fff;
+  --link-color: rgb(111, 187, 109);
+  --table-alternate-color: #282c34;
+  --toggle-switch: #6b6e70;
+  --toggle-switch-hover: #61892F;
+  --copy-text-color: #fff;
+}
+
+body {
+  background-color: var(--main-background-color);
+  color: var(--main-text-color);
+}
+
+body .copy-text {
+  background-color: var(--main-background-color);
+  color: var(--copy-text-color) !important;
+}
+
+body table tbody>tr:nth-child(odd)>td,
+body table tbody>tr:nth-child(odd)>th {
+  background: var(--table-alternate-color);
+}
+
+body a {
+  color: var(--link-color);
+}
+
+body #caption,
+body .content {
+  background-color: var(--headings-bg-color) !important;
+  border: 1px solid #e1e1e1;
+  border-collapse: collapse;
+}
+
+body #cred-header {
+  color: var(--cred-header-text-color);
+  background-color: var(--headings-bg-color);
+}
+
+body .modalDialog {
+  color: var(--headings-text-color);
+
+}
+
+body #logo h1 {
+  color: var(--logo-heading-text-color);
+}
+
+#theme-toggle {
+  fill: var(--toggle-switch);
+}
+
+#theme-toggle:hover {
+  fill: var(--toggle-switch-hover);
+}
+
+/* body,
+body *,
+body *:before,
+body *:after {
+  transition: ease-in-out 750ms;
+  transition-delay: 0ms ;
+}
+.CodeMirror,
+.CodeMirror-gutters {
+  transition: none !important;
+  transition-delay: 0ms !important;
+} */
+
 
 html {
   color: #222;
@@ -297,8 +387,9 @@ textarea {
 }
 
 input[type=submit] {
-  background-color: initial;
-  color: initial;
+  background-color: inherit;
+  color: inherit;
+  cursor: pointer;
 }
 
 html {
@@ -354,6 +445,13 @@ body {
   margin-bottom: 0;
 }
 
+#logo>svg:nth-child(1) {
+  margin-top: -32%;
+  margin-bottom: -32%;
+  margin-left: -6%;
+}
+
+
 #login-signup {
   float: right;
   list-style-type: none;
@@ -364,6 +462,14 @@ body {
   float: right;
   list-style-type: none;
 }
+
+.theme {
+  float: right;
+  list-style-type: none;
+  /* margin-top: 1.8em; */
+  outline: none;
+}
+
 
 #header-nav {
   border: 1px solid rgb(185, 185, 185);
@@ -708,6 +814,10 @@ main {
   width: 80%;
   height: 500px !important;
 }
+
+/* .CodeMirror-linenumber {
+  left: -40px !important;
+} */
 
 .copy-text {
   border: 1px solid #888;
