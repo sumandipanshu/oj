@@ -1,26 +1,27 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .forms import QuestionForm,SubmissionForm
 from .models import Questions,Submission
 from .redis_task_add import add_task,get_output
 from django.contrib.auth.decorators import login_required
-
+import threading
 from core.models import Profile
 import logging
 
+@login_required
 def get_submission(request):
-    symbols = '< > & \' \"'.split()
-    replace = '&lt; &gt; &amp; &apos; &quot;'.split()
+    # symbols = '< > & \' \"'.split()
+    # replace = '&lt; &gt; &amp; &apos; &quot;'.split()
     solved = Submission.objects.filter(user_id = request.user.id)
     submissions = []
     for i in solved:
         temp = {}
         temp["solution"] = i
-        for sym,rep in zip(symbols,replace):
-            temp["solution"].solution_code = temp["solution"].solution_code.replace(sym,rep)
+        # for sym,rep in zip(symbols,replace):
+        #     temp["solution"].solution_code = temp["solution"].solution_code.replace(sym,rep)
         temp["question"] = Questions.objects.get(id = i.qid)
         submissions.append(temp)
-    return render(request, 'get_submission.html',{'submissions':submissions})
+    return render(request, 'get_submission.html',{'submissions':submissions[::-1]})
     
 
 @login_required
@@ -58,42 +59,48 @@ def question(request,qid):
 
 @login_required
 def solution(request, qid):
+    logging.warning(request.method)
     if request.method=='GET':
         form=SubmissionForm()
+        return render(request, 'post_form_upload.html', {'form': form})
         
     else:
         form=SubmissionForm(request.POST)
         submit=Submission()
         previous = Submission.objects.filter(status = "success",user_id = request.user.id, qid = qid)
+        flag = 0
         if len(previous) == 0:
-            if form.is_valid():
-                submit=form.save(commit=False)
-                submit.qid=qid
-                submit.user_id=request.user.id
-                submit.status="processing"
-                submit.score=0
-                submit.save()
-            question=Questions.objects.get(id=qid)
-            question=question.__dict__
-            add_task(request.user.id,qid,submit.solution_code,question["test_inputs"],question["expected_outputs"],submit.lang,submit.status)
-            user = Profile.objects.get(pk = request.user.pk)
-            if user.score == None:
-                user.score = 0
-            while True:
-                if get_output(request.user.id)[b'status'].decode('utf-8')!="processing" and get_output(request.user.id)[b'question'].decode('utf-8')==str(qid):
-                    submit = Submission.objects.filter(user_id = request.user.id , qid = qid)
-                    print(submit)
-                    submit = list(submit).pop()
-                    if get_output(request.user.id)[b"status"].decode('utf-8')=="201":
-                        user.score+=int(question["points"])
-                        submit.status = "success"
-                        submit.save()
-                        user.save()
-                    else:
-                        submit.status = "wrong"
-                        submit.save()
-                    break
-    return render(request, 'post_form_upload.html', {
-        'form': form, "status" : get_output(request.user.id)[b'status'].decode('utf-8')
-    })
+            flag=1
+        else:
+            flag=0
 
+        if form.is_valid():
+            submit=form.save(commit=False)
+            submit.qid=qid
+            submit.user_id=request.user.id
+            submit.status="processing"
+            submit.score=0
+            submit.save()
+            th = threading.Thread(target = handle_submission, args = (request.user.id,qid,submit,flag,))
+            th.start()
+
+        
+        return redirect(get_submission)
+
+def handle_submission(user_id,qid,submit,flag):
+    question=Questions.objects.get(id=qid)
+    add_task(user_id,qid,submit.solution_code,question.test_inputs,question.expected_outputs,submit.lang,submit.status,question.time_limit)
+    user = Profile.objects.get(pk = user_id)
+    if user.score == None:
+        user.score = 0
+    while True:
+        compiler_output = get_output(user_id)
+        if compiler_output[b'status'].decode('utf-8')!="processing" and compiler_output[b'question'].decode('utf-8')==str(qid):
+            if compiler_output[b"status"].decode('utf-8')=="201":
+                if flag == 1:
+                    user.score+=int(question.points)
+                    user.save()
+            submit.status = compiler_output[b"status"].decode('utf-8')
+            submit.save()
+            break
+    

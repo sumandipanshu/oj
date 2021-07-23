@@ -93,7 +93,7 @@ class Program:
         if self.language == 'java':
             cmd = 'java {}'.format(self.name).split()
         elif self.language in ['c', 'cpp']:
-            cmd = "./"+self.name
+            cmd = self.name
         elif self.language=="py":
             cmd = "python3 {}".format(self.fileName).split()
         # Invalid files

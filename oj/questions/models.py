@@ -11,6 +11,10 @@ class Questions(models.Model):
     memory_size = models.IntegerField(null=False, blank = False)
     sample_inputs=models.TextField(max_length=300,blank=False)
     sample_outputs=models.TextField(max_length=300,blank=False)
+    input_format=models.TextField(max_length=500,blank=False)
+    output_format=models.TextField(max_length=500,blank=False)
+    note=models.TextField(max_length=300,blank=True)
+
 
 class Submission(models.Model):
     qid=models.IntegerField(null=False,blank=False)
